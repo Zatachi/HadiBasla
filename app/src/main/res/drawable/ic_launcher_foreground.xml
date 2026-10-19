@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lisansla rozeti: krem kalkan, içinde koyu yeşil "L" -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#F3E7CC"
+        android:pathData="M54,25.25 L77.75,34 L77.75,54 C77.75,69 66.5,77.75 54,82.75 C41.5,77.75 30.25,69 30.25,54 L30.25,34 Z" />
+    <path
+        android:strokeColor="#1D4D3A"
+        android:strokeWidth="5.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000"
+        android:pathData="M47.75,42.75 L47.75,67.75 L62.75,67.75" />
+</vector>

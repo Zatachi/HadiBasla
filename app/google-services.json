@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "375858051660",
+    "project_id": "lisans-hazirlik",
+    "storage_bucket": "lisans-hazirlik.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375858051660:android:7700eed64b4e79bae492e9",
+        "android_client_info": {
+          "package_name": "com.lisanshazirlik.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtDhwsB5ms3Am_wRR5sfNi-BTceSJGFPA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

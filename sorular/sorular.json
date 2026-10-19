@@ -1,0 +1,354 @@
+{
+  "surum": 1,
+  "guncelleme": "20 Ekim 2026",
+  "dersler": [
+    {
+      "kod": "1001",
+      "ad": "Dar Kapsamlı Sermaye Piyasası Mevzuatı ve Meslek Kuralları",
+      "kisaAd": "Mevzuat ve Meslek Kuralları",
+      "konular": [
+        { "id": "1001-01", "ad": "Sermaye Piyasası Kanunu" },
+        { "id": "1001-02", "ad": "Özel Durumlar Tebliği" },
+        { "id": "1001-03", "ad": "Kurumsal Yönetim Tebliği" },
+        { "id": "1001-04", "ad": "Yatırım Fonları Tebliği" },
+        { "id": "1001-05", "ad": "Meslek Kuralları ve Etik İlkeler" }
+      ]
+    },
+    {
+      "kod": "1003",
+      "ad": "Sermaye Piyasası Araçları 1",
+      "kisaAd": "Sermaye Piyasası Araçları",
+      "konular": [
+        { "id": "1003-01", "ad": "Paylar" },
+        { "id": "1003-02", "ad": "Borçlanma Araçları" },
+        { "id": "1003-03", "ad": "Yatırım Fonu Katılma Payları" },
+        { "id": "1003-04", "ad": "Türev Araçlar" },
+        { "id": "1003-05", "ad": "Vergilendirme (GVK Geçici 67)" }
+      ]
+    },
+    {
+      "kod": "1005",
+      "ad": "Yatırım Kuruluşları",
+      "kisaAd": "Yatırım Kuruluşları",
+      "konular": [
+        { "id": "1005-01", "ad": "Yatırım Hizmetleri ve Yan Hizmetler" },
+        { "id": "1005-02", "ad": "Aracı Kurumların Kuruluşu ve Faaliyetleri" },
+        { "id": "1005-03", "ad": "Belge ve Kayıt Düzeni" },
+        { "id": "1005-04", "ad": "Kredili Alım, Açığa Satış ve Ödünç İşlemleri" },
+        { "id": "1005-05", "ad": "Kitle Fonlaması" },
+        { "id": "1005-06", "ad": "Uzaktan Kimlik Tespiti" }
+      ]
+    },
+    {
+      "kod": "1012",
+      "ad": "Takas, Saklama ve Operasyon İşlemleri",
+      "kisaAd": "Takas, Saklama ve Operasyon",
+      "konular": [
+        { "id": "1012-01", "ad": "Temel Kavramlar" },
+        { "id": "1012-02", "ad": "Takas, Saklama ve Kaydileştirme" },
+        { "id": "1012-03", "ad": "Pay Piyasası Takas ve Temerrüt" },
+        { "id": "1012-04", "ad": "Borçlanma Araçları Takası" },
+        { "id": "1012-05", "ad": "Türev Araçlarda Takas ve Teslimat" },
+        { "id": "1012-06", "ad": "Takasbank Teminat Yönetimi" }
+      ]
+    }
+  ],
+  "sorular": [
+    {
+      "id": "1001-0001",
+      "ders": "1001",
+      "konu": "1001-01",
+      "soru": "Piyasa dolandırıcılığı sayılan bir fiilde bulunan kişi, soruşturma başlamadan önce bu fiilden sağladığı menfaatin iki katını Hazine'ye öderse ne olur?",
+      "secenekler": [
+        "Verilecek ceza yarı oranında indirilir.",
+        "Verilecek ceza üçte bir oranında indirilir.",
+        "Bu suçtan dolayı cezaya hükmolunmaz.",
+        "Hapis cezası yerine yalnızca idari para cezası verilir.",
+        "Ödeme, verilecek cezayı etkilemez."
+      ],
+      "dogru": 2,
+      "aciklama": "Kanun, piyasa dolandırıcılığı için etkin pişmanlık hükmü getirmiştir. Menfaatin iki katı soruşturma başlamadan önce Hazine'ye ödenirse ceza verilmez. Ödeme soruşturma başladıktan sonra yapılırsa ceza yarı oranında, kovuşturma evresinde hüküm verilinceye kadar yapılırsa üçte bir oranında indirilir.",
+      "kaynak": "6362 sayılı SPKn, piyasa dolandırıcılığı ve etkin pişmanlık"
+    },
+    {
+      "id": "1001-0002",
+      "ders": "1001",
+      "konu": "1001-03",
+      "soru": "Kurumsal Yönetim Tebliği'ne göre 7 üyeli bir yönetim kurulunda en az kaç bağımsız üye bulunmalıdır?",
+      "secenekler": ["1", "2", "3", "4", "5"],
+      "dogru": 2,
+      "aciklama": "Bağımsız üye sayısı, toplam üye sayısının üçte birinden az olamaz ve hesaplamada küsuratlar bir üst tam sayıya tamamlanır. 7 ÷ 3 = 2,33 olduğundan en az 3 bağımsız üye gerekir. Her durumda bağımsız üye sayısı ikiden az olamaz.",
+      "kaynak": "Kurumsal Yönetim Tebliği (II-17.1), Kurumsal Yönetim İlkeleri 4.3.4"
+    },
+    {
+      "id": "1001-0003",
+      "ders": "1001",
+      "konu": "1001-03",
+      "soru": "Kurumsal Yönetim Tebliği'ne göre bağımsız yönetim kurulu üyelerinin görev süresi en fazla ne kadardır?",
+      "secenekler": ["2 yıl", "3 yıl", "4 yıl", "5 yıl", "Herhangi bir süre sınırı yoktur."],
+      "dogru": 1,
+      "aciklama": "Bağımsız yönetim kurulu üyeleri üç yıla kadar seçilebilir. Görev süresi dolan üye yeniden aday gösterilerek tekrar seçilebilir.",
+      "kaynak": "Kurumsal Yönetim Tebliği (II-17.1), Kurumsal Yönetim İlkeleri 4.3.5"
+    },
+    {
+      "id": "1001-0004",
+      "ders": "1001",
+      "konu": "1001-04",
+      "soru": "Yatırım fonlarıyla ilgili aşağıdaki ifadelerden hangisi doğrudur?",
+      "secenekler": [
+        "Yatırım fonu, ticaret siciline tescil edilmiş bir anonim şirkettir.",
+        "Katılma payı sahipleri fonun yönetim kurulunu genel kurulda seçer.",
+        "Yatırım fonlarını yalnızca bankalar kurabilir.",
+        "Fon portföyündeki varlıklar kurucunun malvarlığının bir parçası sayılır.",
+        "Yatırım fonu, içtüzükle kurulan ve tüzel kişiliği bulunmayan bir mal varlığıdır."
+      ],
+      "dogru": 4,
+      "aciklama": "Yatırım fonu, portföy yönetim şirketlerince içtüzük ile kurulan ve tüzel kişiliği olmayan bir mal varlığıdır. Fonun şirket gibi bir yönetim kurulu ya da genel kurulu yoktur. Fon varlıkları kurucunun malvarlığından ayrı tutulur.",
+      "kaynak": "6362 sayılı SPKn, yatırım fonları; Yatırım Fonlarına İlişkin Esaslar Tebliği (III-52.1)"
+    },
+    {
+      "id": "1001-0005",
+      "ders": "1001",
+      "konu": "1001-01",
+      "soru": "Kaydileştirilmiş sermaye piyasası araçlarının ve bunlara bağlı hakların kayıtlarını hak sahipleri bazında tutan kuruluş hangisidir?",
+      "secenekler": [
+        "Borsa İstanbul A.Ş.",
+        "İstanbul Takas ve Saklama Bankası A.Ş.",
+        "Türkiye Sermaye Piyasaları Birliği",
+        "Merkezi Kayıt Kuruluşu A.Ş.",
+        "Sermaye Piyasası Kurulu"
+      ],
+      "dogru": 3,
+      "aciklama": "Kaydi sistemde sermaye piyasası araçları fiziki senet yerine elektronik kayıt olarak izlenir. Bu kayıtları tutan özel hukuk tüzel kişisi Merkezi Kayıt Kuruluşu'dur (MKK). Takasbank ise takas, saklama ve merkezi karşı taraf hizmetleri sunar.",
+      "kaynak": "6362 sayılı SPKn, kaydi sistem ve Merkezi Kayıt Kuruluşu"
+    },
+    {
+      "id": "1003-0001",
+      "ders": "1003",
+      "konu": "1003-02",
+      "soru": "Nominal değeri 100 TL olan ve vadesine tam 1 yıl kalan kuponsuz bir senetten yatırımcı yıllık %25 getiri bekliyor. Senedin bugünkü fiyatı kaç TL olmalıdır?",
+      "secenekler": ["75,00", "78,50", "80,00", "82,50", "125,00"],
+      "dogru": 2,
+      "aciklama": "Kuponsuz senedin fiyatı, vadede ödenecek nominal değerin beklenen getiriyle bugüne indirgenmesiyle bulunur: 100 ÷ (1 + 0,25) = 80 TL. 125 TL, iskonto yerine faiz eklenerek yapılan yaygın bir hatanın sonucudur.",
+      "kaynak": "Borçlanma araçlarında fiyatlama (kuponsuz senet)"
+    },
+    {
+      "id": "1003-0002",
+      "ders": "1003",
+      "konu": "1003-02",
+      "soru": "Piyasa faiz oranları yükseldiğinde sabit kuponlu tahvillerin fiyatları genel olarak nasıl etkilenir?",
+      "secenekler": [
+        "Artar.",
+        "Düşer.",
+        "Değişmez.",
+        "Yalnızca kısa vadeli tahvillerin fiyatı artar.",
+        "Tahvilin kupon oranı da otomatik olarak yükselir."
+      ],
+      "dogru": 1,
+      "aciklama": "Tahvil fiyatı ile faiz oranı ters yönlü hareket eder. Faizler yükselince yeni ihraçlar daha yüksek getiri sunar; sabit kuponlu eski tahvilin cazip kalması için fiyatının düşmesi gerekir. Vadesi uzun olan tahvillerde bu etki genellikle daha büyüktür.",
+      "kaynak": "Tahvillerde risk-getiri ilişkisi"
+    },
+    {
+      "id": "1003-0003",
+      "ders": "1003",
+      "konu": "1003-02",
+      "soru": "Bir tahvilin kirli (brüt) fiyatı için aşağıdakilerden hangisi doğrudur?",
+      "secenekler": [
+        "Temiz fiyattan işlemiş faiz çıkarılarak bulunur.",
+        "Kupon ödemelerini hiç içermeyen fiyattır.",
+        "Her zaman tahvilin nominal değerine eşittir.",
+        "Temiz fiyat ile işlemiş faizin toplamıdır.",
+        "Yalnızca vade sonunda ödenen tutarı ifade eder."
+      ],
+      "dogru": 3,
+      "aciklama": "Son kupon ödemesinden bu yana geçen sürede biriken faize işlemiş faiz denir. Alıcı, satıcıya hem tahvilin temiz fiyatını hem de bu birikmiş faizi öder. Bu nedenle kirli fiyat = temiz fiyat + işlemiş faiz.",
+      "kaynak": "Temiz fiyat, kirli fiyat ve işlemiş faiz mekanizması"
+    },
+    {
+      "id": "1003-0004",
+      "ders": "1003",
+      "konu": "1003-04",
+      "soru": "Alım (call) opsiyonu satın alan bir yatırımcı için aşağıdakilerden hangisi doğrudur?",
+      "secenekler": [
+        "Dayanak varlığı belirlenen fiyattan satın alma hakkına sahiptir, ancak bu hakkı kullanmak zorunda değildir.",
+        "Vade içinde dayanak varlığı satma yükümlülüğü vardır.",
+        "Opsiyonu satan taraftan prim tahsil eder.",
+        "Uğrayabileceği zarar sınırsızdır.",
+        "Opsiyonu kullanmak zorundadır."
+      ],
+      "dogru": 0,
+      "aciklama": "Alım opsiyonunun alıcısı prim öder ve karşılığında dayanak varlığı kullanım fiyatından alma hakkı kazanır; hakkını kullanıp kullanmamak kendi tercihidir. Bu nedenle en fazla kaybı ödediği primle sınırlıdır. Yükümlülük, opsiyonu satan (yazan) taraftadır.",
+      "kaynak": "Türev araçlar, opsiyon sözleşmeleri"
+    },
+    {
+      "id": "1003-0005",
+      "ders": "1003",
+      "konu": "1003-03",
+      "soru": "Bir yatırım fonunun birim pay değeri nasıl hesaplanır?",
+      "secenekler": [
+        "Fon portföy değeri ile dolaşımdaki pay sayısının çarpımıyla",
+        "Kurucunun her ay belirlediği sabit bir fiyatla",
+        "Fonun ilk ihraç fiyatına günlük faiz eklenerek",
+        "Fonun toplam değerinin yatırımcı sayısına bölünmesiyle",
+        "Fon toplam değerinin dolaşımdaki pay sayısına bölünmesiyle"
+      ],
+      "dogru": 4,
+      "aciklama": "Fon toplam değeri; portföydeki varlıkların değerine diğer varlıklar eklenip borçlar düşülerek bulunur. Bu tutar dolaşımdaki pay sayısına bölününce birim pay değeri elde edilir. Payda yatırımcı sayısı değil, pay sayısıdır.",
+      "kaynak": "Yatırım fonlarında fiyatlama sistematiği"
+    },
+    {
+      "id": "1005-0001",
+      "ders": "1005",
+      "konu": "1005-01",
+      "soru": "6362 sayılı Sermaye Piyasası Kanunu'na göre aşağıdakilerden hangisi bir yan hizmettir?",
+      "secenekler": [
+        "İşlem aracılığı",
+        "Portföy yöneticiliği",
+        "Yatırım danışmanlığı",
+        "Servet yönetimi ve finansal planlama",
+        "Emirlerin alınması ve iletilmesi"
+      ],
+      "dogru": 3,
+      "aciklama": "İşlem aracılığı, portföy yöneticiliği, yatırım danışmanlığı ve emir iletimine aracılık yatırım hizmetleridir. Servet yönetimi ve finansal planlama ise yatırım araştırması, finansal analiz ve sermaye piyasası danışmanlığı gibi yan hizmetler arasında sayılır.",
+      "kaynak": "6362 sayılı SPKn, yatırım hizmet ve faaliyetleri ile yan hizmetler"
+    },
+    {
+      "id": "1005-0002",
+      "ders": "1005",
+      "konu": "1005-01",
+      "soru": "Yan hizmetlerle ilgili aşağıdaki ifadelerden hangisi doğrudur?",
+      "secenekler": [
+        "Her yan hizmet için Kurul'dan ayrıca izin alınması zorunludur.",
+        "Yatırım kuruluşları bütün yan hizmetleri sunmak zorundadır.",
+        "Yalnızca yan hizmet sunmak amacıyla yatırım kuruluşu kurulamaz.",
+        "Yan hizmetleri yalnızca bankalar sunabilir.",
+        "Yan hizmetler, yatırım hizmetlerinin yerine sunulabilir."
+      ],
+      "dogru": 2,
+      "aciklama": "Yan hizmetleri sunmak için ayrıca izin almak gerekmez ve yatırım kuruluşları bunları sunmak zorunda değildir. Ancak yan hizmetler yatırım hizmetlerine ek olarak sunulur; münhasıran yan hizmet yapmak amacıyla yatırım kuruluşu kurulamaz.",
+      "kaynak": "6362 sayılı SPKn, yan hizmetler"
+    },
+    {
+      "id": "1005-0003",
+      "ders": "1005",
+      "konu": "1005-02",
+      "soru": "Bir ortağın aracı kurumdaki payının belirli eşikleri aşması sonucunu doğuran pay edinimleri Kurul iznine tabidir. Bu eşikler hangi seçenekte doğru verilmiştir?",
+      "secenekler": [
+        "%5, %10, %25, %50",
+        "%10, %20, %33, %50",
+        "%10, %25, %50, %75",
+        "%20, %40, %60, %80",
+        "%25, %50, %67, %100"
+      ],
+      "dogru": 1,
+      "aciklama": "Aracı kurum sermayesinin veya oy haklarının %10'u ya da daha fazlasını edinerek ortak olmak ve ortaklık payının %10, %20, %33 veya %50 eşiklerini aşması Kurul iznine tabidir. Payın bu oranların altına düşmesine yol açan devirler de aynı şekilde izne bağlıdır.",
+      "kaynak": "Yatırım Kuruluşları Tebliği (III-39.1), pay devirleri"
+    },
+    {
+      "id": "1005-0004",
+      "ders": "1005",
+      "konu": "1005-05",
+      "soru": "Bir platformun kitle fonlaması faaliyetinde bulunabilmesi için aşağıdakilerden hangisi gereklidir?",
+      "secenekler": [
+        "Borsa İstanbul'a üye olması",
+        "Türkiye Cumhuriyet Merkez Bankası'ndan lisans alması",
+        "Paylarının borsada işlem görmesi",
+        "Yalnızca Türkiye Sermaye Piyasaları Birliği'ne bildirimde bulunması",
+        "Sermaye Piyasası Kurulu tarafından listeye alınması"
+      ],
+      "dogru": 4,
+      "aciklama": "Kitle fonlaması platformlarının faaliyete geçebilmesi için Sermaye Piyasası Kurulu tarafından listeye alınmaları gerekir. Listeye alınma; kurucular, ortaklık yapısı, yönetim ve teknik altyapı gibi şartların sağlanmasına bağlıdır.",
+      "kaynak": "Kitle Fonlaması Tebliği (III-35/A.2)"
+    },
+    {
+      "id": "1005-0005",
+      "ders": "1005",
+      "konu": "1005-06",
+      "soru": "Uzaktan kimlik tespiti nasıl gerçekleştirilir?",
+      "secenekler": [
+        "Müşterinin kimlik kartının fotokopisini e-postayla göndermesiyle",
+        "Personel ile müşterinin aynı ortamda bulunmadan, çevrim içi görüntülü görüşme yapmasıyla",
+        "Müşterinin telefonuna gelen tek kullanımlık şifreyi girmesiyle",
+        "Müşterinin ses kaydı göndermesiyle",
+        "İmzalı sözleşmenin kargo ile kuruma ulaştırılmasıyla"
+      ],
+      "dogru": 1,
+      "aciklama": "Uzaktan kimlik tespitinde personel ile kişi fiziksel olarak aynı yerde bulunmaz; çevrim içi görüntülü görüşme yaparak iletişim kurar. Yöntem, yüz yüze kimlik tespitine benzer güvenlik düzeyi sağlayacak şekilde tasarlanmalıdır.",
+      "kaynak": "Uzaktan Kimlik Tespiti Tebliği (III-42.1)"
+    },
+    {
+      "id": "1012-0001",
+      "ders": "1012",
+      "konu": "1012-03",
+      "soru": "Borsa İstanbul Pay Piyasası'nda gerçekleşen bir işlemin takası, kural olarak ne zaman yapılır?",
+      "secenekler": ["İşlem günü (T+0)", "İşlemden sonraki ilk iş günü (T+1)", "İşlemden sonraki ikinci iş günü (T+2)", "İşlemden sonraki üçüncü iş günü (T+3)", "İşlemden sonraki beşinci iş günü (T+5)"],
+      "dogru": 2,
+      "aciklama": "Pay Piyasası'nda takas günü, işlem gününü izleyen ikinci iş günüdür (T+2). Süre hesaplanırken Takasbank'ın ve Pay Piyasası'nın açık olduğu iş günleri dikkate alınır.",
+      "kaynak": "Borsa İstanbul Pay Piyasası takas esasları"
+    },
+    {
+      "id": "1012-0002",
+      "ders": "1012",
+      "konu": "1012-03",
+      "soru": "Pay Piyasası'nda yarım günlerde yapılan işlemlerin takası nasıl gerçekleştirilir?",
+      "secenekler": [
+        "Yarım günün akşamında, aynı gün içinde yapılır.",
+        "Yarım günde takas yapılmaz; bu işlemler bir önceki günün işlemleriyle birleştirilir ve yarım günü izleyen ikinci iş günü takas edilir.",
+        "Yarım günü izleyen ilk iş günü ayrı olarak takas edilir.",
+        "Yarım günlerde pay piyasasında işlem yapılamaz.",
+        "Takas günü her seferinde yatırımcının talebine göre belirlenir."
+      ],
+      "dogru": 1,
+      "aciklama": "Yarım günlerde takas işlemi yapılmaz. Yarım günde gerçekleşen işlemler bir önceki iş gününün işlemleriyle birleştirilir ve yarım günü izleyen ikinci iş gününde topluca takas edilir.",
+      "kaynak": "Borsa İstanbul Pay Piyasası takas esasları"
+    },
+    {
+      "id": "1012-0003",
+      "ders": "1012",
+      "konu": "1012-02",
+      "soru": "Borsa İstanbul'daki pay ve türev piyasalarında merkezi karşı taraf (MKT) hizmetini sunan kuruluş hangisidir?",
+      "secenekler": [
+        "Merkezi Kayıt Kuruluşu A.Ş.",
+        "Sermaye Piyasası Kurulu",
+        "Türkiye Sermaye Piyasaları Birliği",
+        "İstanbul Takas ve Saklama Bankası A.Ş. (Takasbank)",
+        "Borsa İstanbul A.Ş."
+      ],
+      "dogru": 3,
+      "aciklama": "Merkezi karşı taraf, alıcıya karşı satıcı, satıcıya karşı alıcı rolünü üstlenerek takasın tamamlanmasını garanti eden kuruluştur. Borsa İstanbul piyasalarında bu hizmeti Takasbank sunar. MKK ise kayıt tutma işlevini üstlenir.",
+      "kaynak": "Takasbank Merkezi Karşı Taraf Yönetmeliği"
+    },
+    {
+      "id": "1012-0004",
+      "ders": "1012",
+      "konu": "1012-05",
+      "soru": "Vadeli İşlem ve Opsiyon Piyasası'nda (VİOP) açık pozisyonlar için aşağıdakilerden hangisi doğrudur?",
+      "secenekler": [
+        "Kâr ve zarar yalnızca vade sonunda hesaplanır.",
+        "Pozisyonlar haftada bir kez değerlenir.",
+        "Pozisyonlar her gün uzlaşma fiyatı üzerinden değerlenir ve kâr/zarar hesaplara yansıtılır.",
+        "Teminat yalnızca vade sonunda istenir.",
+        "Uzlaşma fiyatını her yatırımcı kendisi belirler."
+      ],
+      "dogru": 2,
+      "aciklama": "Vadeli işlemlerde pozisyonlar kapatılana kadar her gün piyasa kapanışında borsanın belirlediği uzlaşma fiyatına göre değerlenir. Oluşan kâr veya zarar günlük olarak teminat hesaplarına yansıtılır; teminat sürdürme seviyesinin altına düşerse teminat tamamlama çağrısı yapılır.",
+      "kaynak": "Türev araçlarda takas ve günlük uzlaşma"
+    },
+    {
+      "id": "1012-0005",
+      "ders": "1012",
+      "konu": "1012-01",
+      "soru": "Takas işlemi en genel anlamıyla neyi ifade eder?",
+      "secenekler": [
+        "Alım satım işlemi sonucunda tarafların karşılıklı menkul kıymet ve nakit yükümlülüklerini yerine getirmesini",
+        "Yatırımcının emrinin borsaya iletilmesini",
+        "Yatırımcı adına yeni bir hesap açılmasını",
+        "Borsada oluşan fiyatların kamuya duyurulmasını",
+        "Halka arzda talep toplanmasını"
+      ],
+      "dogru": 0,
+      "aciklama": "Takas, işlem sonrasında alıcının nakdi, satıcının ise menkul kıymeti teslim ettiği süreçtir. Böylece alım satım sözleşmesi karşılıklı yükümlülükler yerine getirilerek tamamlanmış olur.",
+      "kaynak": "Takas ve saklamaya ilişkin temel kavramlar"
+    }
+  ]
+}
