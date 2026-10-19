@@ -38,6 +38,7 @@ import com.lisanshazirlik.app.ui.KonuEkrani
 import com.lisanshazirlik.app.ui.LisansEkrani
 import com.lisanshazirlik.app.ui.OzetEkrani
 import com.lisanshazirlik.app.ui.SonuclarEkrani
+import com.lisanshazirlik.app.ui.VideoEkrani
 import com.lisanshazirlik.app.ui.calismaSirasi
 import com.lisanshazirlik.app.ui.konuTestiSorulari
 import com.lisanshazirlik.app.ui.CozEkrani
@@ -76,6 +77,7 @@ private sealed interface Ekran {
     data object Sonuclar : Ekran
     data object Lisans : Ekran
     data object Hatirlatma : Ekran
+    data class Video(val baslik: String, val adres: String) : Ekran
 }
 
 class MainActivity : ComponentActivity() {
@@ -247,6 +249,7 @@ private fun AltEkran(
                         ders, konu, banka, depo,
                         ozetAc = { git(Ekran.Ozet(konu.id)) },
                         kartlarAc = { git(Ekran.Kartlar(konu.id)) },
+                        videoAc = { git(Ekran.Video(konu.ad, konu.video)) },
                         coz = { y.coz(konu.ad, calismaSirasi(sorular, depo), konu.id, "pratik") },
                         test = { depo.sonKonu(konu.id); git(Ekran.Deneme(konuTestiSorulari(banka, konu.id), "konu:${konu.id}")) },
                         geri = geri,
@@ -274,6 +277,7 @@ private fun AltEkran(
             Ekran.Sonuclar -> SonuclarEkrani(banka, depo, depo.kullanici?.lisans, geri = geri)
             Ekran.Lisans -> LisansEkrani(banka.lisanslar, depo.kullanici?.lisans, sec = { depo.lisansSec(it) }, geri = geri)
             Ekran.Hatirlatma -> HatirlatmaEkrani(kayit, geri = geri)
+            is Ekran.Video -> VideoEkrani(ust.baslik, ust.adres, geri = geri)
         }
     }
 }

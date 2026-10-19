@@ -16,6 +16,8 @@ data class Konu(
     val ad: String,
     val ozet: String = "",
     val kartlar: List<BilgiKarti> = emptyList(),
+    /** Animasyonlu anlatım videosunun adresi (yoksa boş). */
+    val video: String = "",
 )
 
 data class Ders(
@@ -80,6 +82,7 @@ data class SoruBankasi(
                             id = k.getString("id"),
                             ad = k.getString("ad"),
                             ozet = k.optString("ozet", ""),
+                            video = k.optString("video", ""),
                             kartlar = k.optJSONArray("kartlar")?.nesneler()?.map {
                                 BilgiKarti(it.getString("on"), it.getString("arka"))
                             } ?: emptyList(),

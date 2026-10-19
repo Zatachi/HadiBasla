@@ -54,6 +54,7 @@ fun KonuEkrani(
     depo: KullaniciDeposu,
     ozetAc: () -> Unit,
     kartlarAc: () -> Unit,
+    videoAc: () -> Unit,
     coz: () -> Unit,
     test: () -> Unit,
     geri: () -> Unit,
@@ -86,6 +87,25 @@ fun KonuEkrani(
                     BilgiSatiri("Doğru oranın", "%${yuzde(dogru, cozulen)}")
                 }
             }
+            if (konu.video.isNotBlank()) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(Yesil)
+                        .clickableIf(true, videoAc)
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(Modifier.size(52.dp).clip(RoundedCornerShape(26.dp)).background(Altin), contentAlignment = Alignment.Center) {
+                        Text("▶", color = YesilKoyu, fontSize = 22.sp)
+                    }
+                    Column(Modifier.padding(start = 14.dp)) {
+                        Text("Video anlatım", style = MaterialTheme.typography.titleMedium, color = Krem)
+                        Text("Konuyu önce izleyerek öğren", style = MaterialTheme.typography.bodyMedium, color = KremSoluk)
+                    }
+                }
+            }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Bolum(Modifier.weight(1f), "📖", "Konu özeti", if (konu.ozet.isNotBlank()) "Önce oku" else null, ozetAc)
                 Bolum(Modifier.weight(1f), "🃏", "Bilgi kartları", if (konu.kartlar.isNotEmpty()) "${konu.kartlar.size} kart" else null, kartlarAc)
@@ -95,7 +115,7 @@ fun KonuEkrani(
                 Bolum(Modifier.weight(1f), "⏱", "Konu testi", if (testAdet > 0) "$testAdet soru, ${denemeSuresiDk(testAdet)} dk" else null, test)
             }
             Text(
-                "Önerilen sıra: özeti oku, kartlarla tekrar et, soruları çöz, son olarak konu testiyle kendini ölç.",
+                "Önerilen sıra: videoyu izle ya da özeti oku, kartlarla tekrar et, soruları çöz, son olarak konu testiyle kendini ölç.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MetinSoluk,
             )
