@@ -1,5 +1,5 @@
 {
-  "surum": 2,
+  "surum": 3,
   "guncelleme": "20 Ekim 2026",
   "lisanslar": [
     {
@@ -174,7 +174,8 @@
               "on": "Takas süresi hesaplanırken hangi günler sayılır?",
               "arka": "Takasbank'ın ve Pay Piyasası'nın açık olduğu iş günleri."
             }
-          ]
+          ],
+          "video": "https://raw.githubusercontent.com/Zatachi/HadiBasla/main/videolar/1012-03-takas-t2.mp4"
         },
         {
           "id": "1012-04",
