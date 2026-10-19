@@ -74,12 +74,13 @@ class Yonlendirici(
 fun Kabuk(
     sekme: Sekme,
     sekmeSec: (Sekme) -> Unit,
+    menuGoster: Boolean = true,
     icerik: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
         containerColor = Zemin,
         bottomBar = {
-            NavigationBar(containerColor = Kart) {
+            if (menuGoster) NavigationBar(containerColor = Kart) {
                 Sekme.entries.forEach { s ->
                     NavigationBarItem(
                         selected = s == sekme,

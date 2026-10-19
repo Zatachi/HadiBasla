@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -120,42 +123,182 @@ private fun Bolum(modifier: Modifier, simge: String, baslik: String, alt: String
     }
 }
 
+private data class OzetSayfasi(val baslik: String, val satirlar: List<String>, val akildaKalsin: Boolean)
+
+private fun ozetSayfalari(ozet: String): List<OzetSayfasi> {
+    val sayfalar = mutableListOf<OzetSayfasi>()
+    var baslik = ""
+    var satirlar = mutableListOf<String>()
+    fun kapat() {
+        if (baslik.isNotBlank() || satirlar.isNotEmpty()) {
+            sayfalar += OzetSayfasi(baslik, satirlar.toList(), baslik.lowercase().contains("akılda kalsın"))
+        }
+    }
+    ozet.lines().map { it.trim() }.filter { it.isNotEmpty() }.forEach { s ->
+        if (s.startsWith("## ") || s.startsWith("# ")) {
+            kapat(); baslik = s.trimStart('#', ' '); satirlar = mutableListOf()
+        } else satirlar += s
+    }
+    kapat()
+    return sayfalar
+}
+
+/** Sayı, oran ve T+2 gibi ezberlenecek ifadeleri kalın ve yeşil yapar. */
+private fun vurgula(metin: String): androidx.compose.ui.text.AnnotatedString =
+    androidx.compose.ui.text.buildAnnotatedString {
+        var son = 0
+        Regex("""[^\s,.;:()]*\d[^\s,.;:()]*""").findAll(metin).forEach { m ->
+            append(metin.substring(son, m.range.first))
+            pushStyle(androidx.compose.ui.text.SpanStyle(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold, color = Yesil))
+            append(m.value)
+            pop()
+            son = m.range.last + 1
+        }
+        append(metin.substring(son))
+    }
+
+/** Konu özeti: her sayfada tek fikir, kaydırarak okunur; son sayfa "Akılda kalsın". */
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
-fun OzetEkrani(ders: Ders, konu: Konu, coz: (() -> Unit)?, geri: () -> Unit) {
+fun OzetEkrani(ders: Ders, konu: Konu, coz: (() -> Unit)?, kartlar: (() -> Unit)?, geri: () -> Unit) {
+    val sayfalar = remember(konu.id) { ozetSayfalari(konu.ozet) }
+    val durum = androidx.compose.foundation.pager.rememberPagerState { sayfalar.size }
+    val kapsam = androidx.compose.runtime.rememberCoroutineScope()
+    val son = durum.currentPage == sayfalar.lastIndex
+
     Scaffold(
-        topBar = { UstCubuk("Konu özeti", geri) },
+        topBar = {
+            UstCubuk(konu.ad, geri) {
+                Text("${durum.currentPage + 1}/${sayfalar.size}", color = Krem, modifier = Modifier.padding(end = 16.dp))
+            }
+        },
         bottomBar = {
-            if (coz != null) {
-                Column(Modifier.background(Kart).navigationBarsPadding()) {
-                    HorizontalDivider(color = Cizgi)
-                    Button(onClick = coz, modifier = Modifier.fillMaxWidth().padding(16.dp).height(52.dp)) {
-                        Text("Bu konudan soru çöz")
+            Column(Modifier.background(Kart)) {
+                HorizontalDivider(color = Cizgi)
+                Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (!son) {
+                        OutlinedButton(
+                            onClick = { kapsam.launch { durum.animateScrollToPage(durum.currentPage - 1) } },
+                            enabled = durum.currentPage > 0,
+                            modifier = Modifier.weight(1f).height(52.dp),
+                        ) { Text("Geri") }
+                        Button(
+                            onClick = { kapsam.launch { durum.animateScrollToPage(durum.currentPage + 1) } },
+                            modifier = Modifier.weight(1f).height(52.dp),
+                        ) { Text("İleri") }
+                    } else {
+                        if (kartlar != null) {
+                            OutlinedButton(onClick = kartlar, modifier = Modifier.weight(1f).height(52.dp)) { Text("Bilgi kartları") }
+                        }
+                        if (coz != null) {
+                            Button(onClick = coz, modifier = Modifier.weight(1f).height(52.dp)) { Text("Soru çöz") }
+                        }
+                        if (kartlar == null && coz == null) {
+                            Button(onClick = geri, modifier = Modifier.weight(1f).height(52.dp)) { Text("Konuya dön") }
+                        }
                     }
                 }
             }
         },
         containerColor = Zemin,
     ) { ic ->
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(ic)
-                .verticalScroll(rememberScrollState())
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            Etiket(ders.kisaAd)
-            Text(konu.ad, style = MaterialTheme.typography.headlineSmall)
-            BasitMetin(konu.ozet)
-            Bosluk(12)
-            Text(
-                "Bu özet, ilgili mevzuat esas alınarak Lisansla tarafından hazırlanmıştır. Sınavdan önce güncel resmi kaynakları da kontrol et.",
-                style = MaterialTheme.typography.bodyMedium,
-                fontSize = 12.sp,
-                color = MetinSoluk,
-            )
+        Column(Modifier.fillMaxSize().padding(ic)) {
+            Row(
+                Modifier.fillMaxWidth().padding(top = 14.dp),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                sayfalar.indices.forEach { i ->
+                    Box(
+                        Modifier
+                            .padding(horizontal = 4.dp)
+                            .height(6.dp)
+                            .width(if (i == durum.currentPage) 22.dp else 6.dp)
+                            .clip(RoundedCornerShape(3.dp))
+                            .background(if (i == durum.currentPage) Yesil else Cizgi),
+                    )
+                }
+            }
+            androidx.compose.foundation.pager.HorizontalPager(
+                state = durum,
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.Top,
+            ) { i ->
+                val s = sayfalar[i]
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                ) {
+                    if (s.akildaKalsin) AkildaKalsin(s) else OzetSayfasiGorunumu(s, if (i == 0) ders.kisaAd else null)
+                }
+            }
         }
     }
+}
+
+@Composable
+private fun OzetSayfasiGorunumu(s: OzetSayfasi, ust: String?) {
+    if (ust != null) Etiket(ust)
+    Text(s.baslik, style = MaterialTheme.typography.headlineSmall, fontSize = 27.sp, lineHeight = 34.sp)
+    var madde = 0
+    s.satirlar.forEach { satir ->
+        if (satir.startsWith("- ")) {
+            madde++
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Kart)
+                    .border(1.dp, Cizgi, RoundedCornerShape(16.dp))
+                    .padding(16.dp),
+                verticalAlignment = Alignment.Top,
+            ) {
+                Box(
+                    Modifier.size(30.dp).clip(RoundedCornerShape(15.dp)).background(YesilAcik),
+                    contentAlignment = Alignment.Center,
+                ) { Text("$madde", style = MaterialTheme.typography.labelLarge, color = YesilKoyu) }
+                Text(
+                    vurgula(satir.removePrefix("- ")),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 19.sp,
+                    lineHeight = 28.sp,
+                    modifier = Modifier.padding(start = 12.dp),
+                )
+            }
+        } else {
+            Text(vurgula(satir), style = MaterialTheme.typography.bodyLarge, fontSize = 19.sp, lineHeight = 29.sp)
+        }
+    }
+    Bosluk(4)
+    Text("Sonraki sayfa için sola kaydır", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+}
+
+@Composable
+private fun AkildaKalsin(s: OzetSayfasi) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(Yesil)
+            .padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        Text("AKILDA KALSIN", style = MaterialTheme.typography.labelMedium, color = Altin)
+        s.satirlar.flatMap { it.removePrefix("- ").split("·") }.map { it.trim() }.filter { it.isNotEmpty() }.forEach { p ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(10.dp).clip(RoundedCornerShape(5.dp)).background(Altin))
+                Text(p, color = Krem, fontFamily = Baslik, fontSize = 24.sp, lineHeight = 30.sp, modifier = Modifier.padding(start = 14.dp))
+            }
+        }
+    }
+    Text(
+        "Bu özet, ilgili mevzuat esas alınarak Lisansla tarafından hazırlanmıştır. Sınavdan önce güncel resmi kaynakları da kontrol et.",
+        style = MaterialTheme.typography.bodyMedium,
+        fontSize = 12.sp,
+        color = MetinSoluk,
+    )
 }
 
 /** Dokununca dönen bilgi kartları. "Biliyorum" desteden çıkarır, "Tekrar et" sona atar. */

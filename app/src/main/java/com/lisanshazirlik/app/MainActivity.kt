@@ -7,7 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -170,8 +172,14 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
     }
 
     val ust = yigin.lastOrNull()
-    if (ust == null) {
-        Kabuk(sekme, { sekme = it }) { ic ->
+    // Alt menü her ekranda görünür; sadece deneme/konu testi sırasında gizlenir.
+    // Bir sekmeye dokunmak o sekmenin başına döner.
+    Kabuk(
+        sekme,
+        sekmeSec = { yigin = emptyList(); sekme = it },
+        menuGoster = ust !is Ekran.Deneme,
+    ) { ic ->
+        if (ust == null) {
             when (sekme) {
                 Sekme.ANA -> AnaSekme(banka, depo, y, ic)
                 Sekme.DERSLER -> DerslerSekme(banka, depo, y, ic)
@@ -179,11 +187,33 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
                 Sekme.ISTATISTIK -> IstatistikSekme(banka, depo, depo.kullanici?.lisans, y.konuAc, y.sonuclar, ic)
                 Sekme.PROFIL -> ProfilSekme(banka, depo, hesap, kayit, y, ic)
             }
+        } else {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .padding(bottom = ic.calculateBottomPadding())
+                    .consumeWindowInsets(ic),
+            ) {
+                AltEkran(ust, banka, depo, hesap, kayit, y, yigin.size, cevapla, ::git, ::geri)
+            }
         }
-        return
     }
+}
 
-    key(yigin.size) {
+@Composable
+private fun AltEkran(
+    ust: Ekran,
+    banka: SoruBankasi,
+    depo: KullaniciDeposu,
+    hesap: Hesap,
+    kayit: YerelKayit,
+    y: Yonlendirici,
+    derinlik: Int,
+    cevapla: (Soru, Boolean) -> Unit,
+    git: (Ekran) -> Unit,
+    geri: () -> Unit,
+) {
+    key(derinlik) {
         when (ust) {
             is Ekran.Ders -> {
                 val ders = banka.ders(ust.kod)
@@ -193,20 +223,20 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
                     coz = { b, s, konuId -> y.coz(b, s, konuId, "pratik") },
                     deneme = { y.dersDenemesi(ust.kod) },
                     konuAc = y.konuAc,
-                    geri = ::geri,
+                    geri = geri,
                 )
             }
-            is Ekran.Coz -> CozEkrani(ust.baslik, ust.sorular, ust.mod, banka, kayit, cevapla, geri = ::geri)
+            is Ekran.Coz -> CozEkrani(ust.baslik, ust.sorular, ust.mod, banka, kayit, cevapla, geri = geri)
             is Ekran.Deneme -> DenemeEkrani(
                 ust.sorular, ust.kapsam, banka, cevapla,
                 sonucKaydet = { kapsam, ort, gecti, puanlar, adet -> depo.denemeKaydet(kapsam, ort, gecti, puanlar, adet) },
-                geri = ::geri,
+                geri = geri,
             )
-            is Ekran.Hedef -> HedefEkrani(banka, depo, ust.ders, geri = ::geri)
-            Ekran.Gorus -> GorusEkrani(geri = ::geri)
-            Ekran.Aydinlatma -> AydinlatmaEkrani(geri = ::geri)
-            Ekran.Verilerim -> VerilerimEkrani(banka, depo, hesap, geri = ::geri)
-            Ekran.Premium -> PremiumEkrani(depo, geri = ::geri)
+            is Ekran.Hedef -> HedefEkrani(banka, depo, ust.ders, geri = geri)
+            Ekran.Gorus -> GorusEkrani(geri = geri)
+            Ekran.Aydinlatma -> AydinlatmaEkrani(geri = geri)
+            Ekran.Verilerim -> VerilerimEkrani(banka, depo, hesap, geri = geri)
+            Ekran.Premium -> PremiumEkrani(depo, geri = geri)
             is Ekran.Konu -> {
                 val dk = banka.konu(ust.id)
                 if (dk == null) Yukleniyor()
@@ -219,7 +249,7 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
                         kartlarAc = { git(Ekran.Kartlar(konu.id)) },
                         coz = { y.coz(konu.ad, calismaSirasi(sorular, depo), konu.id, "pratik") },
                         test = { depo.sonKonu(konu.id); git(Ekran.Deneme(konuTestiSorulari(banka, konu.id), "konu:${konu.id}")) },
-                        geri = ::geri,
+                        geri = geri,
                     )
                 }
             }
@@ -232,17 +262,18 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
                     OzetEkrani(
                         ders, konu,
                         coz = if (sorular.isNotEmpty()) ({ geri(); y.coz(konu.ad, calismaSirasi(sorular, depo), konu.id, "pratik") }) else null,
-                        geri = ::geri,
+                        kartlar = if (konu.kartlar.isNotEmpty()) ({ geri(); git(Ekran.Kartlar(konu.id)) }) else null,
+                        geri = geri,
                     )
                 }
             }
             is Ekran.Kartlar -> {
                 val dk = banka.konu(ust.id)
-                if (dk == null) Yukleniyor() else KartlarEkrani(dk.second, geri = ::geri)
+                if (dk == null) Yukleniyor() else KartlarEkrani(dk.second, geri = geri)
             }
-            Ekran.Sonuclar -> SonuclarEkrani(banka, depo, depo.kullanici?.lisans, geri = ::geri)
-            Ekran.Lisans -> LisansEkrani(banka.lisanslar, depo.kullanici?.lisans, sec = { depo.lisansSec(it) }, geri = ::geri)
-            Ekran.Hatirlatma -> HatirlatmaEkrani(kayit, geri = ::geri)
+            Ekran.Sonuclar -> SonuclarEkrani(banka, depo, depo.kullanici?.lisans, geri = geri)
+            Ekran.Lisans -> LisansEkrani(banka.lisanslar, depo.kullanici?.lisans, sec = { depo.lisansSec(it) }, geri = geri)
+            Ekran.Hatirlatma -> HatirlatmaEkrani(kayit, geri = geri)
         }
     }
 }
