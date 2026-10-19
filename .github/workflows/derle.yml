@@ -9,7 +9,6 @@ on:
       - "firestore.rules"
       - "docs/**"
       - "araclar/**"
-      - "metinler/**"
   workflow_dispatch:
 
 permissions:
