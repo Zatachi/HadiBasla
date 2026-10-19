@@ -89,7 +89,7 @@ fun HedefSecici(
             )
         }
         Text(
-            "Henüz tarih almadıysan hedeflediğin tarihi seç; sonra değiştirebilirsin.",
+            "İsteğe bağlı. Tarih seçersen kalan günleri ve günlük hedefini sınavına göre hesaplarız; sonra da ekleyebilirsin.",
             style = MaterialTheme.typography.bodyMedium,
             color = MetinSoluk,
         )
@@ -139,6 +139,7 @@ fun HedefEkrani(
     var ders by remember { mutableStateOf(duzenlenen ?: bosDersler.firstOrNull()?.kod) }
     var tarih by remember { mutableStateOf(mevcut?.sinavTarihi) }
     var silSor by remember { mutableStateOf(false) }
+    var tarihsizSor by remember { mutableStateOf(false) }
 
     Scaffold(topBar = { UstCubuk(if (mevcut == null) "Hedef ekle" else "Hedefi düzenle", geri) }, containerColor = Zemin) { ic ->
         Column(
@@ -163,10 +164,13 @@ fun HedefEkrani(
             Bosluk(8)
             Button(
                 onClick = {
-                    val d = ders; val t = tarih
-                    if (d != null && t != null) { depo.hedefKaydet(d, t, gecti = false); geri() }
+                    val d = ders
+                    if (d != null) {
+                        if (tarih == null) tarihsizSor = true
+                        else { depo.hedefKaydet(d, tarih, gecti = false); geri() }
+                    }
                 },
-                enabled = ders != null && tarih != null,
+                enabled = ders != null,
                 modifier = Modifier.fillMaxWidth().height(52.dp),
             ) { Text("Kaydet") }
             if (mevcut != null) {
@@ -180,6 +184,15 @@ fun HedefEkrani(
             }
         }
     }
+    if (tarihsizSor) {
+        TarihsizPenceresi(
+            kapat = { tarihsizSor = false },
+            devam = {
+                tarihsizSor = false
+                ders?.let { depo.hedefKaydet(it, null, gecti = false); geri() }
+            },
+        )
+    }
     if (silSor && mevcut != null) {
         AlertDialog(
             onDismissRequest = { silSor = false },
@@ -189,4 +202,18 @@ fun HedefEkrani(
             dismissButton = { TextButton(onClick = { silSor = false }) { Text("Vazgeç") } },
         )
     }
+}
+
+/** Sınav tarihi seçilmeden kaydedilirken hatırlatır; zorunlu tutmaz. */
+@Composable
+fun TarihsizPenceresi(kapat: () -> Unit, devam: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = kapat,
+        title = { Text("Sınav tarihi seçmedin") },
+        text = {
+            Text("Tarih seçersen kaç gün kaldığını görür, günlük hedefini sınavına göre ayarlarız. Tarihi daha sonra da ekleyebilirsin. Yine de devam etmek istiyor musun?")
+        },
+        confirmButton = { TextButton(onClick = devam) { Text("Devam et") } },
+        dismissButton = { TextButton(onClick = kapat) { Text("Tarih seç") } },
+    )
 }

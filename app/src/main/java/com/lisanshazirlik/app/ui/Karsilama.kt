@@ -186,6 +186,7 @@ fun KurulumEkrani(
     var ad by remember { mutableStateOf(onerilenAd.orEmpty()) }
     var ders by remember { mutableStateOf<String?>(null) }
     var tarih by remember { mutableStateOf<LocalDate?>(null) }
+    var tarihsizSor by remember { mutableStateOf(false) }
 
     Column(Modifier.fillMaxSize().background(Zemin).navigationBarsPadding().imePadding()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
@@ -219,11 +220,13 @@ fun KurulumEkrani(
             } else {
                 Button(
                     onClick = {
-                        depo.profilOlustur(ad, aydinlatmaSurum)
-                        val d = ders; val t = tarih
-                        if (d != null && t != null) depo.hedefKaydet(d, t)
+                        val d = ders
+                        if (d != null) {
+                            if (tarih == null) tarihsizSor = true
+                            else { depo.profilOlustur(ad, aydinlatmaSurum); depo.hedefKaydet(d, tarih) }
+                        }
                     },
-                    enabled = ders != null && tarih != null,
+                    enabled = ders != null,
                     modifier = Modifier.fillMaxWidth().height(52.dp),
                 ) { Text("Başla") }
                 TextButton(onClick = { depo.profilOlustur(ad, aydinlatmaSurum) }, modifier = Modifier.fillMaxWidth()) {
@@ -231,6 +234,16 @@ fun KurulumEkrani(
                 }
             }
         }
+    }
+    if (tarihsizSor) {
+        TarihsizPenceresi(
+            kapat = { tarihsizSor = false },
+            devam = {
+                tarihsizSor = false
+                depo.profilOlustur(ad, aydinlatmaSurum)
+                ders?.let { depo.hedefKaydet(it, null) }
+            },
+        )
     }
 }
 

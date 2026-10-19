@@ -267,7 +267,7 @@ fun VerilerimEkrani(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap, ger
                 Bosluk(8)
                 if (depo.hedefler.isEmpty()) Text("Hedef yok.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 depo.hedefler.forEach { h ->
-                    BilgiSatiri(banka.ders(h.ders)?.kisaAd ?: h.ders, if (h.gecti) "Geçildi" else uzunTarih(h.sinavTarihi))
+                    BilgiSatiri(banka.ders(h.ders)?.kisaAd ?: h.ders, if (h.gecti) "Geçildi" else h.sinavTarihi?.let { uzunTarih(it) } ?: "Tarih seçilmedi")
                 }
             }
             KartKutu {

@@ -100,12 +100,13 @@ fun Kabuk(
 /** Aktif hedeflere göre bugün çözülmesi önerilen soru sayısı. */
 fun gunlukHedef(banka: SoruBankasi, depo: KullaniciDeposu): Int {
     val cozulen = depo.cozulenler()
-    val aktif = depo.aktifHedefler().filter { it.kalanGun() >= 0 }
+    // Tarihi geçmiş hedefler hesaba katılmaz; tarihsiz hedefler için 30 gün varsayılır.
+    val aktif = depo.aktifHedefler().filter { (it.kalanGun() ?: 0L) >= 0 }
     if (aktif.isEmpty()) return 20
     val toplam = aktif.sumOf { h ->
         val sorular = banka.dersSorulari(h.ders)
         val kalan = sorular.count { it.id !in cozulen }
-        val gun = maxOf(1L, h.kalanGun())
+        val gun = maxOf(1L, h.kalanGun() ?: 30L)
         maxOf(ceil(kalan / gun.toDouble()).toInt(), minOf(10, sorular.size))
     }
     return toplam.coerceIn(5, 100)
@@ -138,7 +139,7 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: Pad
     val cozulen = depo.cozulenler()
     val aktif = depo.aktifHedefler()
     val gecilen = depo.hedefler.filter { it.gecti }
-    val enYakin = aktif.filter { it.kalanGun() >= 0 }.minByOrNull { it.sinavTarihi }
+    val enYakin = aktif.filter { (it.kalanGun() ?: -1L) >= 0 }.minByOrNull { it.kalanGun()!! }
     val hedefSayi = gunlukHedef(banka, depo)
     val bugun = depo.bugunCozulen
     val zayif = zayifKonu(banka, depo)
@@ -312,10 +313,22 @@ private fun HedefKarti(h: Hedef, banka: SoruBankasi, cozulen: Set<String>, y: Yo
     val c = sorular.count { it.id in cozulen }
     val gun = h.kalanGun()
     KartKutu(Modifier.padding(horizontal = 16.dp), tikla = { y.dersAc(h.ders) }) {
+        if (gun == null) {
+            Text(ders.kisaAd, style = MaterialTheme.typography.titleMedium)
+            Text("Sınav tarihi seçilmedi", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+            Bosluk(10)
+            Ilerleme(if (sorular.isEmpty()) 0f else c / sorular.size.toFloat())
+            Bosluk(6)
+            Row {
+                Text("${sorular.size} sorudan $c çözüldü", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk, modifier = Modifier.weight(1f))
+                Text("Tarih ekle", style = MaterialTheme.typography.labelLarge, color = Yesil, modifier = Modifier.clickableIf(true) { y.hedefAc(h.ders) })
+            }
+            return@KartKutu
+        }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(ders.kisaAd, style = MaterialTheme.typography.titleMedium)
-                Text("Sınav: ${uzunTarih(h.sinavTarihi)}", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                Text("Sınav: ${uzunTarih(h.sinavTarihi!!)}", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
@@ -383,7 +396,8 @@ fun CalisSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: P
                             Text(
                                 when {
                                     h?.gecti == true -> "Geçtin ✓"
-                                    h != null -> "Sınav: ${kisaTarih(h.sinavTarihi)} · ${kalanGunYazisi(h.kalanGun())}"
+                                    h != null && h.sinavTarihi != null -> "Sınav: ${kisaTarih(h.sinavTarihi)} · ${kalanGunYazisi(h.kalanGun()!!)}"
+                                    h != null -> "Hedefte · tarih seçilmedi"
                                     else -> "${sorular.size} soru · ${d.konular.size} konu"
                                 },
                                 style = MaterialTheme.typography.bodyMedium,

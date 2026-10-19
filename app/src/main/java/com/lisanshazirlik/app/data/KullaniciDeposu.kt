@@ -22,8 +22,9 @@ data class Kullanici(
     val premium: Boolean,
 )
 
-data class Hedef(val ders: String, val sinavTarihi: LocalDate, val gecti: Boolean) {
-    fun kalanGun(bugun: LocalDate = LocalDate.now()): Long = ChronoUnit.DAYS.between(bugun, sinavTarihi)
+data class Hedef(val ders: String, val sinavTarihi: LocalDate?, val gecti: Boolean) {
+    /** Sınav tarihi seçilmediyse null. */
+    fun kalanGun(bugun: LocalDate = LocalDate.now()): Long? = sinavTarihi?.let { ChronoUnit.DAYS.between(bugun, it) }
 }
 
 data class DenemeKaydi(
@@ -79,11 +80,11 @@ class KullaniciDeposu(val uid: String) {
                 runCatching {
                     Hedef(
                         ders = d.id,
-                        sinavTarihi = LocalDate.parse(d.getString("sinavTarihi")),
+                        sinavTarihi = d.getString("sinavTarihi")?.let { LocalDate.parse(it) },
                         gecti = d.getBoolean("gecti") ?: false,
                     )
                 }.getOrNull()
-            }.sortedBy { it.sinavTarihi }
+            }.sortedWith(compareBy<Hedef, LocalDate?>(nullsLast()) { it.sinavTarihi })
         }
         dinleyiciler += kok.collection("ilerleme").addSnapshotListener { q, _ ->
             if (q == null) return@addSnapshotListener
@@ -148,9 +149,9 @@ class KullaniciDeposu(val uid: String) {
         kok.set(mapOf("aydinlatmaSurum" to surum, "aydinlatmaZaman" to FieldValue.serverTimestamp()), SetOptions.merge())
     }
 
-    fun hedefKaydet(ders: String, tarih: LocalDate, gecti: Boolean = false) {
+    fun hedefKaydet(ders: String, tarih: LocalDate?, gecti: Boolean = false) {
         kok.collection("hedefler").document(ders).set(
-            mapOf("sinavTarihi" to tarih.toString(), "gecti" to gecti, "zaman" to FieldValue.serverTimestamp())
+            mapOf("sinavTarihi" to tarih?.toString(), "gecti" to gecti, "zaman" to FieldValue.serverTimestamp())
         )
     }
 
