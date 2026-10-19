@@ -28,7 +28,16 @@ import com.lisanshazirlik.app.data.SoruDeposu
 import com.lisanshazirlik.app.data.YerelKayit
 import com.lisanshazirlik.app.ui.AnaSekme
 import com.lisanshazirlik.app.ui.AydinlatmaEkrani
-import com.lisanshazirlik.app.ui.CalisSekme
+import com.lisanshazirlik.app.ui.DerslerSekme
+import com.lisanshazirlik.app.ui.HatirlatmaEkrani
+import com.lisanshazirlik.app.ui.IstatistikSekme
+import com.lisanshazirlik.app.ui.KartlarEkrani
+import com.lisanshazirlik.app.ui.KonuEkrani
+import com.lisanshazirlik.app.ui.LisansEkrani
+import com.lisanshazirlik.app.ui.OzetEkrani
+import com.lisanshazirlik.app.ui.SonuclarEkrani
+import com.lisanshazirlik.app.ui.calismaSirasi
+import com.lisanshazirlik.app.ui.konuTestiSorulari
 import com.lisanshazirlik.app.ui.CozEkrani
 import com.lisanshazirlik.app.ui.DenemeEkrani
 import com.lisanshazirlik.app.ui.DenemeSekme
@@ -59,6 +68,12 @@ private sealed interface Ekran {
     data object Aydinlatma : Ekran
     data object Verilerim : Ekran
     data object Premium : Ekran
+    data class Konu(val id: String) : Ekran
+    data class Ozet(val id: String) : Ekran
+    data class Kartlar(val id: String) : Ekran
+    data object Sonuclar : Ekran
+    data object Lisans : Ekran
+    data object Hatirlatma : Ekran
 }
 
 class MainActivity : ComponentActivity() {
@@ -137,13 +152,17 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
             if (konuId != null) depo.sonKonu(konuId)
             git(Ekran.Coz(baslik, sorular, mod))
         },
-        genelDeneme = { git(Ekran.Deneme(denemeSorulari(banka), "genel")) },
+        genelDeneme = { git(Ekran.Deneme(denemeSorulari(banka, banka.lisansDersleri(depo.kullanici?.lisans)), "genel")) },
         dersDenemesi = { git(Ekran.Deneme(dersDenemesiSorulari(banka, it), it)) },
         hedefAc = { git(Ekran.Hedef(it)) },
         gorus = { git(Ekran.Gorus) },
         aydinlatma = { git(Ekran.Aydinlatma) },
         verilerim = { git(Ekran.Verilerim) },
         premium = { git(Ekran.Premium) },
+        konuAc = { git(Ekran.Konu(it)) },
+        sonuclar = { git(Ekran.Sonuclar) },
+        lisans = { git(Ekran.Lisans) },
+        hatirlatma = { git(Ekran.Hatirlatma) },
     )
 
     BackHandler(enabled = yigin.isNotEmpty() || sekme != Sekme.ANA) {
@@ -155,8 +174,9 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
         Kabuk(sekme, { sekme = it }) { ic ->
             when (sekme) {
                 Sekme.ANA -> AnaSekme(banka, depo, y, ic)
-                Sekme.CALIS -> CalisSekme(banka, depo, y, ic)
+                Sekme.DERSLER -> DerslerSekme(banka, depo, y, ic)
                 Sekme.DENEME -> DenemeSekme(banka, depo, y, ic)
+                Sekme.ISTATISTIK -> IstatistikSekme(banka, depo, depo.kullanici?.lisans, y.konuAc, y.sonuclar, ic)
                 Sekme.PROFIL -> ProfilSekme(banka, depo, hesap, kayit, y, ic)
             }
         }
@@ -172,6 +192,7 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
                     ders, banka, depo.cozulenler(),
                     coz = { b, s, konuId -> y.coz(b, s, konuId, "pratik") },
                     deneme = { y.dersDenemesi(ust.kod) },
+                    konuAc = y.konuAc,
                     geri = ::geri,
                 )
             }
@@ -186,6 +207,42 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
             Ekran.Aydinlatma -> AydinlatmaEkrani(geri = ::geri)
             Ekran.Verilerim -> VerilerimEkrani(banka, depo, hesap, geri = ::geri)
             Ekran.Premium -> PremiumEkrani(depo, geri = ::geri)
+            is Ekran.Konu -> {
+                val dk = banka.konu(ust.id)
+                if (dk == null) Yukleniyor()
+                else {
+                    val (ders, konu) = dk
+                    val sorular = banka.konuSorulari(konu.id)
+                    KonuEkrani(
+                        ders, konu, banka, depo,
+                        ozetAc = { git(Ekran.Ozet(konu.id)) },
+                        kartlarAc = { git(Ekran.Kartlar(konu.id)) },
+                        coz = { y.coz(konu.ad, calismaSirasi(sorular, depo), konu.id, "pratik") },
+                        test = { depo.sonKonu(konu.id); git(Ekran.Deneme(konuTestiSorulari(banka, konu.id), "konu:${konu.id}")) },
+                        geri = ::geri,
+                    )
+                }
+            }
+            is Ekran.Ozet -> {
+                val dk = banka.konu(ust.id)
+                if (dk == null) Yukleniyor()
+                else {
+                    val (ders, konu) = dk
+                    val sorular = banka.konuSorulari(konu.id)
+                    OzetEkrani(
+                        ders, konu,
+                        coz = if (sorular.isNotEmpty()) ({ geri(); y.coz(konu.ad, calismaSirasi(sorular, depo), konu.id, "pratik") }) else null,
+                        geri = ::geri,
+                    )
+                }
+            }
+            is Ekran.Kartlar -> {
+                val dk = banka.konu(ust.id)
+                if (dk == null) Yukleniyor() else KartlarEkrani(dk.second, geri = ::geri)
+            }
+            Ekran.Sonuclar -> SonuclarEkrani(banka, depo, depo.kullanici?.lisans, geri = ::geri)
+            Ekran.Lisans -> LisansEkrani(banka.lisanslar, depo.kullanici?.lisans, sec = { depo.lisansSec(it) }, geri = ::geri)
+            Ekran.Hatirlatma -> HatirlatmaEkrani(kayit, geri = ::geri)
         }
     }
 }

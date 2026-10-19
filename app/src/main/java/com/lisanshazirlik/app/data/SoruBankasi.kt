@@ -9,13 +9,30 @@ import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 
-data class Konu(val id: String, val ad: String)
+data class BilgiKarti(val on: String, val arka: String)
+
+data class Konu(
+    val id: String,
+    val ad: String,
+    val ozet: String = "",
+    val kartlar: List<BilgiKarti> = emptyList(),
+)
 
 data class Ders(
     val kod: String,
     val ad: String,
     val kisaAd: String,
+    val aciklama: String,
     val konular: List<Konu>,
+)
+
+/** Bir lisans sınavı ve içerdiği dersler. Aktif olmayanlar "Yakında" görünür. */
+data class Lisans(
+    val kod: String,
+    val ad: String,
+    val kisaAd: String,
+    val dersler: List<String>,
+    val aktif: Boolean,
 )
 
 data class Soru(
@@ -32,16 +49,23 @@ data class Soru(
 data class SoruBankasi(
     val surum: Int,
     val guncelleme: String,
+    val lisanslar: List<Lisans>,
     val dersler: List<Ders>,
     val sorular: List<Soru>,
 ) {
     fun ders(kod: String): Ders? = dersler.firstOrNull { it.kod == kod }
+    fun lisans(kod: String?): Lisans? = lisanslar.firstOrNull { it.kod == kod }
+    /** Seçili lisansın dersleri; lisans bilinmiyorsa tüm dersler. */
+    fun lisansDersleri(kod: String?): List<Ders> =
+        lisans(kod)?.dersler?.mapNotNull { ders(it) } ?: dersler
+    fun konu(id: String): Pair<Ders, Konu>? =
+        dersler.firstNotNullOfOrNull { d -> d.konular.firstOrNull { it.id == id }?.let { d to it } }
     fun dersSorulari(kod: String): List<Soru> = sorular.filter { it.ders == kod }
     fun konuSorulari(konuId: String): List<Soru> = sorular.filter { it.konu == konuId }
     fun bul(id: String): Soru? = sorular.firstOrNull { it.id == id }
 
     companion object {
-        val BOS = SoruBankasi(0, "", emptyList(), emptyList())
+        val BOS = SoruBankasi(0, "", emptyList(), emptyList(), emptyList())
 
         fun ayristir(metin: String): SoruBankasi {
             val kok = JSONObject(metin)
@@ -50,8 +74,16 @@ data class SoruBankasi(
                     kod = d.getString("kod"),
                     ad = d.getString("ad"),
                     kisaAd = d.optString("kisaAd", d.getString("ad")),
+                    aciklama = d.optString("aciklama", ""),
                     konular = d.getJSONArray("konular").nesneler().map { k ->
-                        Konu(k.getString("id"), k.getString("ad"))
+                        Konu(
+                            id = k.getString("id"),
+                            ad = k.getString("ad"),
+                            ozet = k.optString("ozet", ""),
+                            kartlar = k.optJSONArray("kartlar")?.nesneler()?.map {
+                                BilgiKarti(it.getString("on"), it.getString("arka"))
+                            } ?: emptyList(),
+                        )
                     },
                 )
             }
@@ -74,9 +106,19 @@ data class SoruBankasi(
                     )
                 }.getOrNull()
             }
+            val lisanslar = kok.optJSONArray("lisanslar")?.nesneler()?.map { l ->
+                Lisans(
+                    kod = l.getString("kod"),
+                    ad = l.getString("ad"),
+                    kisaAd = l.optString("kisaAd", l.getString("ad")),
+                    dersler = l.optJSONArray("dersler")?.let { a -> (0 until a.length()).map { a.getString(it) } } ?: emptyList(),
+                    aktif = l.optBoolean("aktif", true),
+                )
+            } ?: emptyList()
             return SoruBankasi(
                 surum = kok.optInt("surum", 0),
                 guncelleme = kok.optString("guncelleme", ""),
+                lisanslar = lisanslar,
                 dersler = dersler,
                 sorular = sorular,
             )

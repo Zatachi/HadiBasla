@@ -1,56 +1,195 @@
 {
-  "surum": 1,
+  "surum": 2,
   "guncelleme": "20 Ekim 2026",
+  "lisanslar": [
+    {
+      "kod": "duzey1",
+      "ad": "Sermaye Piyasası Faaliyetleri Düzey 1",
+      "kisaAd": "Düzey 1",
+      "dersler": [
+        "1001",
+        "1003",
+        "1005",
+        "1012"
+      ],
+      "aktif": true
+    },
+    {
+      "kod": "duzey2",
+      "ad": "Sermaye Piyasası Faaliyetleri Düzey 2",
+      "kisaAd": "Düzey 2",
+      "dersler": [],
+      "aktif": false
+    },
+    {
+      "kod": "duzey3",
+      "ad": "Sermaye Piyasası Faaliyetleri Düzey 3",
+      "kisaAd": "Düzey 3",
+      "dersler": [],
+      "aktif": false
+    },
+    {
+      "kod": "turev",
+      "ad": "Türev Araçlar",
+      "kisaAd": "Türev Araçlar",
+      "dersler": [],
+      "aktif": false
+    }
+  ],
   "dersler": [
     {
       "kod": "1001",
       "ad": "Dar Kapsamlı Sermaye Piyasası Mevzuatı ve Meslek Kuralları",
       "kisaAd": "Mevzuat ve Meslek Kuralları",
       "konular": [
-        { "id": "1001-01", "ad": "Sermaye Piyasası Kanunu" },
-        { "id": "1001-02", "ad": "Özel Durumlar Tebliği" },
-        { "id": "1001-03", "ad": "Kurumsal Yönetim Tebliği" },
-        { "id": "1001-04", "ad": "Yatırım Fonları Tebliği" },
-        { "id": "1001-05", "ad": "Meslek Kuralları ve Etik İlkeler" }
-      ]
+        {
+          "id": "1001-01",
+          "ad": "Sermaye Piyasası Kanunu"
+        },
+        {
+          "id": "1001-02",
+          "ad": "Özel Durumlar Tebliği"
+        },
+        {
+          "id": "1001-03",
+          "ad": "Kurumsal Yönetim Tebliği",
+          "ozet": "## Bağımsız yönetim kurulu üyeleri\nKurumsal Yönetim Tebliği, halka açık şirketlerin yönetim kurulunda şirketten ve büyük ortaklardan bağımsız üyeler bulunmasını ister. Amaç, küçük yatırımcıların çıkarlarını da gözeten tarafsız bir bakış sağlamaktır.\n- Bağımsız üye sayısı, toplam üye sayısının en az üçte biri olmalıdır.\n- Hesaplamada küsurat bir üst tam sayıya yuvarlanır: 7 üyeli kurulda 7 ÷ 3 = 2,33 olduğundan en az 3 bağımsız üye gerekir.\n- Hangi durumda olursa olsun bağımsız üye sayısı ikiden az olamaz.\n- Bağımsız üyeler üç yıla kadar seçilir ve yeniden aday gösterilebilir.\n## Akılda kalsın\n1/3 · küsurat yukarı · en az 2 · en fazla 3 yıl",
+          "kartlar": [
+            {
+              "on": "Bağımsız üye sayısı toplam yönetim kurulu üye sayısının en az ne kadarı olmalı?",
+              "arka": "Üçte biri. Küsurat bir üst tam sayıya yuvarlanır."
+            },
+            {
+              "on": "Bağımsız üye sayısı hiçbir durumda kaçtan az olamaz?",
+              "arka": "İkiden."
+            },
+            {
+              "on": "9 üyeli bir kurulda en az kaç bağımsız üye bulunmalı?",
+              "arka": "3 (9 ÷ 3 = 3)."
+            },
+            {
+              "on": "Bağımsız üyenin görev süresi en fazla ne kadardır?",
+              "arka": "Üç yıl. Süre bitince yeniden aday gösterilebilir."
+            }
+          ]
+        },
+        {
+          "id": "1001-04",
+          "ad": "Yatırım Fonları Tebliği"
+        },
+        {
+          "id": "1001-05",
+          "ad": "Meslek Kuralları ve Etik İlkeler"
+        }
+      ],
+      "aciklama": "SPK Kanunu, özel durumlar, kurumsal yönetim, yatırım fonları ve meslek kuralları"
     },
     {
       "kod": "1003",
       "ad": "Sermaye Piyasası Araçları 1",
       "kisaAd": "Sermaye Piyasası Araçları",
       "konular": [
-        { "id": "1003-01", "ad": "Paylar" },
-        { "id": "1003-02", "ad": "Borçlanma Araçları" },
-        { "id": "1003-03", "ad": "Yatırım Fonu Katılma Payları" },
-        { "id": "1003-04", "ad": "Türev Araçlar" },
-        { "id": "1003-05", "ad": "Vergilendirme (GVK Geçici 67)" }
-      ]
+        {
+          "id": "1003-01",
+          "ad": "Paylar"
+        },
+        {
+          "id": "1003-02",
+          "ad": "Borçlanma Araçları"
+        },
+        {
+          "id": "1003-03",
+          "ad": "Yatırım Fonu Katılma Payları"
+        },
+        {
+          "id": "1003-04",
+          "ad": "Türev Araçlar"
+        },
+        {
+          "id": "1003-05",
+          "ad": "Vergilendirme (GVK Geçici 67)"
+        }
+      ],
+      "aciklama": "Paylar, tahviller ve bonolar, yatırım fonları, türev araçlar ve vergilendirme"
     },
     {
       "kod": "1005",
       "ad": "Yatırım Kuruluşları",
       "kisaAd": "Yatırım Kuruluşları",
       "konular": [
-        { "id": "1005-01", "ad": "Yatırım Hizmetleri ve Yan Hizmetler" },
-        { "id": "1005-02", "ad": "Aracı Kurumların Kuruluşu ve Faaliyetleri" },
-        { "id": "1005-03", "ad": "Belge ve Kayıt Düzeni" },
-        { "id": "1005-04", "ad": "Kredili Alım, Açığa Satış ve Ödünç İşlemleri" },
-        { "id": "1005-05", "ad": "Kitle Fonlaması" },
-        { "id": "1005-06", "ad": "Uzaktan Kimlik Tespiti" }
-      ]
+        {
+          "id": "1005-01",
+          "ad": "Yatırım Hizmetleri ve Yan Hizmetler"
+        },
+        {
+          "id": "1005-02",
+          "ad": "Aracı Kurumların Kuruluşu ve Faaliyetleri"
+        },
+        {
+          "id": "1005-03",
+          "ad": "Belge ve Kayıt Düzeni"
+        },
+        {
+          "id": "1005-04",
+          "ad": "Kredili Alım, Açığa Satış ve Ödünç İşlemleri"
+        },
+        {
+          "id": "1005-05",
+          "ad": "Kitle Fonlaması"
+        },
+        {
+          "id": "1005-06",
+          "ad": "Uzaktan Kimlik Tespiti"
+        }
+      ],
+      "aciklama": "Aracı kurumlar, yatırım hizmetleri, kredili işlemler, kitle fonlaması ve uzaktan kimlik tespiti"
     },
     {
       "kod": "1012",
       "ad": "Takas, Saklama ve Operasyon İşlemleri",
       "kisaAd": "Takas, Saklama ve Operasyon",
       "konular": [
-        { "id": "1012-01", "ad": "Temel Kavramlar" },
-        { "id": "1012-02", "ad": "Takas, Saklama ve Kaydileştirme" },
-        { "id": "1012-03", "ad": "Pay Piyasası Takas ve Temerrüt" },
-        { "id": "1012-04", "ad": "Borçlanma Araçları Takası" },
-        { "id": "1012-05", "ad": "Türev Araçlarda Takas ve Teslimat" },
-        { "id": "1012-06", "ad": "Takasbank Teminat Yönetimi" }
-      ]
+        {
+          "id": "1012-01",
+          "ad": "Temel Kavramlar"
+        },
+        {
+          "id": "1012-02",
+          "ad": "Takas, Saklama ve Kaydileştirme"
+        },
+        {
+          "id": "1012-03",
+          "ad": "Pay Piyasası Takas ve Temerrüt",
+          "ozet": "## Pay Piyasası'nda takas süresi\nBorsa İstanbul Pay Piyasası'nda alım satım işlemi yapıldığı gün para ile pay hemen el değiştirmez. Karşılıklı teslim, takas gününde Takasbank aracılığıyla yapılır.\n- Takas günü, işlem gününü izleyen ikinci iş günüdür: T+2.\n- Süre hesaplanırken yalnızca Takasbank'ın ve Pay Piyasası'nın açık olduğu iş günleri sayılır.\n- Yarım günlerde takas yapılmaz. Yarım günde yapılan işlemler bir önceki günün işlemleriyle birleştirilir ve yarım günü izleyen ikinci iş günü topluca takas edilir.\n## Akılda kalsın\nPay Piyasası = T+2 · yarım günde takas yok",
+          "kartlar": [
+            {
+              "on": "Pay Piyasası'nda takas ne zaman yapılır?",
+              "arka": "İşlem gününü izleyen ikinci iş günü (T+2)."
+            },
+            {
+              "on": "Yarım günlerde takas yapılır mı?",
+              "arka": "Hayır. Yarım gün işlemleri bir önceki günün işlemleriyle birleştirilip yarım günü izleyen ikinci iş günü takas edilir."
+            },
+            {
+              "on": "Takas süresi hesaplanırken hangi günler sayılır?",
+              "arka": "Takasbank'ın ve Pay Piyasası'nın açık olduğu iş günleri."
+            }
+          ]
+        },
+        {
+          "id": "1012-04",
+          "ad": "Borçlanma Araçları Takası"
+        },
+        {
+          "id": "1012-05",
+          "ad": "Türev Araçlarda Takas ve Teslimat"
+        },
+        {
+          "id": "1012-06",
+          "ad": "Takasbank Teminat Yönetimi"
+        }
+      ],
+      "aciklama": "Takas ve saklama, MKK, pay ve borçlanma araçları takası, VİOP ve teminat yönetimi"
     }
   ],
   "sorular": [
@@ -75,7 +214,13 @@
       "ders": "1001",
       "konu": "1001-03",
       "soru": "Kurumsal Yönetim Tebliği'ne göre 7 üyeli bir yönetim kurulunda en az kaç bağımsız üye bulunmalıdır?",
-      "secenekler": ["1", "2", "3", "4", "5"],
+      "secenekler": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
       "dogru": 2,
       "aciklama": "Bağımsız üye sayısı, toplam üye sayısının üçte birinden az olamaz ve hesaplamada küsuratlar bir üst tam sayıya tamamlanır. 7 ÷ 3 = 2,33 olduğundan en az 3 bağımsız üye gerekir. Her durumda bağımsız üye sayısı ikiden az olamaz.",
       "kaynak": "Kurumsal Yönetim Tebliği (II-17.1), Kurumsal Yönetim İlkeleri 4.3.4"
@@ -85,7 +230,13 @@
       "ders": "1001",
       "konu": "1001-03",
       "soru": "Kurumsal Yönetim Tebliği'ne göre bağımsız yönetim kurulu üyelerinin görev süresi en fazla ne kadardır?",
-      "secenekler": ["2 yıl", "3 yıl", "4 yıl", "5 yıl", "Herhangi bir süre sınırı yoktur."],
+      "secenekler": [
+        "2 yıl",
+        "3 yıl",
+        "4 yıl",
+        "5 yıl",
+        "Herhangi bir süre sınırı yoktur."
+      ],
       "dogru": 1,
       "aciklama": "Bağımsız yönetim kurulu üyeleri üç yıla kadar seçilebilir. Görev süresi dolan üye yeniden aday gösterilerek tekrar seçilebilir.",
       "kaynak": "Kurumsal Yönetim Tebliği (II-17.1), Kurumsal Yönetim İlkeleri 4.3.5"
@@ -127,7 +278,13 @@
       "ders": "1003",
       "konu": "1003-02",
       "soru": "Nominal değeri 100 TL olan ve vadesine tam 1 yıl kalan kuponsuz bir senetten yatırımcı yıllık %25 getiri bekliyor. Senedin bugünkü fiyatı kaç TL olmalıdır?",
-      "secenekler": ["75,00", "78,50", "80,00", "82,50", "125,00"],
+      "secenekler": [
+        "75,00",
+        "78,50",
+        "80,00",
+        "82,50",
+        "125,00"
+      ],
       "dogru": 2,
       "aciklama": "Kuponsuz senedin fiyatı, vadede ödenecek nominal değerin beklenen getiriyle bugüne indirgenmesiyle bulunur: 100 ÷ (1 + 0,25) = 80 TL. 125 TL, iskonto yerine faiz eklenerek yapılan yaygın bir hatanın sonucudur.",
       "kaynak": "Borçlanma araçlarında fiyatlama (kuponsuz senet)"
@@ -281,7 +438,13 @@
       "ders": "1012",
       "konu": "1012-03",
       "soru": "Borsa İstanbul Pay Piyasası'nda gerçekleşen bir işlemin takası, kural olarak ne zaman yapılır?",
-      "secenekler": ["İşlem günü (T+0)", "İşlemden sonraki ilk iş günü (T+1)", "İşlemden sonraki ikinci iş günü (T+2)", "İşlemden sonraki üçüncü iş günü (T+3)", "İşlemden sonraki beşinci iş günü (T+5)"],
+      "secenekler": [
+        "İşlem günü (T+0)",
+        "İşlemden sonraki ilk iş günü (T+1)",
+        "İşlemden sonraki ikinci iş günü (T+2)",
+        "İşlemden sonraki üçüncü iş günü (T+3)",
+        "İşlemden sonraki beşinci iş günü (T+5)"
+      ],
       "dogru": 2,
       "aciklama": "Pay Piyasası'nda takas günü, işlem gününü izleyen ikinci iş günüdür (T+2). Süre hesaplanırken Takasbank'ın ve Pay Piyasası'nın açık olduğu iş günleri dikkate alınır.",
       "kaynak": "Borsa İstanbul Pay Piyasası takas esasları"

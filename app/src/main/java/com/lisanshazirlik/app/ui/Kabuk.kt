@@ -23,6 +23,7 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -46,8 +47,9 @@ import kotlin.math.ceil
 
 enum class Sekme(val ad: String, val ikon: ImageVector) {
     ANA("Ana sayfa", Icons.Filled.Home),
-    CALIS("Çalış", Icons.AutoMirrored.Filled.List),
+    DERSLER("Dersler", Icons.AutoMirrored.Filled.List),
     DENEME("Deneme", Icons.Filled.CheckCircle),
+    ISTATISTIK("İstatistik", Icons.Filled.Star),
     PROFIL("Profil", Icons.Filled.Person),
 }
 
@@ -62,6 +64,10 @@ class Yonlendirici(
     val aydinlatma: () -> Unit,
     val verilerim: () -> Unit,
     val premium: () -> Unit,
+    val konuAc: (String) -> Unit,
+    val sonuclar: () -> Unit,
+    val lisans: () -> Unit,
+    val hatirlatma: () -> Unit,
 )
 
 @Composable
@@ -79,7 +85,7 @@ fun Kabuk(
                         selected = s == sekme,
                         onClick = { sekmeSec(s) },
                         icon = { Icon(s.ikon, contentDescription = null) },
-                        label = { Text(s.ad) },
+                        label = { Text(s.ad, maxLines = 1, fontSize = 11.sp) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = Yesil,
                             selectedTextColor = Yesil,
@@ -143,6 +149,11 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: Pad
     val hedefSayi = gunlukHedef(banka, depo)
     val bugun = depo.bugunCozulen
     val zayif = zayifKonu(banka, depo)
+    val lisansAd = banka.lisans(k?.lisans)?.kisaAd ?: "Düzey 1"
+    val lisansSorulari = banka.lisansDersleri(k?.lisans).flatMap { banka.dersSorulari(it.kod) }
+    val gununSorusu = lisansSorulari.takeIf { it.isNotEmpty() }?.let {
+        it[(java.time.LocalDate.now().toEpochDay() % it.size).toInt()]
+    }
     val sonKonu = k?.sonKonu?.let { id ->
         banka.dersler.firstNotNullOfOrNull { d -> d.konular.firstOrNull { it.id == id }?.let { d to it } }
     }
@@ -168,8 +179,8 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: Pad
                         Text("Merhaba ${k?.ad.orEmpty()}", fontFamily = Baslik, fontSize = 24.sp, color = Krem)
                         Text(
                             when {
-                                aktif.isEmpty() -> "Düzey 1 · Henüz hedef seçmedin"
-                                else -> "Düzey 1 · ${aktif.size} derse hazırlanıyorsun"
+                                aktif.isEmpty() -> "$lisansAd · Henüz hedef seçmedin"
+                                else -> "$lisansAd · ${aktif.size} derse hazırlanıyorsun"
                             },
                             style = MaterialTheme.typography.bodyMedium,
                             color = KremSoluk,
@@ -214,6 +225,24 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: Pad
             }
         }
 
+        if (gununSorusu != null) {
+            item {
+                val cevap = depo.ilerleme[gununSorusu.id]
+                KartKutu(Modifier.padding(horizontal = 16.dp), tikla = { y.coz("Günün sorusu", listOf(gununSorusu), null, "gunun") }) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Etiket("Günün sorusu", Modifier.weight(1f))
+                        Text(
+                            when (cevap) { null -> "Çöz"; 1 -> "✓ Doğru"; else -> "Tekrar dene" },
+                            style = MaterialTheme.typography.labelLarge,
+                            color = when (cevap) { null -> Yesil; 1 -> DogruYesil; else -> YanlisKirmizi },
+                        )
+                    }
+                    Bosluk(6)
+                    Text(gununSorusu.metin, style = MaterialTheme.typography.bodyMedium, maxLines = 3, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                }
+            }
+        }
+
         if (sonKonu != null) {
             item {
                 val (d, kn) = sonKonu
@@ -225,7 +254,7 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: Pad
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
                         .background(Yesil)
-                        .clickableIf(sorular.isNotEmpty()) { y.coz(kn.ad, calismaSirasi(sorular, depo), kn.id, "pratik") }
+                        .clickableIf(true) { y.konuAc(kn.id) }
                         .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -253,7 +282,7 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: Pad
             }
         }
         items(aktif, key = { "h" + it.ders }) { h -> HedefKarti(h, banka, cozulen, y) }
-        if (aktif.isNotEmpty() && depo.hedefler.size < banka.dersler.size) {
+        if (aktif.isNotEmpty() && depo.hedefler.size < banka.lisansDersleri(k?.lisans).size) {
             item {
                 Text(
                     "+ Başka bir ders ekle",
@@ -272,12 +301,12 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: Pad
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(14.dp))
                         .background(YanlisZemin)
-                        .clickableIf(true) { y.coz(zayif.konuAd, calismaSirasi(zayif.sorular, depo), zayif.konuId, "pratik") }
+                        .clickableIf(true) { y.konuAc(zayif.konuId) }
                         .padding(16.dp),
                 ) {
                     Text("Zayıf konun", style = MaterialTheme.typography.bodyMedium, color = YanlisKirmizi)
                     Text("${zayif.konuAd} · %${zayif.oran} doğru", style = MaterialTheme.typography.titleMedium, color = Metin)
-                    Text("Dokun, bu konuyu tekrar çöz.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                    Text("Dokun, özeti oku ve soruları tekrar çöz.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 }
             }
         }
@@ -291,7 +320,7 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: Pad
                         Text("✓  ${banka.ders(h.ders)?.kisaAd ?: h.ders}", style = MaterialTheme.typography.bodyMedium, color = DogruYesil)
                     }
                     Bosluk(4)
-                    Text("${gecilen.size} / ${banka.dersler.size} ders tamamlandı", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                    Text("${gecilen.size} / ${banka.lisansDersleri(k?.lisans).size} ders tamamlandı", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 }
             }
         }
@@ -358,15 +387,17 @@ private fun HedefKarti(h: Hedef, banka: SoruBankasi, cozulen: Set<String>, y: Yo
     }
 }
 
-// ---------------------------------------------------------------- Çalış
+// ---------------------------------------------------------------- Dersler
 
 @Composable
-fun CalisSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: PaddingValues) {
+fun DerslerSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: PaddingValues) {
+    val lisans = banka.lisans(depo.kullanici?.lisans)
+    val dersler = banka.lisansDersleri(depo.kullanici?.lisans)
     val cozulen = depo.cozulenler()
     val dogru = depo.dogrular()
     val yanlislar = depo.yanlislar().mapNotNull { banka.bul(it) }
     Column(Modifier.fillMaxSize()) {
-        SekmeBasligi("Çalış")
+        SekmeBasligi("Dersler")
         LazyColumn(
             Modifier.fillMaxSize().padding(bottom = ic.calculateBottomPadding()),
             contentPadding = PaddingValues(16.dp),
@@ -383,8 +414,20 @@ fun CalisSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: P
                     )
                 }
             }
-            item { Etiket("Dersler", Modifier.padding(start = 4.dp, top = 8.dp)) }
-            items(banka.dersler, key = { it.kod }) { d ->
+            item {
+                KartKutu(tikla = y.sonuclar) {
+                    Text("Sınav sonuçlarım", style = MaterialTheme.typography.titleMedium)
+                    Bosluk(4)
+                    Text("Girdiğin sınavların puanlarını kaydet, lisans durumunu gör.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                }
+            }
+            item {
+                Row(Modifier.padding(start = 4.dp, top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Etiket(lisans?.ad ?: "Dersler", Modifier.weight(1f))
+                    Text("Değiştir", style = MaterialTheme.typography.labelLarge, color = Yesil, modifier = Modifier.clickableIf(true, y.lisans))
+                }
+            }
+            items(dersler, key = { it.kod }) { d ->
                 val sorular = banka.dersSorulari(d.kod)
                 val c = sorular.count { it.id in cozulen }
                 val dg = sorular.count { it.id in dogru }
@@ -392,7 +435,11 @@ fun CalisSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: P
                 KartKutu(tikla = { y.dersAc(d.kod) }) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
-                            Text(d.kisaAd, style = MaterialTheme.typography.titleMedium)
+                            Text(d.ad, style = MaterialTheme.typography.titleMedium)
+                            if (d.aciklama.isNotBlank()) {
+                                Text(d.aciklama, style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                            }
+                            Bosluk(4)
                             Text(
                                 when {
                                     h?.gecti == true -> "Geçtin ✓"
@@ -401,7 +448,7 @@ fun CalisSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: P
                                     else -> "${sorular.size} soru · ${d.konular.size} konu"
                                 },
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = if (h?.gecti == true) DogruYesil else MetinSoluk,
+                                color = if (h?.gecti == true) DogruYesil else Yesil,
                             )
                         }
                         Text("%${yuzde(c, sorular.size)}", style = MaterialTheme.typography.labelLarge, color = Yesil)
@@ -422,7 +469,9 @@ fun CalisSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: P
 
 @Composable
 fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: PaddingValues) {
-    val genelAdet = denemeSoruSayisi(banka)
+    val dersler = banka.lisansDersleri(depo.kullanici?.lisans)
+    val genelAdet = denemeSoruSayisi(banka, dersler)
+    val denemeler = depo.denemeler.filter { !it.kapsam.startsWith("konu:") }
     Column(Modifier.fillMaxSize()) {
         SekmeBasligi("Deneme")
         LazyColumn(
@@ -434,11 +483,11 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
                 KartKutu(tikla = if (genelAdet > 0) y.genelDeneme else null) {
                     Text("Genel deneme", style = MaterialTheme.typography.titleMedium)
                     Bosluk(4)
-                    Text("Dört dersten $genelAdet soru, ${denemeSuresiDk(genelAdet)} dakika. Gerçek sınavda her ders 25 soru ve 45 dakika. Her dersten en az 50, ortalama en az 60.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                    Text("${dersler.size} dersten $genelAdet soru, ${denemeSuresiDk(genelAdet)} dakika. Gerçek sınavda her ders 25 soru ve 45 dakika. Her dersten en az 50, ortalama en az 60.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 }
             }
             item { Etiket("Ders denemeleri", Modifier.padding(start = 4.dp, top = 8.dp)) }
-            items(banka.dersler, key = { "d" + it.kod }) { d ->
+            items(dersler, key = { "d" + it.kod }) { d ->
                 val adet = minOf(SINAV_SORU, banka.dersSorulari(d.kod).size)
                 KartKutu(tikla = if (adet > 0) ({ y.dersDenemesi(d.kod) }) else null) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -448,10 +497,10 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
                 }
             }
             item { Etiket("Geçmiş denemelerin", Modifier.padding(start = 4.dp, top = 8.dp)) }
-            if (depo.denemeler.isEmpty()) {
+            if (denemeler.isEmpty()) {
                 item { Text("Henüz deneme çözmedin. İlk denemenden sonra sonuçların burada listelenir.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk, modifier = Modifier.padding(horizontal = 4.dp)) }
             }
-            items(depo.denemeler, key = { it.id }) { dk ->
+            items(denemeler, key = { it.id }) { dk ->
                 val tarih = java.time.Instant.ofEpochMilli(dk.zaman).atZone(java.time.ZoneId.systemDefault()).toLocalDate()
                 KartKutu {
                     Row(verticalAlignment = Alignment.CenterVertically) {

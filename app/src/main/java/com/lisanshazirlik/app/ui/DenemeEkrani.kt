@@ -56,8 +56,8 @@ const val SINAV_DAKIKA = 45
 private const val DERS_BASINA_EN_FAZLA = SINAV_SORU
 
 /** Her dersten eşit sayıda soru: en az sorusu olan dersin sayısı ya da en fazla 25. */
-fun denemeSoruSayisi(banka: SoruBankasi): Int {
-    val dolu = banka.dersler.map { banka.dersSorulari(it.kod).size }.filter { it > 0 }
+fun denemeSoruSayisi(banka: SoruBankasi, dersler: List<com.lisanshazirlik.app.data.Ders> = banka.dersler): Int {
+    val dolu = dersler.map { banka.dersSorulari(it.kod).size }.filter { it > 0 }
     if (dolu.isEmpty()) return 0
     return minOf(DERS_BASINA_EN_FAZLA, dolu.min()) * dolu.size
 }
@@ -65,12 +65,22 @@ fun denemeSoruSayisi(banka: SoruBankasi): Int {
 /** Gerçek sınavla aynı tempo: 25 soruya 45 dakika (soru başına 1,8 dakika). */
 fun denemeSuresiDk(adet: Int): Int = (adet * SINAV_DAKIKA + SINAV_SORU - 1) / SINAV_SORU
 
+fun denemeBasligi(kapsam: String, banka: SoruBankasi): String = when {
+    kapsam == "genel" -> "Genel deneme"
+    kapsam.startsWith("konu:") -> banka.konu(kapsam.removePrefix("konu:"))?.second?.ad ?: "Konu testi"
+    else -> banka.ders(kapsam)?.kisaAd ?: "Deneme"
+}
+
+/** Konu testi: o konudan en fazla 10 soru, sınav temposunda. */
+fun konuTestiSorulari(banka: SoruBankasi, konuId: String): List<Soru> =
+    banka.konuSorulari(konuId).shuffled().take(10)
+
 /** Tek ders denemesi: gerçek sınav gibi 25 soru (soru bankası yeterliyse). */
 fun dersDenemesiSorulari(banka: SoruBankasi, ders: String): List<Soru> =
     banka.dersSorulari(ders).shuffled().take(SINAV_SORU)
 
-fun denemeSorulari(banka: SoruBankasi): List<Soru> {
-    val dolu = banka.dersler.filter { banka.dersSorulari(it.kod).isNotEmpty() }
+fun denemeSorulari(banka: SoruBankasi, dersler: List<com.lisanshazirlik.app.data.Ders> = banka.dersler): List<Soru> {
+    val dolu = dersler.filter { banka.dersSorulari(it.kod).isNotEmpty() }
     if (dolu.isEmpty()) return emptyList()
     val n = minOf(DERS_BASINA_EN_FAZLA, dolu.minOf { banka.dersSorulari(it.kod).size })
     return dolu.flatMap { banka.dersSorulari(it.kod).shuffled().take(n) }
@@ -133,7 +143,7 @@ fun DenemeEkrani(
 
     Scaffold(
         topBar = {
-            UstCubuk(if (kapsam == "genel") "Deneme sınavı" else (banka.ders(kapsam)?.kisaAd ?: "Deneme"), { cikSor = true }) {
+            UstCubuk(denemeBasligi(kapsam, banka), { cikSor = true }) {
                 Text(
                     "%d:%02d".format(kalan / 60, kalan % 60),
                     color = if (kalan < 120) Altin else Krem,

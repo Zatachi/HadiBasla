@@ -19,8 +19,14 @@ data class Kullanici(
     val seri: Int,
     val sonGun: String,
     val sonKonu: String?,
+    val lisans: String?,
     val premium: Boolean,
 )
+
+/** Gerçek lisans sınavında alınan puan. */
+data class SinavSonucu(val ders: String, val puan: Int, val tarih: LocalDate?)
+
+data class GunKaydi(val tarih: LocalDate, val sayi: Int, val dogru: Int)
 
 data class Hedef(val ders: String, val sinavTarihi: LocalDate?, val gecti: Boolean) {
     /** Sınav tarihi seçilmediyse null. */
@@ -45,7 +51,8 @@ data class DenemeKaydi(
  * kullanicilar/{uid}/hedefler/{ders}   sınav tarihi, geçti mi
  * kullanicilar/{uid}/ilerleme/{ders}   s: { soruId: 1 (doğru) | 0 (yanlış) }  (son cevap)
  * kullanicilar/{uid}/gunler/{tarih}    sayi: o gün çözülen soru
- * kullanicilar/{uid}/denemeler/{id}    deneme sonuçları
+ * kullanicilar/{uid}/denemeler/{id}    deneme sonuçları (kapsam: genel, ders kodu ya da konu:ID)
+ * kullanicilar/{uid}/sonuclar/{ders}   gerçek sınavda alınan puan
  */
 class KullaniciDeposu(val uid: String) {
     private val db = FirebaseFirestore.getInstance()
@@ -64,6 +71,11 @@ class KullaniciDeposu(val uid: String) {
     var bugunCozulen by mutableIntStateOf(0)
         private set
     var denemeler by mutableStateOf<List<DenemeKaydi>>(emptyList())
+        private set
+    var sonuclar by mutableStateOf<Map<String, SinavSonucu>>(emptyMap())
+        private set
+    /** Son 30 günün çalışma kayıtları, eskiden yeniye. */
+    var gunler by mutableStateOf<List<GunKaydi>>(emptyList())
         private set
 
     private val dersIlerleme = mutableMapOf<String, Map<String, Int>>()
@@ -96,8 +108,24 @@ class KullaniciDeposu(val uid: String) {
             }
             ilerleme = dersIlerleme.values.fold(emptyMap()) { a, b -> a + b }
         }
-        dinleyiciler += kok.collection("gunler").document(bugunKey).addSnapshotListener { s, _ ->
-            bugunCozulen = s?.getLong("sayi")?.toInt() ?: 0
+        val otuzGunOnce = LocalDate.now().minusDays(29).toString()
+        dinleyiciler += kok.collection("gunler")
+            .whereGreaterThanOrEqualTo(com.google.firebase.firestore.FieldPath.documentId(), otuzGunOnce)
+            .addSnapshotListener { q, _ ->
+                if (q == null) return@addSnapshotListener
+                gunler = q.documents.mapNotNull { d ->
+                    runCatching {
+                        GunKaydi(LocalDate.parse(d.id), d.getLong("sayi")?.toInt() ?: 0, d.getLong("dogru")?.toInt() ?: 0)
+                    }.getOrNull()
+                }.sortedBy { it.tarih }
+                bugunCozulen = gunler.firstOrNull { it.tarih.toString() == bugunKey }?.sayi ?: 0
+            }
+        dinleyiciler += kok.collection("sonuclar").addSnapshotListener { q, _ ->
+            if (q == null) return@addSnapshotListener
+            sonuclar = q.documents.mapNotNull { d ->
+                val puan = d.getLong("puan")?.toInt() ?: return@mapNotNull null
+                d.id to SinavSonucu(d.id, puan, d.getString("tarih")?.let { runCatching { LocalDate.parse(it) }.getOrNull() })
+            }.toMap()
         }
         dinleyiciler += kok.collection("denemeler").orderBy("zaman", Query.Direction.DESCENDING).limit(50)
             .addSnapshotListener { q, _ ->
@@ -163,7 +191,10 @@ class KullaniciDeposu(val uid: String) {
         kok.collection("ilerleme").document(soru.ders)
             .set(mapOf("s" to mapOf(soru.id to if (dogru) 1 else 0)), SetOptions.merge())
         kok.collection("gunler").document(bugunKey)
-            .set(mapOf("sayi" to FieldValue.increment(1)), SetOptions.merge())
+            .set(
+                mapOf("sayi" to FieldValue.increment(1), "dogru" to FieldValue.increment(if (dogru) 1 else 0)),
+                SetOptions.merge(),
+            )
 
         val k = kullanici
         val dun = LocalDate.now().minusDays(1).toString()
@@ -175,6 +206,24 @@ class KullaniciDeposu(val uid: String) {
         if (k?.sonGun != bugunKey) {
             kok.set(mapOf("seri" to yeniSeri, "sonGun" to bugunKey), SetOptions.merge())
         }
+    }
+
+    fun lisansSec(kod: String) {
+        kok.set(mapOf("lisans" to kod), SetOptions.merge())
+    }
+
+    /** Gerçek sınav puanı. 50 ve üzeri girilirse o dersin hedefi "geçildi" olur. */
+    fun sonucKaydet(ders: String, puan: Int, tarih: LocalDate?) {
+        kok.collection("sonuclar").document(ders).set(
+            mapOf("puan" to puan.coerceIn(0, 100), "tarih" to tarih?.toString(), "zaman" to FieldValue.serverTimestamp())
+        )
+        val h = hedef(ders)
+        if (puan >= 50) hedefKaydet(ders, h?.sinavTarihi ?: tarih, gecti = true)
+        else if (h?.gecti == true) hedefKaydet(ders, h.sinavTarihi, gecti = false)
+    }
+
+    fun sonucSil(ders: String) {
+        kok.collection("sonuclar").document(ders).delete()
     }
 
     fun sonKonu(konuId: String) {
@@ -200,6 +249,7 @@ class KullaniciDeposu(val uid: String) {
         seri = getLong("seri")?.toInt() ?: 0,
         sonGun = getString("sonGun").orEmpty(),
         sonKonu = getString("sonKonu"),
+        lisans = getString("lisans"),
         premium = getBoolean("premium") ?: false,
     )
 
@@ -220,6 +270,6 @@ class KullaniciDeposu(val uid: String) {
     }.getOrNull()
 
     companion object {
-        val ALT_KOLEKSIYONLAR = listOf("hedefler", "ilerleme", "gunler", "denemeler")
+        val ALT_KOLEKSIYONLAR = listOf("hedefler", "ilerleme", "gunler", "denemeler", "sonuclar")
     }
 }

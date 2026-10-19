@@ -185,6 +185,7 @@ fun KurulumEkrani(
     var adim by remember { mutableStateOf(0) }
     var ad by remember { mutableStateOf(onerilenAd.orEmpty()) }
     var ders by remember { mutableStateOf<String?>(null) }
+    var lisans by remember { mutableStateOf(banka.lisanslar.firstOrNull { it.aktif }?.kod) }
     var tarih by remember { mutableStateOf<LocalDate?>(null) }
     var tarihsizSor by remember { mutableStateOf(false) }
 
@@ -203,10 +204,15 @@ fun KurulumEkrani(
                     Bosluk(8)
                     Text("Sadece adın yeterli, soyadına gerek yok.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 }
+            } else if (adim == 1) {
+                YesilUst("Hangi sınava hazırlanıyorsun?", "Dersler ve denemeler buna göre hazırlanır.")
+                Column(Modifier.padding(20.dp)) {
+                    LisansSecici(banka.lisanslar, lisans) { lisans = it }
+                }
             } else {
                 YesilUst("İlk hedefin", "Bir derse odaklan; diğerlerini sonra eklersin.")
                 Column(Modifier.padding(20.dp)) {
-                    HedefSecici(banka.dersler, ders, { ders = it }, tarih, { tarih = it })
+                    HedefSecici(banka.lisansDersleri(lisans), ders, { ders = it }, tarih, { tarih = it })
                 }
             }
         }
@@ -217,19 +223,26 @@ fun KurulumEkrani(
                     enabled = ad.isNotBlank(),
                     modifier = Modifier.fillMaxWidth().height(52.dp),
                 ) { Text("Devam et") }
+            } else if (adim == 1) {
+                Button(
+                    onClick = { adim = 2 },
+                    enabled = lisans != null,
+                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                ) { Text("Devam et") }
+                TextButton(onClick = { adim = 0 }, modifier = Modifier.fillMaxWidth()) { Text("Geri") }
             } else {
                 Button(
                     onClick = {
                         val d = ders
                         if (d != null) {
                             if (tarih == null) tarihsizSor = true
-                            else { depo.profilOlustur(ad, aydinlatmaSurum); depo.hedefKaydet(d, tarih) }
+                            else { depo.profilOlustur(ad, aydinlatmaSurum); lisans?.let { depo.lisansSec(it) }; depo.hedefKaydet(d, tarih) }
                         }
                     },
                     enabled = ders != null,
                     modifier = Modifier.fillMaxWidth().height(52.dp),
                 ) { Text("Başla") }
-                TextButton(onClick = { depo.profilOlustur(ad, aydinlatmaSurum) }, modifier = Modifier.fillMaxWidth()) {
+                TextButton(onClick = { depo.profilOlustur(ad, aydinlatmaSurum); lisans?.let { depo.lisansSec(it) } }, modifier = Modifier.fillMaxWidth()) {
                     Text("Hedefi sonra ekle")
                 }
             }
@@ -240,7 +253,7 @@ fun KurulumEkrani(
             kapat = { tarihsizSor = false },
             devam = {
                 tarihsizSor = false
-                depo.profilOlustur(ad, aydinlatmaSurum)
+                depo.profilOlustur(ad, aydinlatmaSurum); lisans?.let { depo.lisansSec(it) }
                 ders?.let { depo.hedefKaydet(it, null) }
             },
         )

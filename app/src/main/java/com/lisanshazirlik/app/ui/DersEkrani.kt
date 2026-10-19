@@ -25,6 +25,7 @@ fun DersEkrani(
     cozulen: Set<String>,
     coz: (baslik: String, sorular: List<Soru>, konuId: String?) -> Unit,
     deneme: () -> Unit,
+    konuAc: (String) -> Unit,
     geri: () -> Unit,
 ) {
     val tumu = banka.dersSorulari(ders.kod)
@@ -38,7 +39,7 @@ fun DersEkrani(
             item {
                 Text(ders.ad, style = MaterialTheme.typography.titleLarge)
                 Bosluk(4)
-                Text("Ders kodu ${ders.kod}", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                Text("Ders kodu ${ders.kod}" + if (ders.aciklama.isNotBlank()) " · ${ders.aciklama}" else "", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
             }
             item {
                 KartKutu(
@@ -60,11 +61,19 @@ fun DersEkrani(
             items(ders.konular, key = { it.id }) { konu ->
                 val sorular = banka.konuSorulari(konu.id)
                 val c = sorular.count { it.id in cozulen }
-                KartKutu(tikla = if (sorular.isNotEmpty()) ({ coz(konu.ad, sorular.shuffled(), konu.id) }) else null) {
+                val icerikVar = sorular.isNotEmpty() || konu.ozet.isNotBlank() || konu.kartlar.isNotEmpty()
+                KartKutu(tikla = if (icerikVar) ({ konuAc(konu.id) }) else null) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(konu.ad, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                         Text(
-                            if (sorular.isEmpty()) "Yakında" else "${sorular.size} soru",
+                            when {
+                                !icerikVar -> "Yakında"
+                                else -> listOfNotNull(
+                                    "Özet".takeIf { konu.ozet.isNotBlank() },
+                                    "${konu.kartlar.size} kart".takeIf { konu.kartlar.isNotEmpty() },
+                                    "${sorular.size} soru".takeIf { sorular.isNotEmpty() },
+                                ).joinToString(" · ")
+                            },
                             style = MaterialTheme.typography.bodyMedium,
                             color = MetinSoluk,
                             modifier = Modifier.padding(start = 8.dp),

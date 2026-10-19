@@ -1,0 +1,230 @@
+package com.lisanshazirlik.app.ui
+
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.lisanshazirlik.app.data.BilgiKarti
+import com.lisanshazirlik.app.data.Ders
+import com.lisanshazirlik.app.data.Konu
+import com.lisanshazirlik.app.data.KullaniciDeposu
+import com.lisanshazirlik.app.data.SoruBankasi
+
+/** Bir konunun dört bölümü: özet, bilgi kartları, soru çözme ve süreli konu testi. */
+@Composable
+fun KonuEkrani(
+    ders: Ders,
+    konu: Konu,
+    banka: SoruBankasi,
+    depo: KullaniciDeposu,
+    ozetAc: () -> Unit,
+    kartlarAc: () -> Unit,
+    coz: () -> Unit,
+    test: () -> Unit,
+    geri: () -> Unit,
+) {
+    val sorular = banka.konuSorulari(konu.id)
+    val il = depo.ilerleme
+    val cozulen = sorular.count { it.id in il }
+    val dogru = sorular.count { il[it.id] == 1 }
+    val testAdet = minOf(10, sorular.size)
+
+    Scaffold(topBar = { UstCubuk(konu.ad, geri) }, containerColor = Zemin) { ic ->
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(ic)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(ders.ad, style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+            KartKutu {
+                Row(verticalAlignment = Alignment.Bottom) {
+                    Text("$cozulen", style = MaterialTheme.typography.headlineSmall)
+                    Text(" / ${sorular.size} soru çözüldü", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk, modifier = Modifier.padding(bottom = 3.dp))
+                }
+                Bosluk(10)
+                Ilerleme(if (sorular.isEmpty()) 0f else cozulen / sorular.size.toFloat())
+                if (cozulen > 0) {
+                    Bosluk(8)
+                    BilgiSatiri("Doğru oranın", "%${yuzde(dogru, cozulen)}")
+                }
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Bolum(Modifier.weight(1f), "📖", "Konu özeti", if (konu.ozet.isNotBlank()) "Önce oku" else null, ozetAc)
+                Bolum(Modifier.weight(1f), "🃏", "Bilgi kartları", if (konu.kartlar.isNotEmpty()) "${konu.kartlar.size} kart" else null, kartlarAc)
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Bolum(Modifier.weight(1f), "✏️", "Soru çöz", if (sorular.isNotEmpty()) "${sorular.size} soru, açıklamalı" else null, coz)
+                Bolum(Modifier.weight(1f), "⏱", "Konu testi", if (testAdet > 0) "$testAdet soru, ${denemeSuresiDk(testAdet)} dk" else null, test)
+            }
+            Text(
+                "Önerilen sıra: özeti oku, kartlarla tekrar et, soruları çöz, son olarak konu testiyle kendini ölç.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MetinSoluk,
+            )
+        }
+    }
+}
+
+@Composable
+private fun Bolum(modifier: Modifier, simge: String, baslik: String, alt: String?, tikla: () -> Unit) {
+    val hazir = alt != null
+    val sekil = RoundedCornerShape(14.dp)
+    Column(
+        modifier
+            .heightIn(min = 128.dp)
+            .clip(sekil)
+            .background(if (hazir) Kart else Zemin)
+            .border(1.dp, Cizgi, sekil)
+            .clickableIf(hazir, tikla)
+            .padding(14.dp),
+    ) {
+        Text(simge, fontSize = 26.sp)
+        Bosluk(8)
+        Text(baslik, style = MaterialTheme.typography.titleMedium, color = if (hazir) Metin else MetinSoluk)
+        Text(alt ?: "Hazırlanıyor", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+    }
+}
+
+@Composable
+fun OzetEkrani(ders: Ders, konu: Konu, coz: (() -> Unit)?, geri: () -> Unit) {
+    Scaffold(
+        topBar = { UstCubuk("Konu özeti", geri) },
+        bottomBar = {
+            if (coz != null) {
+                Column(Modifier.background(Kart).navigationBarsPadding()) {
+                    HorizontalDivider(color = Cizgi)
+                    Button(onClick = coz, modifier = Modifier.fillMaxWidth().padding(16.dp).height(52.dp)) {
+                        Text("Bu konudan soru çöz")
+                    }
+                }
+            }
+        },
+        containerColor = Zemin,
+    ) { ic ->
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(ic)
+                .verticalScroll(rememberScrollState())
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Etiket(ders.kisaAd)
+            Text(konu.ad, style = MaterialTheme.typography.headlineSmall)
+            BasitMetin(konu.ozet)
+            Bosluk(12)
+            Text(
+                "Bu özet, ilgili mevzuat esas alınarak Lisansla tarafından hazırlanmıştır. Sınavdan önce güncel resmi kaynakları da kontrol et.",
+                style = MaterialTheme.typography.bodyMedium,
+                fontSize = 12.sp,
+                color = MetinSoluk,
+            )
+        }
+    }
+}
+
+/** Dokununca dönen bilgi kartları. "Biliyorum" desteden çıkarır, "Tekrar et" sona atar. */
+@Composable
+fun KartlarEkrani(konu: Konu, geri: () -> Unit) {
+    var deste by remember { mutableStateOf(konu.kartlar.shuffled()) }
+    var ters by remember { mutableStateOf(false) }
+    var bilinen by remember { mutableStateOf(0) }
+    val donus by animateFloatAsState(if (ters) 180f else 0f, tween(350), label = "kart")
+
+    Scaffold(
+        topBar = {
+            UstCubuk(konu.ad, geri) {
+                if (deste.isNotEmpty()) Text("${deste.size} kart", color = Krem, modifier = Modifier.padding(end = 16.dp))
+            }
+        },
+        containerColor = Zemin,
+    ) { ic ->
+        Column(
+            Modifier.fillMaxSize().padding(ic).navigationBarsPadding().padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            if (deste.isEmpty()) {
+                Bosluk(40)
+                Text("Desteyi bitirdin", style = MaterialTheme.typography.headlineSmall)
+                Text("${konu.kartlar.size} kartın hepsini bildin.", style = MaterialTheme.typography.bodyLarge, color = MetinSoluk)
+                Bosluk(12)
+                Button(onClick = { deste = konu.kartlar.shuffled(); bilinen = 0; ters = false }, modifier = Modifier.fillMaxWidth().height(52.dp)) {
+                    Text("Baştan başla")
+                }
+                OutlinedButton(onClick = geri, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Konuya dön") }
+                return@Column
+            }
+            val kart: BilgiKarti = deste.first()
+            Box(
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .graphicsLayer { rotationY = donus; cameraDistance = 12f * density }
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(if (donus <= 90f) Yesil else Kart)
+                    .border(1.dp, if (donus <= 90f) Yesil else Cizgi, RoundedCornerShape(20.dp))
+                    .clickable { ters = !ters }
+                    .padding(28.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (donus <= 90f) {
+                    Text(kart.on, color = Krem, fontFamily = Baslik, fontSize = 22.sp, lineHeight = 30.sp, textAlign = TextAlign.Center)
+                } else {
+                    Text(
+                        kart.arka,
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.graphicsLayer { rotationY = 180f },
+                    )
+                }
+            }
+            Text(if (ters) "Ne kadar iyi bildin?" else "Cevabı görmek için karta dokun", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedButton(
+                    onClick = { deste = deste.drop(1) + kart; ters = false },
+                    modifier = Modifier.weight(1f).height(52.dp),
+                ) { Text("Tekrar et") }
+                Button(
+                    onClick = { deste = deste.drop(1); bilinen++; ters = false },
+                    modifier = Modifier.weight(1f).height(52.dp),
+                ) { Text("Biliyorum") }
+            }
+        }
+    }
+}

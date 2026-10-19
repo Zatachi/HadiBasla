@@ -28,11 +28,17 @@ fun aydinlatmaMetni(baglam: Context): String =
         .replace("{{EPOSTA}}", BuildConfig.EPOSTA)
         .replace("{{TARIH}}", BuildConfig.METIN_TARIHI)
 
-/** Basit biçim: '# ' başlık, '## ' alt başlık, '- ' madde, diğer satırlar paragraf. */
 @Composable
 fun AydinlatmaGovdesi(modifier: Modifier = Modifier) {
     val baglam = LocalContext.current
-    val satirlar = remember { aydinlatmaMetni(baglam).lines() }
+    val metin = remember { aydinlatmaMetni(baglam) }
+    BasitMetin(metin, modifier)
+}
+
+/** Basit biçimli metin: '# ' başlık, '## ' alt başlık, '- ' madde. Konu özetlerinde de kullanılır. */
+@Composable
+fun BasitMetin(metin: String, modifier: Modifier = Modifier) {
+    val satirlar = remember(metin) { metin.lines() }
     Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         satirlar.forEach { ham ->
             val s = ham.trim()

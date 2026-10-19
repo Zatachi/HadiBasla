@@ -20,11 +20,11 @@ service cloud.firestore {
     match /kullanicilar/{uid} {
       allow read, delete: if girisli() && request.auth.uid == uid;
       allow create: if girisli() && request.auth.uid == uid
-        && veri().keys().hasOnly(['ad', 'aydinlatmaSurum', 'aydinlatmaZaman', 'olusturma', 'seri', 'sonGun', 'sonKonu'])
+        && veri().keys().hasOnly(['ad', 'aydinlatmaSurum', 'aydinlatmaZaman', 'olusturma', 'seri', 'sonGun', 'sonKonu', 'lisans'])
         && gecerliAd();
       allow update: if girisli() && request.auth.uid == uid
         && veri().diff(resource.data).affectedKeys()
-             .hasOnly(['ad', 'aydinlatmaSurum', 'aydinlatmaZaman', 'olusturma', 'seri', 'sonGun', 'sonKonu'])
+             .hasOnly(['ad', 'aydinlatmaSurum', 'aydinlatmaZaman', 'olusturma', 'seri', 'sonGun', 'sonKonu', 'lisans'])
         && gecerliAd();
 
       function gecerliAd() {
@@ -33,7 +33,7 @@ service cloud.firestore {
 
       match /{alt}/{belge} {
         allow read, write: if girisli() && request.auth.uid == uid
-          && alt in ['hedefler', 'ilerleme', 'gunler', 'denemeler'];
+          && alt in ['hedefler', 'ilerleme', 'gunler', 'denemeler', 'sonuclar'];
       }
     }
 

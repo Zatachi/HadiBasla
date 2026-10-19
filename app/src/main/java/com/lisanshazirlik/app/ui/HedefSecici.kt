@@ -99,15 +99,23 @@ fun HedefSecici(
     }
 }
 
+/** gecmis=true: geçmiş tarihler seçilir (sınav sonucu); false: bugünden sonrası (sınav hedefi). */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TarihPenceresi(mevcut: LocalDate?, kapat: () -> Unit, sec: (LocalDate) -> Unit) {
+fun TarihPenceresi(
+    mevcut: LocalDate?,
+    kapat: () -> Unit,
+    gecmis: Boolean = false,
+    baslik: String = "Sınav tarihi",
+    sec: (LocalDate) -> Unit,
+) {
     val bugunMs = LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
     val durum = rememberDatePickerState(
-        initialSelectedDateMillis = (mevcut ?: LocalDate.now().plusDays(30)).atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli(),
+        initialSelectedDateMillis = (mevcut ?: if (gecmis) LocalDate.now() else LocalDate.now().plusDays(30))
+            .atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli(),
         selectableDates = object : SelectableDates {
-            override fun isSelectableDate(utcTimeMillis: Long) = utcTimeMillis >= bugunMs
-            override fun isSelectableYear(year: Int) = year >= LocalDate.now().year
+            override fun isSelectableDate(utcTimeMillis: Long) = if (gecmis) utcTimeMillis <= bugunMs else utcTimeMillis >= bugunMs
+            override fun isSelectableYear(year: Int) = if (gecmis) year <= LocalDate.now().year else year >= LocalDate.now().year
         },
     )
     DatePickerDialog(
@@ -122,7 +130,7 @@ private fun TarihPenceresi(mevcut: LocalDate?, kapat: () -> Unit, sec: (LocalDat
         },
         dismissButton = { TextButton(onClick = kapat) { Text("Vazgeç") } },
     ) {
-        DatePicker(state = durum, title = { Text("Sınav tarihi", modifier = Modifier.padding(start = 24.dp, top = 16.dp)) })
+        DatePicker(state = durum, title = { Text(baslik, modifier = Modifier.padding(start = 24.dp, top = 16.dp)) })
     }
 }
 
@@ -135,7 +143,7 @@ fun HedefEkrani(
     geri: () -> Unit,
 ) {
     val mevcut: Hedef? = duzenlenen?.let { depo.hedef(it) }
-    val bosDersler = banka.dersler.filter { d -> d.kod == duzenlenen || depo.hedef(d.kod) == null }
+    val bosDersler = banka.lisansDersleri(depo.kullanici?.lisans).filter { d -> d.kod == duzenlenen || depo.hedef(d.kod) == null }
     var ders by remember { mutableStateOf(duzenlenen ?: bosDersler.firstOrNull()?.kod) }
     var tarih by remember { mutableStateOf(mevcut?.sinavTarihi) }
     var silSor by remember { mutableStateOf(false) }
@@ -151,7 +159,7 @@ fun HedefEkrani(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             if (bosDersler.isEmpty()) {
-                Text("Dört ders için de hedefin var. Bir hedefi düzenlemek için Ana sayfadaki kartına dokun.")
+                Text("Bu lisanstaki bütün dersler için hedefin var. Bir hedefi düzenlemek için Ana sayfadaki kartına dokun.")
                 return@Column
             }
             HedefSecici(

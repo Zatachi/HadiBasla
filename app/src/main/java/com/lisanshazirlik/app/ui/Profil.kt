@@ -123,7 +123,13 @@ fun ProfilSekme(
             }
 
             KartKutu {
+                Satir("Sınavım", banka.lisans(k?.lisans)?.ad ?: "Seçilmedi") { y.lisans() }
+                HorizontalDivider(color = Cizgi)
                 Satir("Hedeflerim", "${depo.aktifHedefler().size} aktif · ${depo.hedefler.count { it.gecti }} geçildi") { y.hedefAc(null) }
+                HorizontalDivider(color = Cizgi)
+                Satir("Sınav sonuçlarım", "Gerçek sınav puanların ve lisans durumun") { y.sonuclar() }
+                HorizontalDivider(color = Cizgi)
+                Satir("Günlük hatırlatma", if (kayit.hatirlatmaAcik) "Açık · %02d:%02d".format(kayit.hatirlatmaSaati / 60, kayit.hatirlatmaSaati % 60) else "Kapalı") { y.hatirlatma() }
                 HorizontalDivider(color = Cizgi)
                 Satir("Verilerim", "Hakkında tutulan bilgiler") { y.verilerim() }
                 HorizontalDivider(color = Cizgi)
