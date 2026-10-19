@@ -102,7 +102,7 @@ def main():
 <p>Ayrıntılar aşağıdaki aydınlatma metninde. Soruların için: {eposta}</p>
 {aydinlatma}
 <h2 id="hesap-silme">Hesabını ve verilerini silme</h2>
-<p>Uygulamada <b>Profil → Hesabımı sil</b> adımlarını izle. Onay verdiğinde hesabın, adın, çalışma ilerlemen, hedeflerin, deneme sonuçların, oyların, hata bildirimlerin ve görüşlerin kalıcı olarak silinir. Bu işlem geri alınamaz.</p>
+<p>Uygulamada <b>Profil → Hesabımı sil</b> adımlarını izle. Onay verdiğinde hesabın, adın, çalışma ilerlemen, hedeflerin, deneme sonuçların, puanların, rozetlerin, sıralama ve davet kayıtların, oyların, hata bildirimlerin ve görüşlerin kalıcı olarak silinir. Bu işlem geri alınamaz.</p>
 <p>Uygulamaya erişemiyorsan {eposta} adresine, uygulamada kullandığın Google hesabının e-posta adresinden "Hesap silme talebi" konulu bir e-posta gönder. Talebin en geç 30 gün içinde yerine getirilir.</p>
 """
     (CIKTI / "gizlilik.html").write_text(sayfa("Lisansla gizlilik politikası", gizlilik), encoding="utf-8")
@@ -111,7 +111,7 @@ def main():
 <h1>Hesap silme</h1>
 <p>Lisansla hesabını ve sana bağlı bütün verileri iki yoldan silebilirsin:</p>
 <ul>
-<li><b>Uygulamadan:</b> Profil → Hesabımı sil. Hesabın, adın, çalışma ilerlemen, hedeflerin, deneme sonuçların, oyların, hata bildirimlerin ve görüşlerin kalıcı olarak silinir.</li>
+<li><b>Uygulamadan:</b> Profil → Hesabımı sil. Hesabın, adın, çalışma ilerlemen, hedeflerin, deneme sonuçların, puanların, rozetlerin, sıralama ve davet kayıtların, oyların, hata bildirimlerin ve görüşlerin kalıcı olarak silinir.</li>
 <li><b>E-postayla:</b> {eposta} adresine, uygulamada kullandığın Google hesabının e-postasından "Hesap silme talebi" konulu bir e-posta gönder. Talebin en geç 30 gün içinde yerine getirilir.</li>
 </ul>
 <p>Silme işleminden sonra verilerin geri getirilemez. Ayrıntılar için <a href="gizlilik.html">gizlilik politikası</a>.</p>

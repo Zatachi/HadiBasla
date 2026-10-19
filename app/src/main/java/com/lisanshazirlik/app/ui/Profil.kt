@@ -123,6 +123,10 @@ fun ProfilSekme(
             }
 
             KartKutu {
+                k?.odulPremiumBitis?.takeIf { k.premiumAktif() }?.let {
+                    Text("🎁 Ödül Premium: ${uzunTarih(it)} tarihine kadar", style = MaterialTheme.typography.bodyMedium, color = DogruYesil, modifier = Modifier.padding(vertical = 8.dp))
+                    HorizontalDivider(color = Cizgi)
+                }
                 Satir("Sınavım", banka.lisans(k?.lisans)?.ad ?: "Seçilmedi") { y.lisans() }
                 HorizontalDivider(color = Cizgi)
                 Satir("Hedeflerim", "${depo.aktifHedefler().size} aktif · ${depo.hedefler.count { it.gecti }} geçildi") { y.hedefAc(null) }
@@ -201,7 +205,7 @@ fun ProfilSekme(
             title = { Text(if (hesap.misafir) "Misafir hesabını sil" else "Hesabını sil") },
             text = {
                 Text(
-                    "Adın, çalışma ilerlemen, hedeflerin, deneme sonuçların, oyların, hata bildirimlerin ve görüşlerin kalıcı olarak silinir. Bu işlem geri alınamaz." +
+                    "Adın, çalışma ilerlemen, hedeflerin, deneme sonuçların, puanların, rozetlerin, sıralama ve davet kayıtların, oyların, hata bildirimlerin ve görüşlerin kalıcı olarak silinir. Bu işlem geri alınamaz." +
                         if (hesap.misafir) "" else "\n\nGüvenlik için Google hesabını bir kez daha seçmen istenecek."
                 )
             },
@@ -319,5 +323,5 @@ fun PremiumEkrani(depo: KullaniciDeposu, geri: () -> Unit) {
 
 /** İleride ücretli özellikleri kısıtlamak için tek kontrol noktası. Şu an her şey herkese açık. */
 object Premium {
-    fun erisimVar(depo: KullaniciDeposu): Boolean = !BuildConfig.PREMIUM_AKTIF || depo.kullanici?.premium == true
+    fun erisimVar(depo: KullaniciDeposu): Boolean = !BuildConfig.PREMIUM_AKTIF || depo.kullanici?.premiumAktif() == true
 }

@@ -61,6 +61,8 @@ fun IstatistikSekme(
     konuAc: (String) -> Unit,
     sonuclarAc: () -> Unit,
     ic: PaddingValues,
+    baslikGoster: Boolean = true,
+    ust: @Composable () -> Unit = {},
 ) {
     val il = depo.ilerleme
     val dersler = banka.lisansDersleri(lisans)
@@ -70,7 +72,7 @@ fun IstatistikSekme(
     val denemeler = depo.denemeler.filter { !it.kapsam.startsWith("konu:") }
 
     Column(Modifier.fillMaxSize()) {
-        SekmeBasligi("İstatistik")
+        if (baslikGoster) SekmeBasligi("İstatistik")
         Column(
             Modifier
                 .fillMaxSize()
@@ -79,6 +81,7 @@ fun IstatistikSekme(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            ust()
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Sayi(Modifier.weight(1f), "Çözülen", "$cozulen")
                 Sayi(Modifier.weight(1f), "Doğru oranı", if (cozulen == 0) "–" else "%${yuzde(dogru, cozulen)}")

@@ -19,12 +19,11 @@ service cloud.firestore {
     // ---- Kullanıcının kendi alanı ----
     match /kullanicilar/{uid} {
       allow read, delete: if girisli() && request.auth.uid == uid;
+      // "premium" alanını sadece sunucu yazabilir (ödeme doğrulaması).
       allow create: if girisli() && request.auth.uid == uid
-        && veri().keys().hasOnly(['ad', 'aydinlatmaSurum', 'aydinlatmaZaman', 'olusturma', 'seri', 'sonGun', 'sonKonu', 'lisans'])
-        && gecerliAd();
+        && !('premium' in veri()) && gecerliAd();
       allow update: if girisli() && request.auth.uid == uid
-        && veri().diff(resource.data).affectedKeys()
-             .hasOnly(['ad', 'aydinlatmaSurum', 'aydinlatmaZaman', 'olusturma', 'seri', 'sonGun', 'sonKonu', 'lisans'])
+        && !veri().diff(resource.data).affectedKeys().hasAny(['premium'])
         && gecerliAd();
 
       function gecerliAd() {
@@ -38,6 +37,36 @@ service cloud.firestore {
     }
 
     // ---- Soru kalitesi için geri bildirim ----
+    // ---- Sıralama (sadece katılmayı seçenler) ----
+    match /siralama/{uid} {
+      allow read: if girisli();
+      allow delete: if girisli() && request.auth.uid == uid;
+      allow create, update: if girisli() && request.auth.uid == uid
+        && veri().takmaAd is string && veri().takmaAd.size() >= 2 && veri().takmaAd.size() <= 20
+        && veri().size() <= 80;
+    }
+
+    // ---- Davet ----
+    match /kodlar/{kod} {
+      allow read: if girisli();
+      allow create: if girisli() && veri().uid == request.auth.uid && kod.size() == 8;
+      allow delete: if girisli() && resource.data.uid == request.auth.uid;
+    }
+
+    match /davetler/{uid} {
+      allow read: if girisli() && (request.auth.uid == uid || resource.data.davetEden == request.auth.uid);
+      allow delete: if girisli() && (request.auth.uid == uid || resource.data.davetEden == request.auth.uid);
+      allow create: if girisli() && request.auth.uid == uid
+        && request.auth.token.firebase.sign_in_provider == 'google.com'
+        && veri().keys().hasOnly(['davetEden', 'kod', 'gecerli', 'zaman'])
+        && veri().davetEden != uid
+        && veri().gecerli == false
+        && get(/databases/$(database)/documents/kodlar/$(veri().kod)).data.uid == veri().davetEden;
+      allow update: if girisli() && request.auth.uid == uid
+        && veri().diff(resource.data).affectedKeys().hasOnly(['gecerli'])
+        && veri().gecerli == true;
+    }
+
     match /cozumler/{kayit} {
       allow read, delete: if sahibi();
       allow create: if girisli() && kendisi() && simdi()

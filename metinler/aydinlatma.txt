@@ -1,6 +1,6 @@
 # Kişisel Verilerin Korunması Aydınlatma Metni
 
-Sürüm 1 · Son güncelleme: {{TARIH}}
+Sürüm 2 · Son güncelleme: {{TARIH}}
 
 Bu metin, Lisansla mobil uygulamasını kullanırken kişisel verilerinin nasıl işlendiğini 6698 sayılı Kişisel Verilerin Korunması Kanunu'nun ("KVKK") 10. maddesi uyarınca açıklamak için hazırlanmıştır.
 
@@ -17,6 +17,8 @@ Yalnızca uygulamanın çalışması için gereken verileri işleriz:
 - Hesap bilgileri: Uygulamaya girdiğin adın ve Google ile giriş yaptıysan Google hesabına bağlı kullanıcı kimliğin. E-posta adresin giriş işlemi için Google tarafından doğrulanır; Lisansla veritabanına kaydedilmez.
 - Çalışma verileri: Çözdüğün sorular, verdiğin cevaplar, doğru ve yanlışların, deneme sınavı sonuçların, seçtiğin dersler, girdiğin sınav tarihleri ve günlük çalışma sayıların.
 - Geri bildirimler: Sorulara verdiğin oylar, gönderdiğin hata bildirimleri ve görüşler.
+- Puan ve ödül bilgileri: Kazandığın puanlar (XP), seviyen, rozetlerin, kazandığın ödül süreleri, davet kodun, hangi davet koduyla geldiğin ve davet ettiğin kişilerin sayısı.
+- Sıralama bilgileri (yalnızca katılmayı seçersen): Kendi seçtiğin takma ad, seviyen ve sıralamalarda kullanılan puanların.
 - Teknik veriler: Hizmetin güvenli çalışması için altyapı sağlayıcımızın tuttuğu bağlantı kayıtları (örneğin IP adresi ve cihaz türü).
 
 Uygulamada reklam yoktur. Konum, rehber, fotoğraf, mikrofon gibi verilere erişilmez. Verilerin satılmaz ve reklam amacıyla kullanılmaz.
@@ -25,9 +27,11 @@ Uygulamada reklam yoktur. Konum, rehber, fotoğraf, mikrofon gibi verilere eriş
 
 - Hesabını oluşturmak, ilerlemeni saklamak, hedeflerini ve kalan günlerini göstermek, telefonunu değiştirdiğinde verilerini geri getirmek. Hukuki sebep: Bir sözleşmenin kurulması veya ifasıyla doğrudan ilgili olması (KVKK m.5/2-c).
 - Soruların doğruluğunu ve kalitesini geliştirmek; hangi soruların zor, hatalı ya da faydasız bulunduğunu görmek. Hukuki sebep: Temel hak ve özgürlüklerine zarar vermemek kaydıyla veri sorumlusunun meşru menfaati (KVKK m.5/2-f).
-- Hizmetin güvenliğini sağlamak ve kötüye kullanımı önlemek. Hukuki sebep: Meşru menfaat (KVKK m.5/2-f).
+- Puan, rozet, davet ve ödül sistemini işletmek. Hukuki sebep: Sözleşmenin ifası (KVKK m.5/2-c).
+- Hizmetin güvenliğini sağlamak ve kötüye kullanımı (sahte hesap, hileli puan gibi) önlemek. Hukuki sebep: Meşru menfaat (KVKK m.5/2-f).
+- Takma adının ve puanlarının sıralamalarda diğer kullanıcılara gösterilmesi. Hukuki sebep: Açık rızan (KVKK m.5/1). Sıralamaya katılmak isteğe bağlıdır; katılmazsan uygulamanın diğer bütün özelliklerini kullanmaya devam edersin. İstediğin an "Başarı → Sıralama" bölümünden ayrılabilirsin; ayrıldığında sıralama kaydın silinir.
 
-Açık rızaya dayalı bir işleme yapılmaz. Özel nitelikli kişisel veri işlenmez.
+Sıralama dışında açık rızaya dayalı bir işleme yapılmaz. Özel nitelikli kişisel veri işlenmez.
 
 ## 4. Verilerin nasıl toplanır?
 
@@ -36,6 +40,8 @@ Verilerin, uygulamayı kullanırken senin girdiğin bilgilerden ve uygulama içi
 ## 5. Verilerin kimlere aktarılır?
 
 Verilerin, uygulamanın altyapısını sağlayan Google'ın Firebase hizmetlerinde (Firebase Authentication ve Cloud Firestore) saklanır. Google bu hizmetlerde veri işleyen olarak hareket eder. Uygulama veritabanı Avrupa Birliği'nde (Frankfurt, Almanya) bulunur; kimlik doğrulama hizmeti Google'ın yurt dışındaki sunucularında çalışır. Bu nedenle verilerin yurt dışına aktarılmaktadır. Aktarım, KVKK'nın 9. maddesinde öngörülen usullere uygun olarak yapılır.
+
+Sıralamaya katıldıysan takma adın, seviyen ve sıralama puanların uygulamanın diğer kullanıcılarına görünür. Gerçek adın ve e-posta adresin hiçbir zaman gösterilmez. Bir davet koduyla geldiysen, seni davet eden kişi yalnızca davetinin sayıldığını görür; kim olduğunu görmez.
 
 Verilerin bunun dışında üçüncü kişilerle paylaşılmaz. Yasal bir zorunluluk olması hâlinde yetkili kamu kurumlarıyla paylaşılabilir.
 

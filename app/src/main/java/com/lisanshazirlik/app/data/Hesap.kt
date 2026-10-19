@@ -127,6 +127,10 @@ class Hesap {
         for (kol in listOf("cozumler", "oylar", "hatalar", "gorusler")) {
             silinecekler += db.collection(kol).whereEqualTo("uid", u).get().await().documents.map { it.reference }
         }
+        silinecekler += db.collection("siralama").document(u)
+        silinecekler += db.collection("kodlar").whereEqualTo("uid", u).get().await().documents.map { it.reference }
+        silinecekler += db.collection("davetler").whereEqualTo("davetEden", u).get().await().documents.map { it.reference }
+        silinecekler += db.collection("davetler").document(u)
         silinecekler += kok
         silinecekler.chunked(400).forEach { parca ->
             val toplu = db.batch()

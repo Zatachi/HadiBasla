@@ -49,7 +49,7 @@ enum class Sekme(val ad: String, val ikon: ImageVector) {
     ANA("Ana sayfa", Icons.Filled.Home),
     DERSLER("Dersler", Icons.AutoMirrored.Filled.List),
     DENEME("Deneme", Icons.Filled.CheckCircle),
-    ISTATISTIK("İstatistik", Icons.Filled.Star),
+    BASARI("Başarı", Icons.Filled.Star),
     PROFIL("Profil", Icons.Filled.Person),
 }
 
@@ -180,8 +180,8 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: Pad
                         Text("Merhaba ${k?.ad.orEmpty()}", fontFamily = Baslik, fontSize = 24.sp, color = Krem)
                         Text(
                             when {
-                                aktif.isEmpty() -> "$lisansAd · Henüz hedef seçmedin"
-                                else -> "$lisansAd · ${aktif.size} derse hazırlanıyorsun"
+                                aktif.isEmpty() -> "$lisansAd · ${com.lisanshazirlik.app.data.Oyun.seviye(k?.xp ?: 0).ad} · ${k?.xp ?: 0} XP"
+                                else -> "$lisansAd · ${com.lisanshazirlik.app.data.Oyun.seviye(k?.xp ?: 0).ad} · ${k?.xp ?: 0} XP"
                             },
                             style = MaterialTheme.typography.bodyMedium,
                             color = KremSoluk,

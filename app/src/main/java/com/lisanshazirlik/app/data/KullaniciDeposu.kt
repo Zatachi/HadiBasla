@@ -21,7 +21,31 @@ data class Kullanici(
     val sonKonu: String?,
     val lisans: String?,
     val premium: Boolean,
-)
+    // ---- oyunlaştırma ----
+    val xp: Int = 0,
+    val xpHafta: Int = 0,
+    val hafta: String = "",
+    val enUzunSeri: Int = 0,
+    val rozetler: Map<String, String> = emptyMap(),
+    val davetKodu: String? = null,
+    val davetEden: String? = null,
+    val odulPremiumBitis: LocalDate? = null,
+    val siralamaKatil: Boolean = false,
+    val takmaAd: String = "",
+    val duvar: Boolean = false,
+    val paylasimGun: String = "",
+    val paylasimSayi: Int = 0,
+    val hedefOdulGunu: String = "",
+    val haftaOdulu: String = "",
+    val davetOdulu: Int = 0,
+    val davetXp: Int = 0,
+    val davetGecerli: Boolean = false,
+) {
+    /** Bu haftanın XP'si (hafta değiştiyse 0). */
+    fun buHaftaXp(): Int = if (hafta == Oyun.hafta()) xpHafta else 0
+
+    fun premiumAktif(): Boolean = premium || (odulPremiumBitis?.let { !it.isBefore(LocalDate.now()) } ?: false)
+}
 
 /** Gerçek lisans sınavında alınan puan. */
 data class SinavSonucu(val ders: String, val puan: Int, val tarih: LocalDate?)
@@ -77,6 +101,8 @@ class KullaniciDeposu(val uid: String) {
     /** Son 30 günün çalışma kayıtları, eskiden yeniye. */
     var gunler by mutableStateOf<List<GunKaydi>>(emptyList())
         private set
+    /** Gösterilmeyi bekleyen yeni rozet ya da seviye (ekran gösterip temizler). */
+    var kutlama by mutableStateOf<String?>(null)
 
     private val dersIlerleme = mutableMapOf<String, Map<String, Int>>()
 
@@ -187,7 +213,22 @@ class KullaniciDeposu(val uid: String) {
         kok.collection("hedefler").document(ders).delete()
     }
 
-    fun cevapKaydet(soru: Soru, dogru: Boolean) {
+    /** XP ekler; hafta değiştiyse haftalık XP sıfırdan başlar. Seviye atlanırsa kutlama gösterilir. */
+    fun xpEkle(miktar: Int, ekAlanlar: Map<String, Any?> = emptyMap()) {
+        if (miktar <= 0 && ekAlanlar.isEmpty()) return
+        val k = kullanici
+        val buHafta = Oyun.hafta()
+        val alanlar = mutableMapOf<String, Any?>("xp" to FieldValue.increment(miktar.toLong()))
+        if (k?.hafta == buHafta) alanlar["xpHafta"] = FieldValue.increment(miktar.toLong())
+        else { alanlar["hafta"] = buHafta; alanlar["xpHafta"] = miktar }
+        alanlar.putAll(ekAlanlar)
+        kok.set(alanlar, SetOptions.merge())
+        val once = Oyun.seviye(k?.xp ?: 0)
+        val sonra = Oyun.seviye((k?.xp ?: 0) + miktar)
+        if (sonra != once) kutlama = "Yeni seviye: ${sonra.ad}"
+    }
+
+    fun cevapKaydet(soru: Soru, dogru: Boolean, gunlukHedef: Int = Int.MAX_VALUE) {
         kok.collection("ilerleme").document(soru.ders)
             .set(mapOf("s" to mapOf(soru.id to if (dogru) 1 else 0)), SetOptions.merge())
         kok.collection("gunler").document(bugunKey)
@@ -203,9 +244,50 @@ class KullaniciDeposu(val uid: String) {
             dun -> k.seri + 1
             else -> 1
         }
+        var xp = if (dogru) Oyun.XP_DOGRU else Oyun.XP_YANLIS
+        val ek = mutableMapOf<String, Any?>()
         if (k?.sonGun != bugunKey) {
-            kok.set(mapOf("seri" to yeniSeri, "sonGun" to bugunKey), SetOptions.merge())
+            ek["seri"] = yeniSeri
+            ek["sonGun"] = bugunKey
+            if (yeniSeri > (k?.enUzunSeri ?: 0)) ek["enUzunSeri"] = yeniSeri
+            xp += Oyun.XP_YENI_GUN
         }
+        if (bugunCozulen + 1 >= gunlukHedef && k?.hedefOdulGunu != bugunKey) {
+            ek["hedefOdulGunu"] = bugunKey
+            xp += Oyun.XP_GUNLUK_HEDEF
+            kutlama = "Bugünkü hedefini tamamladın! +${Oyun.XP_GUNLUK_HEDEF} XP"
+        }
+        xpEkle(xp, ek)
+    }
+
+    /** Yeni kazanılan rozetleri kaydeder, her biri için XP verir. */
+    fun rozetleriGuncelle(hakEdilen: Set<String>) {
+        val k = kullanici ?: return
+        val yeni = hakEdilen - k.rozetler.keys
+        if (yeni.isEmpty()) return
+        val bugun = bugunKey
+        xpEkle(Oyun.XP_ROZET * yeni.size, mapOf("rozetler" to yeni.associateWith { bugun }))
+        val r = Oyun.ROZETLER.firstOrNull { it.id in yeni }
+        if (r != null) kutlama = "${r.simge} Yeni rozet: ${r.ad}"
+    }
+
+    fun paylasildi() {
+        val k = kullanici ?: return
+        val sayi = if (k.paylasimGun == bugunKey) k.paylasimSayi else 0
+        if (sayi >= Oyun.PAYLASIM_GUNLUK_SINIR) return
+        xpEkle(Oyun.XP_PAYLASIM, mapOf("paylasimGun" to bugunKey, "paylasimSayi" to sayi + 1))
+    }
+
+    /** Premium süresini gün olarak uzatır (ödül). */
+    fun premiumUzat(gun: Int, ekAlanlar: Map<String, Any?> = emptyMap()) {
+        val simdi = LocalDate.now()
+        val bas = kullanici?.odulPremiumBitis?.takeIf { !it.isBefore(simdi) } ?: simdi
+        kok.set(ekAlanlar + mapOf("odulPremiumBitis" to bas.plusDays(gun.toLong()).toString()), SetOptions.merge())
+        kutlama = "🎁 $gun gün Premium kazandın!"
+    }
+
+    fun alanYaz(alanlar: Map<String, Any?>) {
+        kok.set(alanlar, SetOptions.merge())
     }
 
     fun lisansSec(kod: String) {
@@ -231,6 +313,7 @@ class KullaniciDeposu(val uid: String) {
     }
 
     fun denemeKaydet(kapsam: String, ortalama: Int, gecti: Boolean, dersPuanlari: Map<String, Int>, soruSayisi: Int) {
+        xpEkle(Oyun.XP_DENEME + ortalama)
         kok.collection("denemeler").add(
             mapOf(
                 "zaman" to FieldValue.serverTimestamp(),
@@ -251,6 +334,24 @@ class KullaniciDeposu(val uid: String) {
         sonKonu = getString("sonKonu"),
         lisans = getString("lisans"),
         premium = getBoolean("premium") ?: false,
+        xp = getLong("xp")?.toInt() ?: 0,
+        xpHafta = getLong("xpHafta")?.toInt() ?: 0,
+        hafta = getString("hafta").orEmpty(),
+        enUzunSeri = getLong("enUzunSeri")?.toInt() ?: 0,
+        rozetler = (get("rozetler") as? Map<*, *>)?.entries?.associate { it.key.toString() to it.value.toString() } ?: emptyMap(),
+        davetKodu = getString("davetKodu"),
+        davetEden = getString("davetEden"),
+        odulPremiumBitis = getString("odulPremiumBitis")?.let { runCatching { LocalDate.parse(it) }.getOrNull() },
+        siralamaKatil = getBoolean("siralamaKatil") ?: false,
+        takmaAd = getString("takmaAd").orEmpty(),
+        duvar = getBoolean("duvar") ?: false,
+        paylasimGun = getString("paylasimGun").orEmpty(),
+        paylasimSayi = getLong("paylasimSayi")?.toInt() ?: 0,
+        hedefOdulGunu = getString("hedefOdulGunu").orEmpty(),
+        haftaOdulu = getString("haftaOdulu").orEmpty(),
+        davetOdulu = getLong("davetOdulu")?.toInt() ?: 0,
+        davetXp = getLong("davetXp")?.toInt() ?: 0,
+        davetGecerli = getBoolean("davetGecerli") ?: false,
     )
 
     private fun DocumentSnapshot.deneme(): DenemeKaydi? = runCatching {

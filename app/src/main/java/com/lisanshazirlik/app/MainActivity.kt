@@ -32,7 +32,10 @@ import com.lisanshazirlik.app.ui.AnaSekme
 import com.lisanshazirlik.app.ui.AydinlatmaEkrani
 import com.lisanshazirlik.app.ui.DerslerSekme
 import com.lisanshazirlik.app.ui.HatirlatmaEkrani
-import com.lisanshazirlik.app.ui.IstatistikSekme
+import com.lisanshazirlik.app.ui.BasariSekme
+import com.lisanshazirlik.app.ui.gunlukHedef
+import com.lisanshazirlik.app.data.Oyun
+import com.lisanshazirlik.app.data.Topluluk
 import com.lisanshazirlik.app.ui.KartlarEkrani
 import com.lisanshazirlik.app.ui.KonuEkrani
 import com.lisanshazirlik.app.ui.LisansEkrani
@@ -148,7 +151,35 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
 
     fun git(e: Ekran) { yigin = yigin + e }
     fun geri() { if (yigin.isNotEmpty()) yigin = yigin.dropLast(1) }
-    val cevapla: (Soru, Boolean) -> Unit = { s, d -> depo.cevapKaydet(s, d) }
+    val cevapla: (Soru, Boolean) -> Unit = { s, d -> depo.cevapKaydet(s, d, gunlukHedef(banka, depo)) }
+
+    // ---- puan, rozet, sıralama ve davet işleri ----
+    var davetDurumu by remember { mutableStateOf<Topluluk.DavetDurumu?>(null) }
+    val k = depo.kullanici
+    LaunchedEffect(depo.uid) {
+        davetDurumu = runCatching { Topluluk.davetDurumu(depo.uid) }.getOrNull()
+        runCatching { Topluluk.haftalikOdulKontrol(depo.uid, depo) }
+    }
+    LaunchedEffect(davetDurumu?.gecerli, k != null) {
+        davetDurumu?.let { Topluluk.davetOdulleri(depo, it.gecerli) }
+    }
+    LaunchedEffect(depo.ilerleme.size, depo.denemeler.size, depo.sonuclar.size, k?.seri, davetDurumu?.gecerli, k != null) {
+        if (k == null) return@LaunchedEffect
+        depo.rozetleriGuncelle(Oyun.hakEdilenRozetler(banka, depo, davetDurumu?.gecerli ?: 0))
+        Topluluk.gecerlilikKontrol(depo.uid, depo)
+    }
+    LaunchedEffect(k?.xp, k?.siralamaKatil, k?.takmaAd, k?.duvar, depo.sonuclar.size) {
+        kotlinx.coroutines.delay(3000)
+        Topluluk.profilYaz(depo.uid, depo, banka)
+    }
+    depo.kutlama?.let { mesaj ->
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { depo.kutlama = null },
+            title = { androidx.compose.material3.Text("Tebrikler!") },
+            text = { androidx.compose.material3.Text(mesaj) },
+            confirmButton = { androidx.compose.material3.TextButton(onClick = { depo.kutlama = null }) { androidx.compose.material3.Text("Harika") } },
+        )
+    }
 
     val y = Yonlendirici(
         dersAc = { git(Ekran.Ders(it)) },
@@ -186,7 +217,7 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
                 Sekme.ANA -> AnaSekme(banka, depo, y, ic)
                 Sekme.DERSLER -> DerslerSekme(banka, depo, y, ic)
                 Sekme.DENEME -> DenemeSekme(banka, depo, y, ic)
-                Sekme.ISTATISTIK -> IstatistikSekme(banka, depo, depo.kullanici?.lisans, y.konuAc, y.sonuclar, ic)
+                Sekme.BASARI -> BasariSekme(banka, depo, hesap, davetDurumu, y.konuAc, y.sonuclar, ic)
                 Sekme.PROFIL -> ProfilSekme(banka, depo, hesap, kayit, y, ic)
             }
         } else {
