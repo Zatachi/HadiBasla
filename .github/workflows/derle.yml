@@ -59,8 +59,8 @@ jobs:
       - name: İndirme sayfasına koy
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.${{ github.run_number }}
-          name: Lisansla 0.1.${{ github.run_number }}
+          tag_name: v0.2.${{ github.run_number }}
+          name: Lisansla 0.2.${{ github.run_number }}
           body: |
             Telefona kurmak için aşağıdaki **Lisansla.apk** dosyasını indir.
             Bu bir test sürümüdür.
