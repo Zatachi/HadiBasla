@@ -41,6 +41,7 @@ fun CozEkrani(
     mod: String,
     banka: SoruBankasi,
     kayit: YerelKayit,
+    cevapla: (Soru, Boolean) -> Unit,
     geri: () -> Unit,
 ) {
     var liste by remember { mutableStateOf(sorular) }
@@ -126,7 +127,7 @@ fun CozEkrani(
                         secim = i
                         val dogruMu = i == soru.dogru
                         if (dogruMu) dogruSayi++
-                        kayit.kaydet(soru.id, dogruMu)
+                        cevapla(soru, dogruMu)
                         GeriBildirim.cozum(soru.id, i, dogruMu, mod)
                     }) else null)
                 }

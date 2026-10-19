@@ -11,7 +11,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 /**
- * Anonim geri bildirim: kim olduğu bilinmeden çözüm, oy, hata bildirimi ve görüş toplar.
+ * Soru kalitesi için geri bildirim: çözüm, oy, hata bildirimi ve görüş.
+ * Kayıtlar kullanıcı kimliğiyle tutulur ki hesap silinince hepsi silinebilsin.
  * İnternet yoksa Firestore bunları sıraya alır, bağlantı gelince gönderir.
  * Hiçbir hata uygulamayı durdurmaz.
  */
@@ -20,9 +21,8 @@ object GeriBildirim {
     private val db by lazy { FirebaseFirestore.getInstance() }
     private val auth by lazy { FirebaseAuth.getInstance() }
 
-    private suspend fun kimlik(): String? = runCatching {
-        auth.currentUser?.uid ?: auth.signInAnonymously().await().user?.uid
-    }.getOrNull()
+    // Giriş yapılmamışsa hiçbir şey gönderilmez.
+    private fun kimlik(): String? = auth.currentUser?.uid
 
     private fun gonder(is_: suspend (String) -> Unit) {
         kapsam.launch {
@@ -30,8 +30,6 @@ object GeriBildirim {
             runCatching { is_(uid) }
         }
     }
-
-    fun hazirla() = gonder { }
 
     fun cozum(soruId: String, secim: Int, dogru: Boolean, mod: String) = gonder { uid ->
         db.collection("cozumler").add(

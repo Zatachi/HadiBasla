@@ -1,34 +1,45 @@
 rules_version = '2';
 
-// Lisansla güvenlik kuralları
-// - Uygulama yalnızca anonim girişle yazabilir, hiçbir şey okuyamaz.
-// - Herkes yalnızca kendi kimliğiyle kayıt ekler; başkasının kaydını değiştiremez.
-// - Toplanan verileri sadece proje sahibi Firebase konsolundan görür.
+// Lisansla güvenlik kuralları (sürüm 2)
+// - Herkes yalnızca kendi verisini okuyabilir, yazabilir ve silebilir.
+// - "premium" alanını uygulama yazamaz; yalnızca ödeme doğrulanınca sunucu tarafında yazılır.
+// - Toplu istatistikleri (cozumler, oylar, hatalar, gorusler) sadece proje sahibi Firebase konsolundan görür.
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function girisli() {
-      return request.auth != null;
-    }
-
-    function veri() {
-      return request.resource.data;
-    }
-
-    function kendisi() {
-      return veri().uid == request.auth.uid;
-    }
-
-    function simdi() {
-      return veri().zaman == request.time;
-    }
-
+    function girisli() { return request.auth != null; }
+    function veri() { return request.resource.data; }
+    function kendisi() { return veri().uid == request.auth.uid; }
+    function sahibi() { return girisli() && resource.data.uid == request.auth.uid; }
+    function simdi() { return veri().zaman == request.time; }
     function kisaMetin(alan, enFazla) {
       return veri()[alan] is string && veri()[alan].size() > 0 && veri()[alan].size() <= enFazla;
     }
 
-    // Her cevaplanan soru: hangi şık seçildi, doğru muydu
+    // ---- Kullanıcının kendi alanı ----
+    match /kullanicilar/{uid} {
+      allow read, delete: if girisli() && request.auth.uid == uid;
+      allow create: if girisli() && request.auth.uid == uid
+        && veri().keys().hasOnly(['ad', 'aydinlatmaSurum', 'aydinlatmaZaman', 'olusturma', 'seri', 'sonGun', 'sonKonu'])
+        && gecerliAd();
+      allow update: if girisli() && request.auth.uid == uid
+        && veri().diff(resource.data).affectedKeys()
+             .hasOnly(['ad', 'aydinlatmaSurum', 'aydinlatmaZaman', 'olusturma', 'seri', 'sonGun', 'sonKonu'])
+        && gecerliAd();
+
+      function gecerliAd() {
+        return !('ad' in veri()) || (veri().ad is string && veri().ad.size() <= 40);
+      }
+
+      match /{alt}/{belge} {
+        allow read, write: if girisli() && request.auth.uid == uid
+          && alt in ['hedefler', 'ilerleme', 'gunler', 'denemeler'];
+      }
+    }
+
+    // ---- Soru kalitesi için geri bildirim ----
     match /cozumler/{kayit} {
+      allow read, delete: if sahibi();
       allow create: if girisli() && kendisi() && simdi()
         && veri().keys().hasOnly(['uid', 'soru', 'secim', 'dogru', 'mod', 'zaman', 'surum'])
         && kisaMetin('soru', 40)
@@ -37,24 +48,24 @@ service cloud.firestore {
         && kisaMetin('mod', 20);
     }
 
-    // Soru başına kişi başı tek oy (belge adı: soruId__uid). 0 = oyu geri al
     match /oylar/{kayit} {
+      allow read, delete: if sahibi();
       allow create, update: if girisli() && kendisi() && simdi()
         && kayit == veri().soru + '__' + request.auth.uid
         && veri().keys().hasOnly(['uid', 'soru', 'oy', 'zaman'])
         && veri().oy in [-1, 0, 1];
     }
 
-    // "Hata bildir" düğmesi
     match /hatalar/{kayit} {
+      allow read, delete: if sahibi();
       allow create: if girisli() && kendisi() && simdi()
         && veri().keys().hasOnly(['uid', 'soru', 'metin', 'zaman', 'surum'])
         && kisaMetin('soru', 40)
         && kisaMetin('metin', 500);
     }
 
-    // "Görüşünü yaz" ekranı
     match /gorusler/{kayit} {
+      allow read, delete: if sahibi();
       allow create: if girisli() && kendisi() && simdi()
         && veri().keys().hasOnly(['uid', 'metin', 'puan', 'zaman', 'surum'])
         && kisaMetin('metin', 2000)

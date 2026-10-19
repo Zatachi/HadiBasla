@@ -105,3 +105,19 @@ fun Bosluk(y: Int) = Spacer(Modifier.height(y.dp))
 val HARFLER = listOf("A", "B", "C", "D", "E")
 
 fun yuzde(pay: Int, payda: Int): Int = if (payda == 0) 0 else Math.round(pay * 100f / payda)
+
+private val TR = java.util.Locale.forLanguageTag("tr")
+private val UZUN_TARIH = java.time.format.DateTimeFormatter.ofPattern("d MMMM yyyy", TR)
+private val KISA_TARIH = java.time.format.DateTimeFormatter.ofPattern("d MMMM", TR)
+
+fun uzunTarih(t: java.time.LocalDate): String = t.format(UZUN_TARIH)
+fun kisaTarih(t: java.time.LocalDate): String = t.format(KISA_TARIH)
+
+fun kalanGunYazisi(gun: Long): String = when {
+    gun > 1 -> "$gun gün kaldı"
+    gun == 1L -> "Yarın"
+    gun == 0L -> "Bugün"
+    else -> "Sınav tarihi geçti"
+}
+
+fun basHarf(ad: String): String = ad.trim().firstOrNull()?.uppercase(TR) ?: "?"

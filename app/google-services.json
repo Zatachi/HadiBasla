@@ -12,7 +12,20 @@
           "package_name": "com.lisanshazirlik.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "375858051660-6ri9saahounbts80o0msun6ffrmk1f1u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lisanshazirlik.app",
+            "certificate_hash": "2bcb57a4b21d39e7190cd051e2b277b74b81cc88"
+          }
+        },
+        {
+          "client_id": "375858051660-o696vpcernr0316793o4q3851ais7dee.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAtDhwsB5ms3Am_wRR5sfNi-BTceSJGFPA"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "375858051660-o696vpcernr0316793o4q3851ais7dee.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -17,18 +17,16 @@ import androidx.compose.ui.unit.dp
 import com.lisanshazirlik.app.data.Ders
 import com.lisanshazirlik.app.data.Soru
 import com.lisanshazirlik.app.data.SoruBankasi
-import com.lisanshazirlik.app.data.YerelKayit
 
 @Composable
 fun DersEkrani(
     ders: Ders,
     banka: SoruBankasi,
-    kayit: YerelKayit,
-    coz: (baslik: String, sorular: List<Soru>) -> Unit,
+    cozulen: Set<String>,
+    coz: (baslik: String, sorular: List<Soru>, konuId: String?) -> Unit,
+    deneme: () -> Unit,
     geri: () -> Unit,
 ) {
-    kayit.degisim
-    val cozulen = kayit.cozulenler()
     val tumu = banka.dersSorulari(ders.kod)
 
     Scaffold(topBar = { UstCubuk(ders.kisaAd, geri) }, containerColor = Zemin) { ic ->
@@ -44,18 +42,25 @@ fun DersEkrani(
             }
             item {
                 KartKutu(
-                    tikla = if (tumu.isNotEmpty()) ({ coz(ders.kisaAd, tumu.shuffled()) }) else null,
+                    tikla = if (tumu.isNotEmpty()) ({ coz(ders.kisaAd, tumu.shuffled(), null) }) else null,
                 ) {
                     Text("Tüm konulardan karışık", style = MaterialTheme.typography.titleMedium, color = Yesil)
                     Bosluk(4)
                     Text("${tumu.size} soru", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 }
             }
+            item {
+                KartKutu(tikla = if (tumu.isNotEmpty()) deneme else null) {
+                    Text("Bu dersten deneme sınavı", style = MaterialTheme.typography.titleMedium)
+                    Bosluk(4)
+                    Text("${minOf(20, tumu.size)} soru, süreli. Geçme notu 50.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                }
+            }
             item { Etiket("Konular", Modifier.padding(start = 4.dp, top = 8.dp)) }
             items(ders.konular, key = { it.id }) { konu ->
                 val sorular = banka.konuSorulari(konu.id)
                 val c = sorular.count { it.id in cozulen }
-                KartKutu(tikla = if (sorular.isNotEmpty()) ({ coz(konu.ad, sorular.shuffled()) }) else null) {
+                KartKutu(tikla = if (sorular.isNotEmpty()) ({ coz(konu.ad, sorular.shuffled(), konu.id) }) else null) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(konu.ad, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                         Text(

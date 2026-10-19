@@ -8,6 +8,12 @@ plugins {
 // GitHub'daki her derleme numarası yeni bir sürüm kodu olur; böylece güncellemeler üzerine kurulabilir.
 val derlemeNo = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
 
+// Aydınlatma metni ve Premium anahtarı metinler/bilgiler.properties dosyasından gelir.
+val bilgiler = java.util.Properties().apply {
+    rootProject.file("metinler/bilgiler.properties").reader(Charsets.UTF_8).use { load(it) }
+}
+fun bilgi(ad: String) = bilgiler.getProperty(ad).replace("\\", "\\\\").replace("\"", "\\\"")
+
 android {
     namespace = "com.lisanshazirlik.app"
     compileSdk = 35
@@ -17,7 +23,13 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = derlemeNo
-        versionName = "0.1.$derlemeNo"
+        versionName = "0.2.$derlemeNo"
+
+        buildConfigField("String", "AD_SOYAD", "\"${bilgi("AD_SOYAD")}\"")
+        buildConfigField("String", "EPOSTA", "\"${bilgi("EPOSTA")}\"")
+        buildConfigField("String", "METIN_TARIHI", "\"${bilgi("TARIH")}\"")
+        buildConfigField("int", "AYDINLATMA_SURUM", bilgi("AYDINLATMA_SURUM"))
+        buildConfigField("boolean", "PREMIUM_AKTIF", bilgi("PREMIUM_AKTIF"))
     }
 
     // Test imzası: telefona doğrudan kurulan APK'lar için.
@@ -66,6 +78,10 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.9.0")

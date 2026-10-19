@@ -7,3 +7,4 @@ local.properties
 captures/
 .kotlin/
 app/src/main/assets/sorular.json
+app/src/main/res/raw/aydinlatma.txt

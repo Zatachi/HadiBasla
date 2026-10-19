@@ -48,7 +48,6 @@ import androidx.compose.ui.unit.sp
 import com.lisanshazirlik.app.data.GeriBildirim
 import com.lisanshazirlik.app.data.Soru
 import com.lisanshazirlik.app.data.SoruBankasi
-import com.lisanshazirlik.app.data.YerelKayit
 import kotlinx.coroutines.delay
 
 private const val DERS_BASINA_EN_FAZLA = 10
@@ -62,6 +61,10 @@ fun denemeSoruSayisi(banka: SoruBankasi): Int {
 
 fun denemeSuresiDk(adet: Int): Int = (adet * 3 + 1) / 2 // soru başına 1,5 dakika
 
+/** Tek ders denemesi: o dersten en fazla 20 soru, konulara dağılmış şekilde karışık. */
+fun dersDenemesiSorulari(banka: SoruBankasi, ders: String): List<Soru> =
+    banka.dersSorulari(ders).shuffled().take(20)
+
 fun denemeSorulari(banka: SoruBankasi): List<Soru> {
     val dolu = banka.dersler.filter { banka.dersSorulari(it.kod).isNotEmpty() }
     if (dolu.isEmpty()) return emptyList()
@@ -72,8 +75,10 @@ fun denemeSorulari(banka: SoruBankasi): List<Soru> {
 @Composable
 fun DenemeEkrani(
     sorular: List<Soru>,
+    kapsam: String,
     banka: SoruBankasi,
-    kayit: YerelKayit,
+    cevapla: (Soru, Boolean) -> Unit,
+    sonucKaydet: (kapsam: String, ortalama: Int, gecti: Boolean, puanlar: Map<String, Int>, soruSayisi: Int) -> Unit,
     geri: () -> Unit,
 ) {
     val cevaplar = remember { mutableStateMapOf<Int, Int>() }
@@ -89,9 +94,11 @@ fun DenemeEkrani(
         sorular.forEachIndexed { i, s ->
             val c = cevaplar[i] ?: return@forEachIndexed
             val dogruMu = c == s.dogru
-            kayit.kaydet(s.id, dogruMu)
+            cevapla(s, dogruMu)
             GeriBildirim.cozum(s.id, c, dogruMu, "deneme")
         }
+        val sonuc = denemeSonucuHesapla(sorular, cevaplar, banka)
+        sonucKaydet(kapsam, sonuc.ortalama, sonuc.gecti, sonuc.dersPuanlari.associate { it.first.kod to yuzde(it.second, it.third) }, sorular.size)
     }
 
     LaunchedEffect(Unit) {
@@ -112,7 +119,7 @@ fun DenemeEkrani(
     }
 
     if (bitti) {
-        DenemeSonucu(sorular, cevaplar, banka, geri)
+        DenemeSonucuEkrani(sorular, cevaplar, banka, geri)
         return
     }
 
@@ -122,7 +129,7 @@ fun DenemeEkrani(
 
     Scaffold(
         topBar = {
-            UstCubuk("Deneme sınavı", { cikSor = true }) {
+            UstCubuk(if (kapsam == "genel") "Deneme sınavı" else (banka.ders(kapsam)?.kisaAd ?: "Deneme"), { cikSor = true }) {
                 Text(
                     "%d:%02d".format(kalan / 60, kalan % 60),
                     color = if (kalan < 120) Altin else Krem,
@@ -219,13 +226,13 @@ fun DenemeEkrani(
     }
 }
 
-@Composable
-private fun DenemeSonucu(
-    sorular: List<Soru>,
-    cevaplar: Map<Int, Int>,
-    banka: SoruBankasi,
-    geri: () -> Unit,
-) {
+data class DenemeSonucu(
+    val dersPuanlari: List<Triple<com.lisanshazirlik.app.data.Ders, Int, Int>>,
+    val ortalama: Int,
+    val gecti: Boolean,
+)
+
+fun denemeSonucuHesapla(sorular: List<Soru>, cevaplar: Map<Int, Int>, banka: SoruBankasi): DenemeSonucu {
     val dersPuanlari = banka.dersler.mapNotNull { ders ->
         val idx = sorular.indices.filter { sorular[it].ders == ders.kod }
         if (idx.isEmpty()) null
@@ -233,7 +240,19 @@ private fun DenemeSonucu(
     }
     val puanlar = dersPuanlari.map { (_, d, t) -> yuzde(d, t) }
     val ortalama = if (puanlar.isEmpty()) 0 else Math.round(puanlar.average()).toInt()
-    val gecti = puanlar.isNotEmpty() && puanlar.all { it >= 50 } && ortalama >= 60
+    // Tek ders denemesinde o dersten 50 almak yeterli; genel denemede ortalama da en az 60 olmalı.
+    val gecti = puanlar.isNotEmpty() && puanlar.all { it >= 50 } && (puanlar.size == 1 || ortalama >= 60)
+    return DenemeSonucu(dersPuanlari, ortalama, gecti)
+}
+
+@Composable
+private fun DenemeSonucuEkrani(
+    sorular: List<Soru>,
+    cevaplar: Map<Int, Int>,
+    banka: SoruBankasi,
+    geri: () -> Unit,
+) {
+    val (dersPuanlari, ortalama, gecti) = denemeSonucuHesapla(sorular, cevaplar, banka)
     val incelenecek = sorular.indices.filter { cevaplar[it] != sorular[it].dogru }
 
     Scaffold(topBar = { UstCubuk("Deneme sonucu", geri) }, containerColor = Zemin) { ic ->
@@ -255,7 +274,7 @@ private fun DenemeSonucu(
                         )
                     }
                     Text(
-                        "Gerçek sınavdaki kurala göre: her dersten en az 50, ortalama en az 60.",
+                        if (dersPuanlari.size == 1) "Bu ders için geçme notu 50." else "Gerçek sınavdaki kurala göre: her dersten en az 50, ortalama en az 60.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MetinSoluk,
                     )
