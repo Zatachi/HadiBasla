@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -9,7 +11,7 @@ plugins {
 val derlemeNo = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
 
 // Aydınlatma metni ve Premium anahtarı metinler/bilgiler.properties dosyasından gelir.
-val bilgiler = java.util.Properties().apply {
+val bilgiler = Properties().apply {
     rootProject.file("metinler/bilgiler.properties").reader(Charsets.UTF_8).use { load(it) }
 }
 fun bilgi(ad: String) = bilgiler.getProperty(ad).replace("\\", "\\\\").replace("\"", "\\\"")
