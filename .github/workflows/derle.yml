@@ -37,7 +37,16 @@ jobs:
           cp metinler/aydinlatma.txt app/src/main/res/raw/aydinlatma.txt
 
       - name: APK'yı derle
-        run: gradle assembleRelease --no-daemon --stacktrace
+        run: |
+          set -o pipefail
+          gradle assembleRelease --no-daemon 2>&1 | tee derleme.log
+
+      - name: Derleme hatalarını özetle
+        if: failure()
+        run: |
+          grep -E "^e: |What went wrong|^> |error:|Exception" -A3 derleme.log | head -80 > hatalar.txt || true
+          msg=$(sed ':a;N;$!ba;s/%/%25/g;s/\r/%0D/g;s/\n/%0A/g' hatalar.txt)
+          echo "::error title=Derleme hatalari::$msg"
 
       - name: APK'yı adlandır
         run: cp app/build/outputs/apk/release/app-release.apk Lisansla.apk
