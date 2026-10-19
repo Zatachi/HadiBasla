@@ -351,23 +351,60 @@ def s_kapanis(t, T):
     return tv
 
 
-SAHNELER = [(s_acilis, 5.0), (s_soru, 7.0), (s_zaman, 18.0), (s_hafta, 12.0), (s_yarim, 10.0), (s_ozet, 9.0), (s_test, 10.0), (s_kapanis, 4.0)]
-SURE = sum(s for _, s in SAHNELER)
+# Her sahne: (çizim, eski süre, ses dosyası süresi, eşleme noktaları)
+# Eşleme noktaları (ses_saniyesi, animasyon_saniyesi): seslendirmede bir şey söylendiği anda
+# ilgili animasyonun oynaması için. Aradaki zamanlar doğrusal olarak ara değerlenir.
+SES_GECIKME, SES_SONRASI = 0.5, 0.9
+SAHNELER = [
+    (s_acilis, 5.0, 6.43, [(0, 0), (1.0, 1.2), (3.0, 2.6)]),
+    (s_soru, 7.0, 9.48, [(0, 0.3), (2.14, 1.5), (7.59, 4.2)]),
+    (s_zaman, 18.0, 26.36, [(0, 0.2), (2.55, 3.0), (9.3, 5.0), (11.09, 6.3), (13.07, 8.2), (15.33, 9.0), (17.5, 10.0), (19.8, 11.4), (22.37, 13.6)]),
+    (s_hafta, 12.0, 17.32, [(0, 0), (2.99, 1.2), (5.0, 2.1), (5.8, 3.0), (7.47, 3.9), (9.45, 4.8), (11.61, 6.4)]),
+    (s_yarim, 10.0, 10.19, [(0, 0), (1.95, 0.6), (4.88, 1.6), (6.5, 2.6), (8.0, 3.6), (9.0, 5.0)]),
+    (s_ozet, 9.0, 13.09, [(0, 0), (1.27, 1.6), (4.89, 2.7), (7.36, 3.8), (9.69, 4.9)]),
+    (s_test, 10.0, 13.95, [(0, 0.2), (1.6, 0.4), (4.9, 2.2), (7.2, 5.2), (8.5, 5.6)]),
+    (s_kapanis, 4.0, 4.05, [(0, 0)]),
+]
+SURELER = [SES_GECIKME + ses + SES_SONRASI for _, _, ses, _ in SAHNELER]
+SURE = sum(SURELER)
 GECIS = 0.35
+
+
+def esle(a, eski, ses, noktalar):
+    """Ses zamanını (a) animasyon zamanına çevirir."""
+    pts = list(noktalar) + [(ses + SES_SONRASI, eski)]
+    if a <= pts[0][0]:
+        return max(0.0, pts[0][1] + (a - pts[0][0]))
+    for (a0, t0), (a1, t1) in zip(pts, pts[1:]):
+        if a <= a1:
+            return t0 + (t1 - t0) * (a - a0) / (a1 - a0)
+    return eski
+
+
+def sahne_karesi(i, yerel, T):
+    f, eski, ses, noktalar = SAHNELER[i]
+    return f(esle(yerel - SES_GECIKME, eski, ses, noktalar), T).bitir()
 
 
 def kare(T):
     bas = 0.0
-    for i, (f, s) in enumerate(SAHNELER):
+    for i, s in enumerate(SURELER):
         if T < bas + s or i == len(SAHNELER) - 1:
-            a = f(T - bas, T).bitir()
-            # sahne sonu: bir sonraki sahneyle kısa karışım
+            a = sahne_karesi(i, T - bas, T)
             kalan = bas + s - T
             if kalan < GECIS and i + 1 < len(SAHNELER):
-                b = SAHNELER[i + 1][0](0.0, T).bitir()
+                b = sahne_karesi(i + 1, 0.0, T)
                 a = Image.blend(a, b, 1 - kalan / GECIS)
             return a
         bas += s
+
+
+def ses_baslangiclari():
+    bas, sonuc = 0.0, []
+    for s in SURELER:
+        sonuc.append(bas + SES_GECIKME)
+        bas += s
+    return sonuc
 
 
 def main():
@@ -388,7 +425,25 @@ def main():
             print(f"{i}/{n}", flush=True)
     ff.stdin.close()
     ff.wait()
-    print("bitti", cikti, SURE, "sn")
+    # seslendirme: ses/1.mp3 ... ses/8.mp3 her sahnenin başına yerleştirilir
+    import os
+    if all(os.path.exists(f"ses/{i + 1}.mp3") for i in range(len(SAHNELER))):
+        girdiler, filtre = [], []
+        for i, bas in enumerate(ses_baslangiclari()):
+            girdiler += ["-i", f"ses/{i + 1}.mp3"]
+            ms = int(bas * 1000)
+            filtre.append(f"[{i + 1}:a]adelay={ms}|{ms}[a{i}]")
+        karisim = "".join(f"[a{i}]" for i in range(len(SAHNELER)))
+        filtre.append(f"{karisim}amix=inputs={len(SAHNELER)}:normalize=0,apad[ses]")
+        sesli = cikti.replace(".mp4", "_sesli.mp4")
+        subprocess.run(
+            ["ffmpeg", "-y", "-loglevel", "error", "-i", cikti] + girdiler +
+            ["-filter_complex", ";".join(filtre), "-map", "0:v", "-map", "[ses]", "-c:v", "copy",
+             "-c:a", "aac", "-b:a", "128k", "-shortest", "-movflags", "+faststart", sesli],
+            check=True,
+        )
+        print("sesli:", sesli)
+    print("bitti", cikti, round(SURE, 1), "sn")
 
 
 if __name__ == "__main__":
