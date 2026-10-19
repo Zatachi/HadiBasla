@@ -7,6 +7,9 @@ on:
       - "sorular/**"
       - "**.md"
       - "firestore.rules"
+      - "docs/**"
+      - "araclar/**"
+      - "metinler/**"
   workflow_dispatch:
 
 permissions:
