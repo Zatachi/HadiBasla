@@ -50,20 +50,24 @@ import com.lisanshazirlik.app.data.Soru
 import com.lisanshazirlik.app.data.SoruBankasi
 import kotlinx.coroutines.delay
 
-private const val DERS_BASINA_EN_FAZLA = 10
+// Gerçek sınavda her ders 25 soru, 45 dakika.
+const val SINAV_SORU = 25
+const val SINAV_DAKIKA = 45
+private const val DERS_BASINA_EN_FAZLA = SINAV_SORU
 
-/** Her dersten eşit sayıda soru: en az sorusu olan dersin sayısı ya da en fazla 10. */
+/** Her dersten eşit sayıda soru: en az sorusu olan dersin sayısı ya da en fazla 25. */
 fun denemeSoruSayisi(banka: SoruBankasi): Int {
     val dolu = banka.dersler.map { banka.dersSorulari(it.kod).size }.filter { it > 0 }
     if (dolu.isEmpty()) return 0
     return minOf(DERS_BASINA_EN_FAZLA, dolu.min()) * dolu.size
 }
 
-fun denemeSuresiDk(adet: Int): Int = (adet * 3 + 1) / 2 // soru başına 1,5 dakika
+/** Gerçek sınavla aynı tempo: 25 soruya 45 dakika (soru başına 1,8 dakika). */
+fun denemeSuresiDk(adet: Int): Int = (adet * SINAV_DAKIKA + SINAV_SORU - 1) / SINAV_SORU
 
-/** Tek ders denemesi: o dersten en fazla 20 soru, konulara dağılmış şekilde karışık. */
+/** Tek ders denemesi: gerçek sınav gibi 25 soru (soru bankası yeterliyse). */
 fun dersDenemesiSorulari(banka: SoruBankasi, ders: String): List<Soru> =
-    banka.dersSorulari(ders).shuffled().take(20)
+    banka.dersSorulari(ders).shuffled().take(SINAV_SORU)
 
 fun denemeSorulari(banka: SoruBankasi): List<Soru> {
     val dolu = banka.dersler.filter { banka.dersSorulari(it.kod).isNotEmpty() }

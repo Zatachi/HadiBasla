@@ -434,12 +434,12 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
                 KartKutu(tikla = if (genelAdet > 0) y.genelDeneme else null) {
                     Text("Genel deneme", style = MaterialTheme.typography.titleMedium)
                     Bosluk(4)
-                    Text("Dört dersten $genelAdet soru, ${denemeSuresiDk(genelAdet)} dakika. Her dersten en az 50, ortalama en az 60.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                    Text("Dört dersten $genelAdet soru, ${denemeSuresiDk(genelAdet)} dakika. Gerçek sınavda her ders 25 soru ve 45 dakika. Her dersten en az 50, ortalama en az 60.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 }
             }
             item { Etiket("Ders denemeleri", Modifier.padding(start = 4.dp, top = 8.dp)) }
             items(banka.dersler, key = { "d" + it.kod }) { d ->
-                val adet = minOf(20, banka.dersSorulari(d.kod).size)
+                val adet = minOf(SINAV_SORU, banka.dersSorulari(d.kod).size)
                 KartKutu(tikla = if (adet > 0) ({ y.dersDenemesi(d.kod) }) else null) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(d.kisaAd, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
