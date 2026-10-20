@@ -48,7 +48,7 @@ fun IsinmaEkrani(konuAd: String, sorular: List<Soru>, geri: () -> Unit, bitti: (
                     color = MetinSoluk,
                 )
                 Bosluk(12)
-                Button(onClick = bitti, modifier = Modifier.fillMaxWidth().height(54.dp)) { Text("▶ Anlatıma geç") }
+                Button(onClick = bitti, modifier = Modifier.fillMaxWidth().height(54.dp)) { Text("▶ Anlatıma Geç") }
                 return@Column
             }
             val soru = sorular[sira]
@@ -73,7 +73,7 @@ fun IsinmaEkrani(konuAd: String, sorular: List<Soru>, geri: () -> Unit, bitti: (
                     Text(if (sira == sorular.lastIndex) "Bitir" else "Sonraki")
                 }
             }
-            TextButton(onClick = bitti) { Text("Isınmayı atla") }
+            TextButton(onClick = bitti) { Text("Isınmayı Atla") }
         }
     }
 }

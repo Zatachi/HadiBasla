@@ -44,7 +44,7 @@ fun DersEkrani(
             item {
                 Text(ders.ad, style = MaterialTheme.typography.titleLarge)
                 Bosluk(4)
-                Text("Ders kodu ${ders.kod}" + if (ders.aciklama.isNotBlank()) " · ${ders.aciklama}" else "", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                Text("Ders Kodu ${ders.kod}" + if (ders.aciklama.isNotBlank()) " · ${ders.aciklama}" else "", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
             }
             item {
                 Row(
@@ -58,7 +58,7 @@ fun DersEkrani(
                 ) {
                     Text("📦", fontSize = 28.sp)
                     androidx.compose.foundation.layout.Column(Modifier.weight(1f).padding(start = 12.dp)) {
-                        Text("Eğitim paketi", style = MaterialTheme.typography.titleMedium, color = Krem)
+                        Text("Eğitim Paketi", style = MaterialTheme.typography.titleMedium, color = Krem)
                         Text("Konu konu öğren, tekrar et, soru çöz; sonunda deneme.", style = MaterialTheme.typography.bodyMedium, color = KremSoluk)
                     }
                     Text("›", fontSize = 26.sp, color = Altin)
@@ -68,14 +68,14 @@ fun DersEkrani(
                 KartKutu(
                     tikla = if (tumu.isNotEmpty()) ({ coz(ders.kisaAd, tumu.shuffled(), null) }) else null,
                 ) {
-                    Text("Tüm konulardan karışık", style = MaterialTheme.typography.titleMedium, color = Yesil)
+                    Text("Tüm Konulardan Karışık", style = MaterialTheme.typography.titleMedium, color = Yesil)
                     Bosluk(4)
-                    Text("${tumu.size} soru", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                    Text("${tumu.size} Soru", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 }
             }
             item {
                 KartKutu(tikla = if (tumu.isNotEmpty()) deneme else null) {
-                    Text("Bu dersten deneme sınavı", style = MaterialTheme.typography.titleMedium)
+                    Text("Bu Dersten Deneme Sınavı", style = MaterialTheme.typography.titleMedium)
                     Bosluk(4)
                     Text(if (tumu.size >= SINAV_SORU) "Gerçek sınav gibi: $SINAV_SORU soru, $SINAV_DAKIKA dakika. Geçme notu 50." else "${tumu.size} soru, ${denemeSuresiDk(tumu.size)} dakika. Soru bankası büyüdükçe 25 soruya tamamlanacak.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 }
@@ -93,8 +93,8 @@ fun DersEkrani(
                                 !icerikVar -> "Yakında"
                                 else -> listOfNotNull(
                                     "Özet".takeIf { konu.ozet.isNotBlank() },
-                                    "${konu.kartlar.size} kart".takeIf { konu.kartlar.isNotEmpty() },
-                                    "${sorular.size} soru".takeIf { sorular.isNotEmpty() },
+                                    "${konu.kartlar.size} Kart".takeIf { konu.kartlar.isNotEmpty() },
+                                    "${sorular.size} Soru".takeIf { sorular.isNotEmpty() },
                                 ).joinToString(" · ")
                             },
                             style = MaterialTheme.typography.bodyMedium,

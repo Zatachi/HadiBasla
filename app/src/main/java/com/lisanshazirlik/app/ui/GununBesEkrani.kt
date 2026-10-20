@@ -37,7 +37,7 @@ fun GununBesEkrani(banka: SoruBankasi, depo: KullaniciDeposu, basla: (baslik: St
     val yeni = oturum.count { it.id !in depo.ilerleme }
     val tekrar = oturum.size - yeni
 
-    Scaffold(topBar = { UstCubuk("Günün 5 dakikası", geri) }, containerColor = Zemin) { ic ->
+    Scaffold(topBar = { UstCubuk("Günün 5 Dakikası", geri) }, containerColor = Zemin) { ic ->
         Column(
             Modifier.fillMaxSize().padding(ic).verticalScroll(rememberScrollState()).padding(vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
@@ -50,12 +50,12 @@ fun GununBesEkrani(banka: SoruBankasi, depo: KullaniciDeposu, basla: (baslik: St
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text("🔁", fontSize = 40.sp)
-                Text(odak?.kisaAd ?: "Ders seç", fontFamily = Baslik, fontSize = 22.sp, color = Krem)
+                Text(odak?.kisaAd ?: "Ders Seç", fontFamily = Baslik, fontSize = 22.sp, color = Krem)
                 Bosluk(12)
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    SayiKutusu(Modifier.weight(1f), "$tekrar", "tekrar")
-                    SayiKutusu(Modifier.weight(1f), "$yeni", "yeni soru")
-                    SayiKutusu(Modifier.weight(1f), "~${maxOf(1, oturum.size / 2)}", "dakika")
+                    SayiKutusu(Modifier.weight(1f), "$tekrar", "Tekrar")
+                    SayiKutusu(Modifier.weight(1f), "$yeni", "Yeni Soru")
+                    SayiKutusu(Modifier.weight(1f), "~${maxOf(1, oturum.size / 2)}", "Dakika")
                 }
             }
             Text(

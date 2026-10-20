@@ -61,7 +61,7 @@ import com.lisanshazirlik.app.data.SoruBankasi
 import kotlin.math.ceil
 
 enum class Sekme(val ad: String, val ikon: ImageVector, val resim: Int? = null) {
-    ANA("Ana sayfa", Icons.Filled.Home, com.lisanshazirlik.app.R.drawable.ic_ana),
+    ANA("Ana Sayfa", Icons.Filled.Home, com.lisanshazirlik.app.R.drawable.ic_ana),
     DERSLER("Eğitim", Icons.Filled.PlayArrow, com.lisanshazirlik.app.R.drawable.ic_egitim),
     DENEME("Deneme", Icons.Filled.CheckCircle, com.lisanshazirlik.app.R.drawable.ic_deneme),
     BASARI("Başarı", Icons.Filled.Star, com.lisanshazirlik.app.R.drawable.ic_basari),
@@ -197,7 +197,7 @@ private fun OgrenmeYolu(
             if (icerikliBaska != null) {
                 Bosluk(10)
                 Button(onClick = icerikliBaska.second, modifier = Modifier.fillMaxWidth().height(48.dp)) {
-                    Text("${icerikliBaska.first} dersiyle başla")
+                    Text("${icerikliBaska.first} Dersiyle Başla")
                 }
             }
             return@KartKutu
@@ -218,7 +218,7 @@ private fun OgrenmeYolu(
                 sonKonu = konuId
                 Bosluk(10)
                 Text(
-                    if (a.konu != null) "${++konuNo}. ${a.konu.ad}" else "Son adım",
+                    if (a.konu != null) "${++konuNo}. ${a.konu.ad}" else "Son Adım",
                     style = MaterialTheme.typography.labelLarge,
                     color = MetinSoluk,
                 )
@@ -245,14 +245,14 @@ private fun OgrenmeYolu(
         Bosluk(14)
         if (siradaki != null) {
             Button(onClick = { y.paketAdimAc(dersKod, siradaki.id) }, modifier = Modifier.fillMaxWidth().height(52.dp)) {
-                Text(if (tamam == 0) "▶  Başla: ${siradaki.tur.ad}" else "▶  Devam et: ${siradaki.tur.ad}")
+                Text(if (tamam == 0) "▶  Başla: ${siradaki.tur.ad}" else "▶  Devam Et: ${siradaki.tur.ad}")
             }
         } else {
             Text("🏅 Bu paketi tamamladın!", style = MaterialTheme.typography.titleMedium, color = DogruYesil)
             if (icerikliBaska != null) {
                 Bosluk(8)
                 OutlinedButton(onClick = icerikliBaska.second, modifier = Modifier.fillMaxWidth().height(48.dp)) {
-                    Text("Sıradaki ders: ${icerikliBaska.first}")
+                    Text("Sıradaki Ders: ${icerikliBaska.first}")
                 }
             }
         }
@@ -294,7 +294,7 @@ private fun YolAdimi(a: Paket.Adim, durum: Int, tikla: () -> Unit) {
         }
         Text("${a.tur.simge}  ${a.tur.ad}", style = MaterialTheme.typography.bodyMedium, color = if (durum == 0) MetinSoluk else Metin,
             modifier = Modifier.weight(1f).padding(start = 10.dp))
-        if (simdi) Text("şimdi", style = MaterialTheme.typography.labelMedium, color = Yesil)
+        if (simdi) Text("Şimdi", style = MaterialTheme.typography.labelMedium, color = Yesil)
     }
 }
 
@@ -315,13 +315,13 @@ private fun HedefKarti(h: Hedef, banka: SoruBankasi, cozulen: Set<String>, y: Yo
     KartKutu(Modifier.padding(horizontal = 16.dp), tikla = { y.dersAc(h.ders) }) {
         if (gun == null) {
             Text(ders.kisaAd, style = MaterialTheme.typography.titleMedium)
-            Text("Sınav tarihi seçilmedi", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+            Text("Sınav Tarihi Seçilmedi", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
             Bosluk(10)
             Ilerleme(if (sorular.isEmpty()) 0f else c / sorular.size.toFloat())
             Bosluk(6)
             Row {
                 Text("${sorular.size} sorudan $c çözüldü", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk, modifier = Modifier.weight(1f))
-                Text("Tarih ekle", style = MaterialTheme.typography.labelLarge, color = Yesil, modifier = Modifier.clickableIf(true) { y.hedefAc(h.ders) })
+                Text("Tarih Ekle", style = MaterialTheme.typography.labelLarge, color = Yesil, modifier = Modifier.clickableIf(true) { y.hedefAc(h.ders) })
             }
             return@KartKutu
         }
@@ -336,7 +336,7 @@ private fun HedefKarti(h: Hedef, banka: SoruBankasi, cozulen: Set<String>, y: Yo
                     style = MaterialTheme.typography.headlineSmall,
                     color = if (gun in 0..7) YanlisKirmizi else Yesil,
                 )
-                Text(if (gun >= 0) "gün kaldı" else "tarih geçti", style = MaterialTheme.typography.bodyMedium, fontSize = 12.sp, color = MetinSoluk)
+                Text(if (gun >= 0) "Gün Kaldı" else "Tarih Geçti", style = MaterialTheme.typography.bodyMedium, fontSize = 12.sp, color = MetinSoluk)
             }
         }
         Bosluk(10)
@@ -484,8 +484,8 @@ private fun SeviyeSecimi(banka: SoruBankasi, depo: KullaniciDeposu, ic: PaddingV
                     Text(
                         when {
                             !l.aktif -> "Yakında"
-                            l.dersler.any { banka.dersSorulari(it).isNotEmpty() } -> "${l.dersler.size} ders"
-                            else -> "${l.dersler.size} ders · içerik yakında"
+                            l.dersler.any { banka.dersSorulari(it).isNotEmpty() } -> "${l.dersler.size} Ders"
+                            else -> "${l.dersler.size} Ders · İçerik Yakında"
                         },
                         style = MaterialTheme.typography.bodyMedium,
                         fontSize = 12.sp,
@@ -537,7 +537,7 @@ private fun KursKarti(banka: SoruBankasi, depo: KullaniciDeposu, d: com.lisansha
             } else {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        listOfNotNull("${d.konular.size} konu", if (videolar > 0) "$videolar video" else null).joinToString(" · "),
+                        listOfNotNull("${d.konular.size} Konu", if (videolar > 0) "$videolar Video" else null).joinToString(" · "),
                         style = MaterialTheme.typography.bodyMedium,
                         fontSize = 12.sp,
                         color = MetinSoluk,
@@ -583,13 +583,13 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
         ) {
             item {
                 Column {
-                    Text("Gerçek sınavın ölçüleri", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(start = 4.dp))
+                    Text("Gerçek Sınavın Ölçüleri", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(start = 4.dp))
                     Bosluk(8)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OlcuKutusu(Modifier.weight(1f), "25", "soru", Yesil)
-                        OlcuKutusu(Modifier.weight(1f), "45", "dakika", Yesil)
-                        OlcuKutusu(Modifier.weight(1f), "50", "ders barajı", YanlisKirmizi)
-                        OlcuKutusu(Modifier.weight(1f), "60", "ortalama", Altin)
+                        OlcuKutusu(Modifier.weight(1f), "25", "Soru", Yesil)
+                        OlcuKutusu(Modifier.weight(1f), "45", "Dakika", Yesil)
+                        OlcuKutusu(Modifier.weight(1f), "50", "Ders Barajı", YanlisKirmizi)
+                        OlcuKutusu(Modifier.weight(1f), "60", "Ortalama", Altin)
                     }
                     Bosluk(8)
                     Text(
@@ -600,7 +600,7 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
                     )
                 }
             }
-            item { Etiket("Ders denemeleri", Modifier.padding(start = 4.dp, top = 8.dp)) }
+            item { Etiket("Ders Denemeleri", Modifier.padding(start = 4.dp, top = 8.dp)) }
             items(dersler, key = { "d" + it.kod }) { d ->
                 val adet = minOf(SINAV_SORU, banka.dersSorulari(d.kod).size)
                 val son = denemeler.filter { it.kapsam == d.kod }.maxByOrNull { it.zaman }
@@ -631,7 +631,7 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
                         )
                         if (son != null) {
                             Text(
-                                "Son denemen: ${son.ortalama} · ${if (son.gecti) "Geçer ✓" else "Kalır"}",
+                                "Son Denemen: ${son.ortalama} · ${if (son.gecti) "Geçer ✓" else "Kalır"}",
                                 style = MaterialTheme.typography.labelLarge,
                                 color = if (son.gecti) DogruYesil else YanlisKirmizi,
                             )
@@ -644,7 +644,7 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
                     }
                 }
             }
-            item { Etiket("Geçmiş denemelerin", Modifier.padding(start = 4.dp, top = 8.dp)) }
+            item { Etiket("Geçmiş Denemelerin", Modifier.padding(start = 4.dp, top = 8.dp)) }
             if (denemeler.isEmpty()) {
                 item { Text("Henüz deneme çözmedin. İlk denemenden sonra sonuçların burada listelenir.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk, modifier = Modifier.padding(horizontal = 4.dp)) }
             }
@@ -654,10 +654,10 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
                             Text(
-                                if (dk.kapsam == "genel") "Genel deneme" else (banka.ders(dk.kapsam)?.kisaAd ?: dk.kapsam),
+                                if (dk.kapsam == "genel") "Genel Deneme" else (banka.ders(dk.kapsam)?.kisaAd ?: dk.kapsam),
                                 style = MaterialTheme.typography.titleMedium,
                             )
-                            Text("${uzunTarih(tarih)} · ${dk.soruSayisi} soru", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                            Text("${uzunTarih(tarih)} · ${dk.soruSayisi} Soru", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                         }
                         Column(horizontalAlignment = Alignment.End) {
                             Text("${dk.ortalama}", style = MaterialTheme.typography.headlineSmall, color = if (dk.gecti) DogruYesil else YanlisKirmizi)

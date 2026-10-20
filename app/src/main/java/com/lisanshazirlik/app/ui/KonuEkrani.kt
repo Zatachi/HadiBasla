@@ -84,7 +84,7 @@ fun KonuEkrani(
                 Ilerleme(if (sorular.isEmpty()) 0f else cozulen / sorular.size.toFloat())
                 if (cozulen > 0) {
                     Bosluk(8)
-                    BilgiSatiri("Doğru oranın", "%${yuzde(dogru, cozulen)}")
+                    BilgiSatiri("Doğru Oranın", "%${yuzde(dogru, cozulen)}")
                 }
             }
             if (konu.video.isNotBlank()) {
@@ -101,18 +101,18 @@ fun KonuEkrani(
                         Text("▶", color = YesilKoyu, fontSize = 22.sp)
                     }
                     Column(Modifier.padding(start = 14.dp)) {
-                        Text("Video anlatım", style = MaterialTheme.typography.titleMedium, color = Krem)
-                        Text("Konuyu önce izleyerek öğren", style = MaterialTheme.typography.bodyMedium, color = KremSoluk)
+                        Text("Video Anlatım", style = MaterialTheme.typography.titleMedium, color = Krem)
+                        Text("Konuyu Önce İzleyerek Öğren", style = MaterialTheme.typography.bodyMedium, color = KremSoluk)
                     }
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Bolum(Modifier.weight(1f), "📖", "Konu özeti", if (konu.ozet.isNotBlank()) "Önce oku" else null, ozetAc)
-                Bolum(Modifier.weight(1f), "🃏", "Bilgi kartları", if (konu.kartlar.isNotEmpty()) "${konu.kartlar.size} kart" else null, kartlarAc)
+                Bolum(Modifier.weight(1f), "📖", "Konu Özeti", if (konu.ozet.isNotBlank()) "Önce Oku" else null, ozetAc)
+                Bolum(Modifier.weight(1f), "🃏", "Bilgi Kartları", if (konu.kartlar.isNotEmpty()) "${konu.kartlar.size} Kart" else null, kartlarAc)
             }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Bolum(Modifier.weight(1f), "✏️", "Soru çöz", if (sorular.isNotEmpty()) "${sorular.size} soru, açıklamalı" else null, coz)
-                Bolum(Modifier.weight(1f), "⏱", "Konu testi", if (testAdet > 0) "$testAdet soru, ${denemeSuresiDk(testAdet)} dk" else null, test)
+                Bolum(Modifier.weight(1f), "✏️", "Soru Çöz", if (sorular.isNotEmpty()) "${sorular.size} Soru, Açıklamalı" else null, coz)
+                Bolum(Modifier.weight(1f), "⏱", "Konu Testi", if (testAdet > 0) "$testAdet Soru, ${denemeSuresiDk(testAdet)} dk" else null, test)
             }
             Text(
                 "Önerilen sıra: videoyu izle ya da özeti oku, kartlarla tekrar et, soruları çöz, son olarak konu testiyle kendini ölç.",
@@ -177,7 +177,7 @@ private fun vurgula(metin: String): androidx.compose.ui.text.AnnotatedString =
         append(metin.substring(son))
     }
 
-/** Konu özeti: her sayfada tek fikir, kaydırarak okunur; son sayfa "Akılda kalsın". */
+/** Konu özeti: her sayfada tek fikir, kaydırarak okunur; son sayfa "Akılda Kalsın". */
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun OzetEkrani(ders: Ders, konu: Konu, coz: (() -> Unit)?, kartlar: (() -> Unit)?, geri: () -> Unit, bitti: (() -> Unit)? = null) {
@@ -207,16 +207,16 @@ fun OzetEkrani(ders: Ders, konu: Konu, coz: (() -> Unit)?, kartlar: (() -> Unit)
                             modifier = Modifier.weight(1f).height(52.dp),
                         ) { Text("İleri") }
                     } else if (bitti != null) {
-                        Button(onClick = bitti, modifier = Modifier.weight(1f).height(52.dp)) { Text("Okudum, devam et") }
+                        Button(onClick = bitti, modifier = Modifier.weight(1f).height(52.dp)) { Text("Okudum, Devam Et") }
                     } else {
                         if (kartlar != null) {
-                            OutlinedButton(onClick = kartlar, modifier = Modifier.weight(1f).height(52.dp)) { Text("Bilgi kartları") }
+                            OutlinedButton(onClick = kartlar, modifier = Modifier.weight(1f).height(52.dp)) { Text("Bilgi Kartları") }
                         }
                         if (coz != null) {
-                            Button(onClick = coz, modifier = Modifier.weight(1f).height(52.dp)) { Text("Soru çöz") }
+                            Button(onClick = coz, modifier = Modifier.weight(1f).height(52.dp)) { Text("Soru Çöz") }
                         }
                         if (kartlar == null && coz == null) {
-                            Button(onClick = geri, modifier = Modifier.weight(1f).height(52.dp)) { Text("Konuya dön") }
+                            Button(onClick = geri, modifier = Modifier.weight(1f).height(52.dp)) { Text("Konuya Dön") }
                         }
                     }
                 }
@@ -294,7 +294,7 @@ private fun OzetSayfasiGorunumu(s: OzetSayfasi, ust: String?) {
         }
     }
     Bosluk(4)
-    Text("Sonraki sayfa için sola kaydır", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+    Text("Sonraki Sayfa İçin Sola Kaydır", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
 }
 
 @Composable
@@ -323,7 +323,7 @@ private fun AkildaKalsin(s: OzetSayfasi) {
     )
 }
 
-/** Dokununca dönen bilgi kartları. "Biliyorum" desteden çıkarır, "Tekrar et" sona atar. */
+/** Dokununca dönen bilgi kartları. "Biliyorum" desteden çıkarır, "Tekrar Et" sona atar. */
 @Composable
 fun KartlarEkrani(konu: Konu, geri: () -> Unit, bitti: (() -> Unit)? = null) {
     var deste by remember { mutableStateOf(konu.kartlar.shuffled()) }
@@ -334,7 +334,7 @@ fun KartlarEkrani(konu: Konu, geri: () -> Unit, bitti: (() -> Unit)? = null) {
     Scaffold(
         topBar = {
             UstCubuk(konu.ad, geri) {
-                if (deste.isNotEmpty()) Text("${deste.size} kart", color = Krem, modifier = Modifier.padding(end = 16.dp))
+                if (deste.isNotEmpty()) Text("${deste.size} Kart", color = Krem, modifier = Modifier.padding(end = 16.dp))
             }
         },
         containerColor = Zemin,
@@ -350,15 +350,15 @@ fun KartlarEkrani(konu: Konu, geri: () -> Unit, bitti: (() -> Unit)? = null) {
                 Text("${konu.kartlar.size} kartın hepsini bildin.", style = MaterialTheme.typography.bodyLarge, color = MetinSoluk)
                 Bosluk(12)
                 if (bitti != null) {
-                    Button(onClick = bitti, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Devam et") }
+                    Button(onClick = bitti, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Devam Et") }
                     OutlinedButton(onClick = { deste = konu.kartlar.shuffled(); bilinen = 0; ters = false }, modifier = Modifier.fillMaxWidth().height(52.dp)) {
-                        Text("Baştan başla")
+                        Text("Baştan Başla")
                     }
                 } else {
                     Button(onClick = { deste = konu.kartlar.shuffled(); bilinen = 0; ters = false }, modifier = Modifier.fillMaxWidth().height(52.dp)) {
-                        Text("Baştan başla")
+                        Text("Baştan Başla")
                     }
-                    OutlinedButton(onClick = geri, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Konuya dön") }
+                    OutlinedButton(onClick = geri, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Konuya Dön") }
                 }
                 return@Column
             }
@@ -386,12 +386,12 @@ fun KartlarEkrani(konu: Konu, geri: () -> Unit, bitti: (() -> Unit)? = null) {
                     )
                 }
             }
-            Text(if (ters) "Ne kadar iyi bildin?" else "Cevabı görmek için karta dokun", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+            Text(if (ters) "Ne kadar iyi bildin?" else "Cevabı Görmek İçin Karta Dokun", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedButton(
                     onClick = { deste = deste.drop(1) + kart; ters = false },
                     modifier = Modifier.weight(1f).height(52.dp),
-                ) { Text("Tekrar et") }
+                ) { Text("Tekrar Et") }
                 Button(
                     onClick = { deste = deste.drop(1); bilinen++; ters = false },
                     modifier = Modifier.weight(1f).height(52.dp),

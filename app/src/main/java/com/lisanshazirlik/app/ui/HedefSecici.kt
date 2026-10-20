@@ -72,19 +72,19 @@ fun HedefSecici(
                 RadioButton(selected = s, onClick = { dersSec(d.kod) })
                 Column {
                     Text(d.kisaAd, style = MaterialTheme.typography.titleMedium)
-                    Text("Ders kodu ${d.kod}", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                    Text("Ders Kodu ${d.kod}", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 }
             }
         }
         Bosluk(8)
-        Etiket("Sınav tarihin")
+        Etiket("Sınav Tarihin")
         OutlinedButton(
             onClick = { takvim = true },
             modifier = Modifier.fillMaxWidth().height(52.dp),
             border = BorderStroke(1.dp, if (tarih == null) Cizgi else Yesil),
         ) {
             Text(
-                if (tarih == null) "Tarih seç" else "${uzunTarih(tarih)} · ${kalanGunYazisi(java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), tarih))}",
+                if (tarih == null) "Tarih Seç" else "${uzunTarih(tarih)} · ${kalanGunYazisi(java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), tarih))}",
                 color = if (tarih == null) MetinSoluk else Yesil,
             )
         }
@@ -106,7 +106,7 @@ fun TarihPenceresi(
     mevcut: LocalDate?,
     kapat: () -> Unit,
     gecmis: Boolean = false,
-    baslik: String = "Sınav tarihi",
+    baslik: String = "Sınav Tarihi",
     sec: (LocalDate) -> Unit,
 ) {
     val bugunMs = LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
@@ -149,7 +149,7 @@ fun HedefEkrani(
     var silSor by remember { mutableStateOf(false) }
     var tarihsizSor by remember { mutableStateOf(false) }
 
-    Scaffold(topBar = { UstCubuk(if (mevcut == null) "Hedef ekle" else "Hedefi düzenle", geri) }, containerColor = Zemin) { ic ->
+    Scaffold(topBar = { UstCubuk(if (mevcut == null) "Hedef Ekle" else "Hedefi Düzenle", geri) }, containerColor = Zemin) { ic ->
         Column(
             Modifier
                 .fillMaxSize()
@@ -185,7 +185,7 @@ fun HedefEkrani(
                 OutlinedButton(
                     onClick = { depo.hedefKaydet(mevcut.ders, mevcut.sinavTarihi, gecti = true); geri() },
                     modifier = Modifier.fillMaxWidth().height(52.dp),
-                ) { Text("Bu dersten geçtim") }
+                ) { Text("Bu Dersten Geçtim") }
                 TextButton(onClick = { silSor = true }, modifier = Modifier.fillMaxWidth()) {
                     Text("Hedefi kaldır", color = YanlisKirmizi)
                 }
@@ -217,11 +217,11 @@ fun HedefEkrani(
 fun TarihsizPenceresi(kapat: () -> Unit, devam: () -> Unit) {
     AlertDialog(
         onDismissRequest = kapat,
-        title = { Text("Sınav tarihi seçmedin") },
+        title = { Text("Sınav Tarihi Seçmedin") },
         text = {
             Text("Tarih seçersen kaç gün kaldığını görür, günlük hedefini sınavına göre ayarlarız. Tarihi daha sonra da ekleyebilirsin. Yine de devam etmek istiyor musun?")
         },
-        confirmButton = { TextButton(onClick = devam) { Text("Devam et") } },
-        dismissButton = { TextButton(onClick = kapat) { Text("Tarih seç") } },
+        confirmButton = { TextButton(onClick = devam) { Text("Devam Et") } },
+        dismissButton = { TextButton(onClick = kapat) { Text("Tarih Seç") } },
     )
 }

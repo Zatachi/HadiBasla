@@ -256,13 +256,13 @@ private fun SiralamaBolumu(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hes
         }
 
         TextButton(onClick = { ayrilSor = true }, modifier = Modifier.padding(horizontal = 8.dp)) {
-            Text("Takma adım: ${k.takmaAd} · Sıralamadan ayrıl", color = MetinSoluk)
+            Text("Takma Adım: ${k.takmaAd} · Sıralamadan Ayrıl", color = MetinSoluk)
         }
     }
     if (ayrilSor) {
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { ayrilSor = false },
-            title = { Text("Sıralamadan ayrıl") },
+            title = { Text("Sıralamadan Ayrıl") },
             text = { Text("Takma adın ve puanların sıralamalardan kaldırılır. Puanların ve rozetlerin hesabında kalmaya devam eder.") },
             confirmButton = { TextButton(onClick = { Topluluk.ayril(uid, depo); ayrilSor = false }) { Text("Ayrıl", color = YanlisKirmizi) } },
             dismissButton = { TextButton(onClick = { ayrilSor = false }) { Text("Vazgeç") } },
@@ -312,7 +312,7 @@ private fun KatilEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String, 
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text("🏆", fontSize = 40.sp)
-        Text("Sıralamalara katıl", style = MaterialTheme.typography.headlineSmall)
+        Text("Sıralamalara Katıl", style = MaterialTheme.typography.headlineSmall)
         Text(
             "Haftalık ligde yarış, ilk 3'e girersen ${Oyun.HAFTALIK_ODUL_GUN} gün Premium kazan. Sıralamalarda gerçek adın değil, seçtiğin takma ad görünür.",
             style = MaterialTheme.typography.bodyLarge,
@@ -333,7 +333,7 @@ private fun KatilEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String, 
                     color = if (hata != null) YanlisKirmizi else MetinSoluk,
                 )
             },
-            label = { Text("Takma adın") },
+            label = { Text("Takma Adın") },
             placeholder = { Text("Boğa34") },
             singleLine = true,
             isError = hata != null || (ad.isNotEmpty() && !gecerli),
@@ -409,13 +409,13 @@ private fun DavetBolumu(depo: KullaniciDeposu, hesap: Hesap, durum: Topluluk.Dav
                         "Kayıt olurken davet kodumu gir, ikimiz de puan kazanalım: ${k2.take(3)}-${k2.drop(3)}\n" +
                         "İndir: https://github.com/Zatachi/HadiBasla/releases/latest/download/Lisansla.apk"
                     val gonder = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, metin)
-                    baglam.startActivity(Intent.createChooser(gonder, "Lisansla'yı paylaş"))
+                    baglam.startActivity(Intent.createChooser(gonder, "Lisansla'yı Paylaş"))
                     depo.paylasildi()
                 },
                 enabled = kod != null,
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Altin, contentColor = YesilKoyu),
-            ) { Text("Arkadaşlarınla paylaş") }
+            ) { Text("Arkadaşlarınla Paylaş") }
             Bosluk(6)
             Text("Paylaşım başına +${Oyun.XP_PAYLASIM} XP (günde ${Oyun.PAYLASIM_GUNLUK_SINIR} kez)", style = MaterialTheme.typography.bodyMedium, fontSize = 12.sp, color = KremSoluk)
         }
@@ -423,7 +423,7 @@ private fun DavetBolumu(depo: KullaniciDeposu, hesap: Hesap, durum: Topluluk.Dav
         KartKutu {
             Text("Davetlerin", style = MaterialTheme.typography.titleMedium)
             Bosluk(6)
-            BilgiSatiri("Kodunla katılan", "${durum?.toplam ?: 0}")
+            BilgiSatiri("Kodunla Katılan", "${durum?.toplam ?: 0}")
             BilgiSatiri("Sayılan (en az ${Oyun.DAVET_GECERLI_SORU} soru çözen)", "$gecerli")
             Bosluk(6)
             Text(
@@ -434,13 +434,13 @@ private fun DavetBolumu(depo: KullaniciDeposu, hesap: Hesap, durum: Topluluk.Dav
         }
 
         KartKutu {
-            Text("Davet ödülleri", style = MaterialTheme.typography.titleMedium)
+            Text("Davet Ödülleri", style = MaterialTheme.typography.titleMedium)
             Bosluk(8)
-            OdulSatiri("🤝", "1 arkadaş", "Tavsiye rozeti", gecerli >= 1)
+            OdulSatiri("🤝", "1 Arkadaş", "Tavsiye Rozeti", gecerli >= 1)
             Oyun.DAVET_ODULLERI.forEach { (n, gun) ->
-                OdulSatiri("🎁", "$n arkadaş", "$gun gün Premium", gecerli >= n)
+                OdulSatiri("🎁", "$n Arkadaş", "$gun Gün Premium", gecerli >= n)
             }
-            OdulSatiri("🌟", "10 arkadaş", "Fenomen rozeti", gecerli >= 10)
+            OdulSatiri("🌟", "10 Arkadaş", "Fenomen Rozeti", gecerli >= 10)
             k?.odulPremiumBitis?.let {
                 Bosluk(6)
                 Text("Premium: ${uzunTarih(it)} tarihine kadar", style = MaterialTheme.typography.bodyMedium, color = DogruYesil)
@@ -466,7 +466,7 @@ private fun DavetBolumu(depo: KullaniciDeposu, hesap: Hesap, durum: Topluluk.Dav
                         bekliyor = true
                         kapsam.launch {
                             mesaj = try {
-                                Topluluk.koduKullan(uid, hesap.misafir, depo, girilen); "Kod kabul edildi!"
+                                Topluluk.koduKullan(uid, hesap.misafir, depo, girilen); "Kod Kabul Edildi!"
                             } catch (e: Topluluk.DavetHatasi) {
                                 e.message
                             } catch (e: Exception) {
@@ -477,8 +477,8 @@ private fun DavetBolumu(depo: KullaniciDeposu, hesap: Hesap, durum: Topluluk.Dav
                     },
                     enabled = girilen.length >= 5 && !bekliyor,
                     modifier = Modifier.fillMaxWidth(),
-                ) { Text("Kodu kullan") }
-                mesaj?.let { Bosluk(6); Text(it, color = if (it.startsWith("Kod kabul")) DogruYesil else YanlisKirmizi) }
+                ) { Text("Kodu Kullan") }
+                mesaj?.let { Bosluk(6); Text(it, color = if (it.startsWith("Kod Kabul")) DogruYesil else YanlisKirmizi) }
             }
         }
         Text(

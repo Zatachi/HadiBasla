@@ -119,9 +119,9 @@ fun ProfilSekme(
             }
             Bosluk(16)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                ProfilSayi(Modifier.weight(1f), "🔥", "${depo.seri()}", "gün seri")
-                ProfilSayi(Modifier.weight(1f), "✏️", "${depo.cozulenler().size}", "soru")
-                ProfilSayi(Modifier.weight(1f), "🏅", "${k?.rozetler?.size ?: 0}", "rozet")
+                ProfilSayi(Modifier.weight(1f), "🔥", "${depo.seri()}", "Gün Seri")
+                ProfilSayi(Modifier.weight(1f), "✏️", "${depo.cozulenler().size}", "Soru")
+                ProfilSayi(Modifier.weight(1f), "🏅", "${k?.rozetler?.size ?: 0}", "Rozet")
             }
         }
 
@@ -131,7 +131,7 @@ fun ProfilSekme(
                     Modifier.fillMaxWidth().clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp))
                         .background(Color(0xFFFBEFD7)).padding(16.dp),
                 ) {
-                    Text("⚠️ Hesabın sadece bu telefonda", style = MaterialTheme.typography.titleMedium, color = Color(0xFF7A5A12))
+                    Text("⚠️ Hesabın Sadece Bu Telefonda", style = MaterialTheme.typography.titleMedium, color = Color(0xFF7A5A12))
                     Bosluk(2)
                     Text("Telefon değişirse ilerlemen kaybolur.", style = MaterialTheme.typography.bodyMedium, color = Color(0xFF7A5A12))
                     Bosluk(10)
@@ -139,7 +139,7 @@ fun ProfilSekme(
                         onClick = { calistir("Google hesabına bağlanıyor…") { hesap.googleIleGiris(baglam) } },
                         enabled = bekliyor == null,
                         modifier = Modifier.fillMaxWidth().height(48.dp),
-                    ) { Text("Google ile kalıcı yap") }
+                    ) { Text("Google ile Kalıcı Yap") }
                 }
             }
             k?.odulPremiumBitis?.takeIf { k.premiumAktif() }?.let {
@@ -149,10 +149,10 @@ fun ProfilSekme(
             Etiket("Çalışmam", Modifier.padding(start = 4.dp, top = 4.dp))
             Grup {
                 MenuSatiri("🎓", "Sınavım", banka.lisans(k?.lisans)?.kisaAd ?: "Seç") { y.lisans() }
-                MenuSatiri("🎯", "Hedeflerim", "${depo.aktifHedefler().size} aktif") { y.hedefAc(null) }
+                MenuSatiri("🎯", "Hedeflerim", "${depo.aktifHedefler().size} Aktif") { y.hedefAc(null) }
                 MenuSatiri("📜", "Sertifikalarım", null) { y.sonuclar() }
                 MenuSatiri(
-                    "🔔", "Günlük hatırlatma",
+                    "🔔", "Günlük Hatırlatma",
                     if (kayit.hatirlatmaAcik) "%02d:%02d".format(kayit.hatirlatmaSaati / 60, kayit.hatirlatmaSaati % 60) else "Kapalı",
                     son = !BuildConfig.PREMIUM_AKTIF,
                 ) { y.hatirlatma() }
@@ -161,20 +161,20 @@ fun ProfilSekme(
                 }
             }
 
-            Etiket("Gizlilik ve destek", Modifier.padding(start = 4.dp, top = 4.dp))
+            Etiket("Gizlilik ve Destek", Modifier.padding(start = 4.dp, top = 4.dp))
             Grup {
                 MenuSatiri("🗂", "Verilerim", null) { y.verilerim() }
-                MenuSatiri("🔒", "Aydınlatma metni", null) { y.aydinlatma() }
-                MenuSatiri("💬", "Görüşünü yaz", null, son = true) { y.gorus() }
+                MenuSatiri("🔒", "Aydınlatma Metni", null) { y.aydinlatma() }
+                MenuSatiri("💬", "Görüşünü Yaz", null, son = true) { y.gorus() }
             }
 
             Etiket("Hesap", Modifier.padding(start = 4.dp, top = 4.dp))
             Grup {
                 if (hesap.misafir) {
-                    MenuSatiri("🗑", "Misafir hesabını sil", null, tehlike = true, son = true) { silSor = true }
+                    MenuSatiri("🗑", "Misafir Hesabını Sil", null, tehlike = true, son = true) { silSor = true }
                 } else {
-                    MenuSatiri("↩️", "Çıkış yap", null) { cikisSor = true }
-                    MenuSatiri("🗑", "Hesabımı sil", null, tehlike = true, son = true) { silSor = true }
+                    MenuSatiri("↩️", "Çıkış Yap", null) { cikisSor = true }
+                    MenuSatiri("🗑", "Hesabımı Sil", null, tehlike = true, son = true) { silSor = true }
                 }
             }
 
@@ -210,10 +210,10 @@ fun ProfilSekme(
     if (cikisSor) {
         AlertDialog(
             onDismissRequest = { cikisSor = false },
-            title = { Text("Çıkış yap") },
+            title = { Text("Çıkış Yap") },
             text = { Text("Verilerin Google hesabında saklanmaya devam eder. Tekrar girdiğinde kaldığın yerden devam edersin.") },
             confirmButton = {
-                TextButton(onClick = { cikisSor = false; calistir("Çıkış yapılıyor…") { hesap.cikis(baglam) } }) { Text("Çıkış yap") }
+                TextButton(onClick = { cikisSor = false; calistir("Çıkış yapılıyor…") { hesap.cikis(baglam) } }) { Text("Çıkış Yap") }
             },
             dismissButton = { TextButton(onClick = { cikisSor = false }) { Text("Vazgeç") } },
         )
@@ -221,7 +221,7 @@ fun ProfilSekme(
     if (silSor) {
         AlertDialog(
             onDismissRequest = { silSor = false },
-            title = { Text(if (hesap.misafir) "Misafir hesabını sil" else "Hesabını sil") },
+            title = { Text(if (hesap.misafir) "Misafir Hesabını Sil" else "Hesabını Sil") },
             text = {
                 Text(
                     "Adın, çalışma ilerlemen, hedeflerin, deneme sonuçların, puanların, rozetlerin, sıralama ve davet kayıtların, oyların, hata bildirimlerin ve görüşlerin kalıcı olarak silinir. Bu işlem geri alınamaz." +
@@ -232,7 +232,7 @@ fun ProfilSekme(
                 TextButton(onClick = {
                     silSor = false
                     calistir("Hesabın siliniyor…") { hesap.hesabiSil(baglam); kayit.temizle() }
-                }) { Text("Kalıcı olarak sil", color = YanlisKirmizi) }
+                }) { Text("Kalıcı Olarak Sil", color = YanlisKirmizi) }
             },
             dismissButton = { TextButton(onClick = { silSor = false }) { Text("Vazgeç") } },
         )
@@ -324,8 +324,8 @@ fun VerilerimEkrani(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap, ger
                 Etiket("Hesap")
                 Bosluk(8)
                 BilgiSatiri("Ad", k?.ad.orEmpty())
-                BilgiSatiri("Giriş yöntemi", if (hesap.misafir) "Misafir" else "Google")
-                BilgiSatiri("Kullanıcı kimliği", (hesap.uid ?: "").take(10) + "…")
+                BilgiSatiri("Giriş Yöntemi", if (hesap.misafir) "Misafir" else "Google")
+                BilgiSatiri("Kullanıcı Kimliği", (hesap.uid ?: "").take(10) + "…")
                 Bosluk(6)
                 Text(
                     "E-posta adresin Lisansla veritabanına kaydedilmez; yalnızca Google girişinde doğrulama için kullanılır.",
@@ -334,23 +334,23 @@ fun VerilerimEkrani(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap, ger
                 )
             }
             KartKutu {
-                Etiket("Çalışma verilerin")
+                Etiket("Çalışma Verilerin")
                 Bosluk(8)
-                BilgiSatiri("Cevapladığın soru", "${depo.cozulenler().size}")
-                BilgiSatiri("Bugün çözülen", "${depo.bugunCozulen}")
-                BilgiSatiri("Çalışma serisi", "${depo.seri()} gün")
-                BilgiSatiri("Deneme sonucu", "${depo.denemeler.size}")
+                BilgiSatiri("Cevapladığın Soru", "${depo.cozulenler().size}")
+                BilgiSatiri("Bugün Çözülen", "${depo.bugunCozulen}")
+                BilgiSatiri("Çalışma Serisi", "${depo.seri()} Gün")
+                BilgiSatiri("Deneme Sonucu", "${depo.denemeler.size}")
             }
             KartKutu {
                 Etiket("Hedeflerin")
                 Bosluk(8)
                 if (depo.hedefler.isEmpty()) Text("Hedef yok.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 depo.hedefler.forEach { h ->
-                    BilgiSatiri(banka.ders(h.ders)?.kisaAd ?: h.ders, if (h.gecti) "Geçildi" else h.sinavTarihi?.let { uzunTarih(it) } ?: "Tarih seçilmedi")
+                    BilgiSatiri(banka.ders(h.ders)?.kisaAd ?: h.ders, if (h.gecti) "Geçildi" else h.sinavTarihi?.let { uzunTarih(it) } ?: "Tarih Seçilmedi")
                 }
             }
             KartKutu {
-                Etiket("Geri bildirimlerin")
+                Etiket("Geri Bildirimlerin")
                 Bosluk(8)
                 Text(
                     "Sorulara verdiğin oylar, hata bildirimlerin, görüşlerin ve hangi soruda hangi şıkkı seçtiğin, soruları iyileştirmek için kullanıcı kimliğinle birlikte saklanır. Hesabını silersen bunlar da silinir.",
@@ -377,11 +377,11 @@ fun PremiumEkrani(depo: KullaniciDeposu, geri: () -> Unit) {
             if (depo.kullanici?.premium == true) {
                 Text("Premium üyeliğin aktif.", style = MaterialTheme.typography.headlineSmall)
             } else {
-                Text("Premium ile tüm soru bankası", style = MaterialTheme.typography.headlineSmall)
+                Text("Premium ile Tüm Soru Bankası", style = MaterialTheme.typography.headlineSmall)
                 listOf(
-                    "Tüm derslerde sınırsız soru",
-                    "Sınırsız genel ve ders denemesi",
-                    "Ayrıntılı konu istatistikleri",
+                    "Tüm Derslerde Sınırsız Soru",
+                    "Sınırsız Genel ve Ders Denemesi",
+                    "Ayrıntılı Konu İstatistikleri",
                 ).forEach { Text("•  $it", style = MaterialTheme.typography.bodyLarge) }
                 Bosluk(8)
                 Text("Satın alma yakında açılacak.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)

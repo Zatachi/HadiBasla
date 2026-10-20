@@ -61,7 +61,7 @@ fun BasitMetin(metin: String, modifier: Modifier = Modifier) {
 
 @Composable
 fun AydinlatmaEkrani(geri: () -> Unit) {
-    Scaffold(topBar = { UstCubuk("Aydınlatma metni", geri) }, containerColor = Zemin) { ic ->
+    Scaffold(topBar = { UstCubuk("Aydınlatma Metni", geri) }, containerColor = Zemin) { ic ->
         AydinlatmaGovdesi(
             Modifier
                 .fillMaxSize()

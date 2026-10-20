@@ -64,11 +64,11 @@ fun PaketEkrani(
                 HorizontalDivider(color = Cizgi)
                 if (siradaki != null) {
                     Button(onClick = { adimAc(siradaki) }, modifier = Modifier.fillMaxWidth().padding(16.dp).height(54.dp)) {
-                        Text(if (tamam == 0) "▶  Başla: ${siradaki.tur.ad}" else "▶  Devam et: ${siradaki.tur.ad}")
+                        Text(if (tamam == 0) "▶  Başla: ${siradaki.tur.ad}" else "▶  Devam Et: ${siradaki.tur.ad}")
                     }
                 } else {
                     OutlinedButton(onClick = { sifirlaSor = true }, modifier = Modifier.fillMaxWidth().padding(16.dp).height(54.dp)) {
-                        Text("Dersi baştan başlat")
+                        Text("Dersi Baştan Başlat")
                     }
                 }
             }
@@ -105,7 +105,7 @@ fun PaketEkrani(
                 BolumKarti(i + 1, kn.ad, konuAdimlari, bitti, siradaki, adimAc)
             }
             adimlar.firstOrNull { it.tur == Paket.Tur.DENEME }?.let { d ->
-                BolumKarti(0, "Final · Ders denemesi", listOf(d), bitti, siradaki, adimAc)
+                BolumKarti(0, "Final · Ders Denemesi", listOf(d), bitti, siradaki, adimAc)
             }
             if (denemelerAc != null) {
                 Row(
@@ -114,7 +114,7 @@ fun PaketEkrani(
                 ) {
                     Text("⏱", fontSize = 22.sp)
                     Column(Modifier.weight(1f).padding(start = 12.dp)) {
-                        Text("Bu dersin denemeleri", style = MaterialTheme.typography.titleMedium)
+                        Text("Bu Dersin Denemeleri", style = MaterialTheme.typography.titleMedium)
                         Text("10 deneme · gerçek sınav gibi 25 soru, 45 dk", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                     }
                     Text("›", fontSize = 24.sp, color = Yesil)
@@ -125,9 +125,9 @@ fun PaketEkrani(
     if (sifirlaSor) {
         AlertDialog(
             onDismissRequest = { sifirlaSor = false },
-            title = { Text("Paketi baştan başlat") },
+            title = { Text("Paketi Baştan Başlat") },
             text = { Text("Paket adımlarının işaretleri sıfırlanır. Çözdüğün sorular, puanların ve rozetlerin silinmez.") },
-            confirmButton = { TextButton(onClick = { depo.paketSifirla(dersKod); sifirlaSor = false }) { Text("Baştan başlat") } },
+            confirmButton = { TextButton(onClick = { depo.paketSifirla(dersKod); sifirlaSor = false }) { Text("Baştan Başlat") } },
             dismissButton = { TextButton(onClick = { sifirlaSor = false }) { Text("Vazgeç") } },
         )
     }
@@ -157,8 +157,8 @@ private fun AdimSatiri(a: Paket.Adim, bitti: Boolean, siradaki: Boolean, tikla: 
             Text(
                 when {
                     bitti -> "Tamamlandı"
-                    siradaki -> "Sıradaki adım"
-                    else -> if (a.tur == Paket.Tur.DENEME) "Gerçek sınav formatında" else a.baslik
+                    siradaki -> "Sıradaki Adım"
+                    else -> if (a.tur == Paket.Tur.DENEME) "Gerçek Sınav Formatında" else a.baslik
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = if (bitti) DogruYesil else MetinSoluk,
@@ -197,7 +197,7 @@ fun PaketGecisEkrani(
         biten?.konu?.let { Text(it.ad, style = MaterialTheme.typography.bodyLarge, color = MetinSoluk, textAlign = TextAlign.Center) }
         sonuc?.let { Bosluk(6); Text(it, style = MaterialTheme.typography.titleMedium, color = Yesil, textAlign = TextAlign.Center) }
         Bosluk(8)
-        Text("$tamam / ${adimlar.size} adım", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+        Text("$tamam / ${adimlar.size} Adım", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
         Bosluk(28)
         if (siradaki != null) {
             KartKutu {
@@ -207,13 +207,13 @@ fun PaketGecisEkrani(
                 Text(siradaki.baslik, style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
             }
             Bosluk(16)
-            Button(onClick = { adimAc(siradaki) }, modifier = Modifier.fillMaxWidth().height(54.dp)) { Text("Devam et") }
+            Button(onClick = { adimAc(siradaki) }, modifier = Modifier.fillMaxWidth().height(54.dp)) { Text("Devam Et") }
             Bosluk(8)
-            OutlinedButton(onClick = pakete, modifier = Modifier.fillMaxWidth().height(50.dp)) { Text("Pakete dön") }
+            OutlinedButton(onClick = pakete, modifier = Modifier.fillMaxWidth().height(50.dp)) { Text("Pakete Dön") }
         } else {
             Text("Paketi bitirdin 🎉", style = MaterialTheme.typography.titleLarge, color = DogruYesil)
             Bosluk(16)
-            Button(onClick = pakete, modifier = Modifier.fillMaxWidth().height(54.dp)) { Text("Pakete dön") }
+            Button(onClick = pakete, modifier = Modifier.fillMaxWidth().height(54.dp)) { Text("Pakete Dön") }
         }
     }
 }

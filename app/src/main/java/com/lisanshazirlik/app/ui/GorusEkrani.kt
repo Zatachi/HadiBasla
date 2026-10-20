@@ -33,7 +33,7 @@ fun GorusEkrani(geri: () -> Unit) {
     var metin by remember { mutableStateOf("") }
     var gonderildi by remember { mutableStateOf(false) }
 
-    Scaffold(topBar = { UstCubuk("Görüşünü yaz", geri) }, containerColor = Zemin) { ic ->
+    Scaffold(topBar = { UstCubuk("Görüşünü Yaz", geri) }, containerColor = Zemin) { ic ->
         Column(
             Modifier
                 .fillMaxSize()
@@ -50,7 +50,7 @@ fun GorusEkrani(geri: () -> Unit) {
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Bosluk(12)
-                Button(onClick = geri, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Ana sayfaya dön") }
+                Button(onClick = geri, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Ana Sayfaya Dön") }
                 return@Column
             }
             Text(

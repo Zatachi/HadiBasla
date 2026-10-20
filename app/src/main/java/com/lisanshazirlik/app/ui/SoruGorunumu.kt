@@ -79,16 +79,16 @@ fun Aciklama(soru: Soru, verilen: Int?) {
     KartKutu {
         Text(
             when {
-                verilen == null -> "Boş bıraktın"
-                dogruMu -> "Doğru cevap"
-                else -> "Yanlış cevap"
+                verilen == null -> "Boş Bıraktın"
+                dogruMu -> "Doğru Cevap"
+                else -> "Yanlış Cevap"
             },
             style = MaterialTheme.typography.titleMedium,
             color = if (dogruMu) DogruYesil else YanlisKirmizi,
         )
         Bosluk(4)
         Text(
-            "Doğru şık: ${HARFLER[soru.dogru]}) ${soru.secenekler[soru.dogru]}",
+            "Doğru Şık: ${HARFLER[soru.dogru]}) ${soru.secenekler[soru.dogru]}",
             style = MaterialTheme.typography.bodyMedium,
         )
         if (soru.aciklama.isNotBlank()) {
@@ -102,7 +102,7 @@ fun Aciklama(soru: Soru, verilen: Int?) {
     }
 }
 
-/** Her sorunun altındaki "işine yaradı mı?" ve "hata bildir" bölümü. */
+/** Her sorunun altındaki "işine yaradı mı?" ve "Hata Bildir" bölümü. */
 @Composable
 fun SoruGeriBildirimi(soru: Soru, mevcutOy: Int, oyVer: (Int) -> Unit) {
     var hataAcik by remember { mutableStateOf(false) }
@@ -114,7 +114,7 @@ fun SoruGeriBildirimi(soru: Soru, mevcutOy: Int, oyVer: (Int) -> Unit) {
             OySecenegi("👎 Hayır", mevcutOy == -1) { oyVer(if (mevcutOy == -1) 0 else -1) }
             Box(Modifier.weight(1f))
             TextButton(onClick = { hataAcik = true }, enabled = !hataGonderildi) {
-                Text(if (hataGonderildi) "Bildirildi" else "Hata bildir", color = if (hataGonderildi) MetinSoluk else YanlisKirmizi)
+                Text(if (hataGonderildi) "Bildirildi" else "Hata Bildir", color = if (hataGonderildi) MetinSoluk else YanlisKirmizi)
             }
         }
     }
@@ -150,7 +150,7 @@ private fun HataPenceresi(kapat: () -> Unit, gonder: (String) -> Unit) {
     var metin by remember { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = kapat,
-        title = { Text("Hata bildir") },
+        title = { Text("Hata Bildir") },
         text = {
             Column {
                 Text("Neyin yanlış olduğunu kısaca yaz. Örneğin: \"Doğru cevap B olmalı\" ya da \"Bu madde değişti\".")

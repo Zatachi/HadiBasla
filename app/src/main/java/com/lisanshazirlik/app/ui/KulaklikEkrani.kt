@@ -152,7 +152,7 @@ fun KulaklikEkrani(banka: SoruBankasi, depo: KullaniciDeposu, cevapla: (Soru, Bo
         Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             Text("✕", color = Krem, fontSize = 22.sp, modifier = Modifier.clip(CircleShape).clickable(onClick = geri).padding(10.dp))
             Column(Modifier.weight(1f).padding(start = 4.dp)) {
-                Text("🎧 Kulaklık modu", color = Krem, fontFamily = Baslik, fontSize = 22.sp)
+                Text("🎧 Kulaklık Modu", color = Krem, fontFamily = Baslik, fontSize = 22.sp)
                 Text(odak?.kisaAd.orEmpty(), color = KremSoluk, fontSize = 12.sp)
             }
             if (liste.isNotEmpty()) Text("${minOf(sira + 1, liste.size)}/${liste.size}", color = KremSoluk, fontSize = 13.sp)
@@ -169,10 +169,10 @@ fun KulaklikEkrani(banka: SoruBankasi, depo: KullaniciDeposu, cevapla: (Soru, Bo
             ) {
                 val soruSayisi = liste.count { it is Parca.Sesli }
                 Text("🎉", fontSize = 56.sp)
-                Text("Tur bitti", color = Krem, fontFamily = Baslik, fontSize = 28.sp)
+                Text("Tur Bitti", color = Krem, fontFamily = Baslik, fontSize = 28.sp)
                 Text("$soruSayisi sorudan $dogruSayi doğru", color = Altin, fontSize = 18.sp)
                 Bosluk(24)
-                BuyukDugme("⟲ Yeni tur") { liste = kulaklikListesi(banka, dersler); sira = 0; dogruSayi = 0 }
+                BuyukDugme("⟲ Yeni Tur") { liste = kulaklikListesi(banka, dersler); sira = 0; dogruSayi = 0 }
                 Bosluk(10)
                 BuyukDugme("Kapat", ikincil = true, tikla = geri)
             }
@@ -213,7 +213,7 @@ fun KulaklikEkrani(banka: SoruBankasi, depo: KullaniciDeposu, cevapla: (Soru, Bo
                     if (sec != null) {
                         Bosluk(8)
                         Text(
-                            if (sec == parca.soru.dogru) "✓ Doğru!" else "✗ Doğru cevap ${HARFLER[parca.soru.dogru]}",
+                            if (sec == parca.soru.dogru) "✓ Doğru!" else "✗ Doğru Cevap ${HARFLER[parca.soru.dogru]}",
                             color = if (sec == parca.soru.dogru) DogruYesil else YanlisKirmizi,
                             fontSize = 20.sp,
                         )
@@ -252,7 +252,7 @@ fun KulaklikEkrani(banka: SoruBankasi, depo: KullaniciDeposu, cevapla: (Soru, Bo
                 }
                 Row(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(
-                        "🔁 Tekrar oku",
+                        "🔁 Tekrar Oku",
                         color = Krem,
                         modifier = Modifier.clip(RoundedCornerShape(50)).background(YesilKoyu).clickable {
                             oku(parca.soru.metin + ". " + parca.soru.secenekler.mapIndexed { i, s -> "${HARFLER[i]}: $s" }.joinToString(". "))

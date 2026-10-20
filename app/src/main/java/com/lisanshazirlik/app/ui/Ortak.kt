@@ -117,7 +117,7 @@ fun kalanGunYazisi(gun: Long): String = when {
     gun > 1 -> "$gun gün kaldı"
     gun == 1L -> "Yarın"
     gun == 0L -> "Bugün"
-    else -> "Sınav tarihi geçti"
+    else -> "Sınav Tarihi Geçti"
 }
 
 fun basHarf(ad: String): String = ad.trim().firstOrNull()?.uppercase(TR) ?: "?"

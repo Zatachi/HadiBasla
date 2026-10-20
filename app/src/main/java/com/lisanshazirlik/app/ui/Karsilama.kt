@@ -77,21 +77,21 @@ fun KarsilamaEkrani(devam: () -> Unit) {
     }
     Column(Modifier.fillMaxSize().background(Zemin).navigationBarsPadding()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
-            YesilUst("Lisansla'ya hoş geldin", "Sermaye piyasası lisans sınavlarına adım adım hazırlan.")
+            YesilUst("Lisansla'ya Hoş Geldin", "Sermaye piyasası lisans sınavlarına adım adım hazırlan.")
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 Ozellik("Çalıştığın dersi ve sınav tarihini seç, kaç gün kaldığını takip et.")
                 Ozellik("Her gün sana uygun sayıda soru çöz, serini bozma.")
                 Ozellik("Yanlışlarını ve zayıf konularını tekrar et, deneme sınavlarıyla kendini ölç.")
                 Bosluk(4)
                 KartKutu {
-                    Text("Kişisel verilerin", style = MaterialTheme.typography.titleMedium)
+                    Text("Kişisel Verilerin", style = MaterialTheme.typography.titleMedium)
                     Bosluk(6)
                     Text(
                         "Sadece adını ve çalışma ilerlemeni saklarız. E-posta adresin kaydedilmez, reklam yoktur, verilerin satılmaz. Hesabını istediğin an silebilirsin.",
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     TextButton(onClick = { metinAcik = true }, modifier = Modifier.padding(start = 0.dp)) {
-                        Text("Aydınlatma metnini oku")
+                        Text("Aydınlatma Metnini Oku")
                     }
                 }
                 Row(
@@ -107,7 +107,7 @@ fun KarsilamaEkrani(devam: () -> Unit) {
             onClick = devam,
             enabled = okudum,
             modifier = Modifier.fillMaxWidth().padding(20.dp).height(52.dp),
-        ) { Text("Devam et") }
+        ) { Text("Devam Et") }
     }
 }
 
@@ -145,18 +145,18 @@ fun GirisEkrani(hesap: Hesap, girildi: (googleAdi: String?) -> Unit) {
 
     Column(Modifier.fillMaxSize().background(Zemin).navigationBarsPadding()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
-            YesilUst("Hesabını oluştur", "İlerlemen hesabında saklanır; telefon değiştirsen de kaybolmaz.")
+            YesilUst("Hesabını Oluştur", "İlerlemen hesabında saklanır; telefon değiştirsen de kaybolmaz.")
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Button(
                     onClick = { calistir { hesap.googleIleGiris(baglam) } },
                     enabled = !bekliyor,
                     modifier = Modifier.fillMaxWidth().height(54.dp),
-                ) { Text("Google ile devam et") }
+                ) { Text("Google ile Devam Et") }
                 OutlinedButton(
                     onClick = { calistir { hesap.misafirGiris(); null } },
                     enabled = !bekliyor,
                     modifier = Modifier.fillMaxWidth().height(54.dp),
-                ) { Text("Misafir olarak dene") }
+                ) { Text("Misafir Olarak Dene") }
                 Text(
                     "Misafir olarak başlarsan ilerlemen bu telefondaki misafir hesabında tutulur. İstediğin zaman Profil'den Google hesabına bağlayıp kalıcı hale getirebilirsin.",
                     style = MaterialTheme.typography.bodyMedium,
@@ -210,7 +210,7 @@ fun KurulumEkrani(
                     LisansSecici(banka.lisanslar, lisans, { l -> banka.icerikVar(l) }) { lisans = it }
                 }
             } else {
-                YesilUst("İlk hedefin", "Bir derse odaklan; diğerlerini sonra eklersin.")
+                YesilUst("İlk Hedefin", "Bir derse odaklan; diğerlerini sonra eklersin.")
                 Column(Modifier.padding(20.dp)) {
                     HedefSecici(banka.lisansDersleri(lisans), ders, { ders = it }, tarih, { tarih = it })
                 }
@@ -222,13 +222,13 @@ fun KurulumEkrani(
                     onClick = { adim = 1 },
                     enabled = ad.isNotBlank(),
                     modifier = Modifier.fillMaxWidth().height(52.dp),
-                ) { Text("Devam et") }
+                ) { Text("Devam Et") }
             } else if (adim == 1) {
                 Button(
                     onClick = { adim = 2 },
                     enabled = lisans != null,
                     modifier = Modifier.fillMaxWidth().height(52.dp),
-                ) { Text("Devam et") }
+                ) { Text("Devam Et") }
                 TextButton(onClick = { adim = 0 }, modifier = Modifier.fillMaxWidth()) { Text("Geri") }
             } else {
                 Button(
@@ -243,7 +243,7 @@ fun KurulumEkrani(
                     modifier = Modifier.fillMaxWidth().height(52.dp),
                 ) { Text("Başla") }
                 TextButton(onClick = { depo.profilOlustur(ad, aydinlatmaSurum); lisans?.let { depo.lisansSec(it) } }, modifier = Modifier.fillMaxWidth()) {
-                    Text("Hedefi sonra ekle")
+                    Text("Hedefi Sonra Ekle")
                 }
             }
         }
@@ -267,7 +267,7 @@ fun HesapCakismasiPenceresi(kimlik: AuthCredential, hesap: Hesap, kapat: () -> U
     var bekliyor by remember { mutableStateOf(false) }
     AlertDialog(
         onDismissRequest = { if (!bekliyor) kapat() },
-        title = { Text("Bu Google hesabı zaten kayıtlı") },
+        title = { Text("Bu Google Hesabı Zaten Kayıtlı") },
         text = {
             Text("Bu Google hesabıyla daha önce Lisansla'ya giriş yapılmış. O hesaba geçersen bu misafir hesaptaki ilerleme silinir ve Google hesabındaki ilerlemen yüklenir.")
         },
@@ -283,7 +283,7 @@ fun HesapCakismasiPenceresi(kimlik: AuthCredential, hesap: Hesap, kapat: () -> U
                     }
                 },
                 colors = ButtonDefaults.textButtonColors(contentColor = YanlisKirmizi),
-            ) { Text("Google hesabına geç") }
+            ) { Text("Google Hesabına Geç") }
         },
         dismissButton = { TextButton(onClick = kapat, enabled = !bekliyor) { Text("Vazgeç") } },
     )

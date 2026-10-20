@@ -214,7 +214,7 @@ private fun KisaVideo(
             ) {
                 val m = kisa.miniSoru
                 if (m != null) {
-                    Text("Hızlı soru", color = Altin, fontSize = 12.sp)
+                    Text("Hızlı Soru", color = Altin, fontSize = 12.sp)
                     Text(m.metin, color = Krem, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         m.secenekler.forEachIndexed { i, s ->
@@ -238,12 +238,12 @@ private fun KisaVideo(
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(
-                        "⟲ Tekrar izle", color = Krem,
+                        "⟲ Tekrar İzle", color = Krem,
                         modifier = Modifier.clip(RoundedCornerShape(50)).background(Color(0x33FFFFFF))
                             .clickable { cevap = null; tekrarSayac++ }.padding(horizontal = 14.dp, vertical = 8.dp),
                     )
                 }
-                Text(if (sonMu) "Bu dersin son videosu" else "↑ Sıradaki için yukarı kaydır", color = KremSoluk, fontSize = 12.sp)
+                Text(if (sonMu) "Bu Dersin Son Videosu" else "↑ Sıradaki İçin Yukarı Kaydır", color = KremSoluk, fontSize = 12.sp)
             }
         }
     }

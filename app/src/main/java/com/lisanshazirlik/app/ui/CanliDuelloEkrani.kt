@@ -62,7 +62,7 @@ private sealed interface Asama {
     data class Sonuc(val benim: OyuncuDurumu, val rakip: OyuncuDurumu?, val rakipAd: String, val bot: Boolean) : Asama
 }
 
-const val BOT_AD = "🤖 Antrenman rakibi"
+const val BOT_AD = "🤖 Antrenman Rakibi"
 
 /** Tek tuşla rakip bul: aynı derse çalışan biriyle eşleşir; 20 sn'de kimse yoksa bot gelir. */
 @Composable
@@ -75,7 +75,7 @@ fun CanliDuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, cevapla: (Soru,
     var gecen by remember { mutableIntStateOf(0) }
 
     if (ders == null || banka.dersSorulari(ders).isEmpty()) {
-        Scaffold(topBar = { UstCubuk("Canlı düello", geri) }, containerColor = Zemin) { ic ->
+        Scaffold(topBar = { UstCubuk("Canlı Düello", geri) }, containerColor = Zemin) { ic ->
             Text("Bu dersin soruları henüz hazır değil.", modifier = Modifier.padding(ic).padding(24.dp))
         }
         return
@@ -205,7 +205,7 @@ private fun AramaEkrani(dersAd: String, gecen: Int, eslesti: Boolean = false, va
             Text("⚔️", fontSize = 60.sp)
         }
         Bosluk(24)
-        Text(if (eslesti) "Rakip bulundu!" else "Rakip aranıyor…", fontFamily = Baslik, fontSize = 26.sp, color = Krem)
+        Text(if (eslesti) "Rakip Bulundu!" else "Rakip aranıyor…", fontFamily = Baslik, fontSize = 26.sp, color = Krem)
         Text(dersAd, color = Altin, style = MaterialTheme.typography.labelLarge)
         Bosluk(8)
         if (!eslesti) {
@@ -305,7 +305,7 @@ private fun CanliOyun(
                     Text("Düellodan çıkmak istiyor musun?", style = MaterialTheme.typography.titleMedium)
                     Text("Bitirmeden çıkarsan bu düelloyu kaybetmiş sayılırsın.", color = MetinSoluk)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(onClick = { cikSor = false }, modifier = Modifier.weight(1f)) { Text("Devam et") }
+                        Button(onClick = { cikSor = false }, modifier = Modifier.weight(1f)) { Text("Devam Et") }
                         OutlinedButton(onClick = { cikSor = false; terkEt() }, modifier = Modifier.weight(1f)) { Text("Çık", color = YanlisKirmizi) }
                     }
                 }
@@ -325,7 +325,7 @@ private fun CanliOyun(
                     )
                     Ilerleme(beklemeKalan / BEKLEME_SINIRI.toFloat())
                     OutlinedButton(onClick = { sonuclandir(ben) }, modifier = Modifier.fillMaxWidth().height(50.dp)) {
-                        Text("Beklemeden sonucu gör")
+                        Text("Beklemeden Sonucu Gör")
                     }
                     Text("Erken çıkman kaybettirmez; rakip bitirmediyse kazanırsın.", color = MetinSoluk, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                 }
@@ -342,7 +342,7 @@ private fun CanliOyun(
                     }
                     Sik(HARFLER[i], m, d, if (secim == null) ({ secim = i; cevapla(soru, i == soru.dogru) }) else null)
                 }
-                if (secim == -1) Text("⏰ Süre doldu", color = YanlisKirmizi, style = MaterialTheme.typography.titleMedium)
+                if (secim == -1) Text("⏰ Süre Doldu", color = YanlisKirmizi, style = MaterialTheme.typography.titleMedium)
             }
         }
     }
@@ -356,20 +356,20 @@ private fun SkorKutusu(modifier: Modifier, ad: String, d: OyuncuDurumu, toplam: 
         Text(ad, color = if (vurgu) Krem else Metin, style = MaterialTheme.typography.labelLarge, maxLines = 1)
         Row(verticalAlignment = Alignment.Bottom) {
             Text("${d.dogru}", fontFamily = Baslik, fontSize = 26.sp, color = if (vurgu) Altin else Yesil)
-            Text(" doğru", color = if (vurgu) KremSoluk else MetinSoluk, fontSize = 12.sp, modifier = Modifier.padding(bottom = 4.dp))
+            Text(" Doğru", color = if (vurgu) KremSoluk else MetinSoluk, fontSize = 12.sp, modifier = Modifier.padding(bottom = 4.dp))
         }
         Bosluk(4)
         Box(Modifier.fillMaxWidth().height(5.dp).clip(RoundedCornerShape(3.dp)).background(if (vurgu) YesilKoyu else Zemin)) {
             Box(Modifier.fillMaxWidth(d.cevaplanan / toplam.toFloat()).height(5.dp).background(Altin))
         }
-        Text(if (d.bitti) "bitirdi ✓" else "${d.cevaplanan}/$toplam soru", color = if (vurgu) KremSoluk else MetinSoluk, fontSize = 11.sp)
+        Text(if (d.bitti) "Bitirdi ✓" else "${d.cevaplanan}/$toplam Soru", color = if (vurgu) KremSoluk else MetinSoluk, fontSize = 11.sp)
     }
 }
 
 @Composable
 private fun CanliSonuc(a: Asama.Sonuc, tekrar: () -> Unit, geri: () -> Unit) {
     val s = sonucHesapla(a.benim, a.rakip)
-    Scaffold(topBar = { UstCubuk("Düello sonucu", geri) }, containerColor = Zemin) { ic ->
+    Scaffold(topBar = { UstCubuk("Düello Sonucu", geri) }, containerColor = Zemin) { ic ->
         Column(
             Modifier.fillMaxSize().padding(ic).padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -395,7 +395,7 @@ private fun CanliSonuc(a: Asama.Sonuc, tekrar: () -> Unit, geri: () -> Unit) {
                 if (a.benim.terk) "XP kazanılmadı" else "+" + when (s) { 1 -> if (a.bot) 15 else 40; 0 -> if (a.bot) 8 else 20; else -> 5 } + " XP",
                 color = Yesil, style = MaterialTheme.typography.titleMedium,
             )
-            Button(onClick = tekrar, modifier = Modifier.fillMaxWidth().height(54.dp)) { Text("⚔️ Yeni rakip bul") }
+            Button(onClick = tekrar, modifier = Modifier.fillMaxWidth().height(54.dp)) { Text("⚔️ Yeni Rakip Bul") }
             OutlinedButton(onClick = geri, modifier = Modifier.fillMaxWidth().height(50.dp)) { Text("Kapat") }
         }
     }

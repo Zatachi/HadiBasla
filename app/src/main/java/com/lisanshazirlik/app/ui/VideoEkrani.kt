@@ -75,7 +75,7 @@ fun VideoEkrani(
                 androidx.compose.material3.Button(
                     onClick = bitti,
                     modifier = Modifier.fillMaxWidth().background(Color.Black).padding(16.dp).height(52.dp),
-                ) { Text(if (izlendi) "Devam et: sorulara geç" else "İzledim, devam et") }
+                ) { Text(if (izlendi) "Devam Et: Sorulara Geç" else "İzledim, Devam Et") }
             }
         },
         containerColor = Color.Black,
@@ -126,17 +126,17 @@ fun VideoEkrani(
                             androidx.compose.material3.Button(
                                 onClick = { cevaplanan += soru.id; soruAni = null; oynatici?.start() },
                                 modifier = Modifier.fillMaxWidth().height(50.dp),
-                            ) { Text("▶ Videoya devam") }
+                            ) { Text("▶ Videoya Devam") }
                         } else {
                             Text("✗ Olmadı. O kısmı bir daha izleyelim.", color = YanlisKirmizi, style = MaterialTheme.typography.titleMedium)
                             androidx.compose.material3.Button(
                                 onClick = { soruAni = null; oynatici?.seekTo((vs.geri * 1000).toInt()); oynatici?.start() },
                                 modifier = Modifier.fillMaxWidth().height(50.dp),
-                            ) { Text("⟲ O kısmı tekrar izle") }
+                            ) { Text("⟲ O Kısmı Tekrar İzle") }
                             androidx.compose.material3.TextButton(
                                 onClick = { cevaplanan += soru.id; soruAni = null; oynatici?.start() },
                                 modifier = Modifier.fillMaxWidth(),
-                            ) { Text("Yine de devam et") }
+                            ) { Text("Yine de Devam Et") }
                         }
                     }
                 }

@@ -43,7 +43,7 @@ fun CozEkrani(
     kayit: YerelKayit,
     cevapla: (Soru, Boolean) -> Unit,
     geri: () -> Unit,
-    /** Eğitim paketinde: sonuç ekranında "Devam et" gösterilir. */
+    /** Eğitim paketinde: sonuç ekranında "Devam Et" gösterilir. */
     adimBitti: ((dogru: Int, toplam: Int) -> Unit)? = null,
 ) {
     var liste by remember { mutableStateOf(sorular) }
@@ -82,9 +82,9 @@ fun CozEkrani(
                     ) {
                         Text(
                             when {
-                                secim == null -> "Bir şık seç"
-                                sonMu -> "Sonucu gör"
-                                else -> "Sonraki soru"
+                                secim == null -> "Bir Şık Seç"
+                                sonMu -> "Sonucu Gör"
+                                else -> "Sonraki Soru"
                             }
                         )
                     }
@@ -174,13 +174,13 @@ private fun Sonuc(dogru: Int, toplam: Int, modifier: Modifier, tekrar: () -> Uni
         )
         Bosluk(28)
         if (devam != null) {
-            Button(onClick = devam, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Devam et") }
+            Button(onClick = devam, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Devam Et") }
             Bosluk(10)
-            OutlinedButton(onClick = tekrar, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Tekrar çöz") }
+            OutlinedButton(onClick = tekrar, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Tekrar Çöz") }
         } else {
-            Button(onClick = tekrar, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Tekrar çöz") }
+            Button(onClick = tekrar, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Tekrar Çöz") }
             Bosluk(10)
-            OutlinedButton(onClick = geri, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Geri dön") }
+            OutlinedButton(onClick = geri, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Geri Dön") }
         }
     }
 }

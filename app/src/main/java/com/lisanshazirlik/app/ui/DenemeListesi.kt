@@ -94,7 +94,7 @@ fun DenemeListesiEkrani(
                     ) {
                         Text("🔓", fontSize = 22.sp)
                         Column(Modifier.weight(1f).padding(start = 10.dp)) {
-                            Text("Deneme 1 ücretsiz", style = MaterialTheme.typography.titleMedium)
+                            Text("Deneme 1 Ücretsiz", style = MaterialTheme.typography.titleMedium)
                             Text("Diğerleri Premium ile açılır. Premium'u davetle ya da haftalık ligde kazanabilirsin.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                         }
                     }

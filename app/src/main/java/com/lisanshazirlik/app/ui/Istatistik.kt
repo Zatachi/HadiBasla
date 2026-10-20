@@ -87,7 +87,7 @@ fun IstatistikSekme(
             ust()
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Sayi(Modifier.weight(1f), "Çözülen", "$cozulen")
-                Sayi(Modifier.weight(1f), "Doğru oranı", if (cozulen == 0) "–" else "%${yuzde(dogru, cozulen)}")
+                Sayi(Modifier.weight(1f), "Doğru Oranı", if (cozulen == 0) "–" else "%${yuzde(dogru, cozulen)}")
                 Sayi(Modifier.weight(1f), "Deneme", "${denemeler.size}")
             }
 
@@ -104,14 +104,14 @@ fun IstatistikSekme(
             }
 
             KartKutu {
-                Text("Son 14 gün", style = MaterialTheme.typography.titleMedium)
+                Text("Son 14 Gün", style = MaterialTheme.typography.titleMedium)
                 Text("Günlük çözülen soru; koyu kısım doğrular.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 Bosluk(12)
                 GunlukGrafik(depo)
             }
 
             KartKutu {
-                Text("Deneme puanların", style = MaterialTheme.typography.titleMedium)
+                Text("Deneme Puanların", style = MaterialTheme.typography.titleMedium)
                 Bosluk(4)
                 if (denemeler.isEmpty()) {
                     Text("Deneme çözdükçe puanlarının gelişimi burada görünür.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
@@ -123,12 +123,12 @@ fun IstatistikSekme(
             }
 
             KartKutu {
-                Text("Konu haritası", style = MaterialTheme.typography.titleMedium)
+                Text("Konu Haritası", style = MaterialTheme.typography.titleMedium)
                 Bosluk(4)
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Lejant(DogruZemin, "%75+")
                     Lejant(SariZemin, "%50–74")
-                    Lejant(YanlisZemin, "%50 altı")
+                    Lejant(YanlisZemin, "%50 Altı")
                     Lejant(Zemin, "Başlanmadı")
                 }
                 dersler.forEach { d ->
@@ -294,7 +294,7 @@ fun SonuclarEkrani(banka: SoruBankasi, depo: KullaniciDeposu, lisans: String?, g
                     modifier = Modifier.size(52.dp),
                 )
                 Column(Modifier.weight(1f).padding(start = 14.dp)) {
-                    Text("Sertifika cüzdanın", fontFamily = Baslik, fontSize = 20.sp, color = Krem)
+                    Text("Sertifika Cüzdanın", fontFamily = Baslik, fontSize = 20.sp, color = Krem)
                     Text("${banka.lisanslar.size} lisanstan $alinan tanesi alındı", style = MaterialTheme.typography.bodyMedium, color = KremSoluk)
                 }
                 Text("$alinan", fontFamily = Baslik, fontSize = 34.sp, color = Altin)
@@ -333,7 +333,7 @@ fun SonuclarEkrani(banka: SoruBankasi, depo: KullaniciDeposu, lisans: String?, g
                         when (durum) {
                             LisansDurumu.ALINDI -> "Alındı"
                             LisansDurumu.DEVAM -> "Devam"
-                            LisansDurumu.BASLANMADI -> "+ Puan gir"
+                            LisansDurumu.BASLANMADI -> "+ Puan Gir"
                         },
                         style = MaterialTheme.typography.labelMedium,
                         color = when (durum) {
@@ -393,28 +393,28 @@ private fun LisansSonucDetay(banka: SoruBankasi, depo: KullaniciDeposu, lisans: 
                     when {
                         lisansTamam -> "Lisans koşulunu sağladın 🎉"
                         hepsiGecti -> "Ortalamanı 60'a çıkarman gerekiyor"
-                        else -> "Lisans yolundaki durumun"
+                        else -> "Lisans Yolundaki Durumun"
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = if (lisansTamam) Altin else KremSoluk,
                 )
                 Bosluk(14)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    SertifikaKutusu(Modifier.weight(1f), "$gecilen/${dersler.size}", "geçilen ders")
-                    SertifikaKutusu(Modifier.weight(1f), if (girilen.isEmpty()) "–" else "$ortalama", "ortalama")
+                    SertifikaKutusu(Modifier.weight(1f), "$gecilen/${dersler.size}", "Geçilen Ders")
+                    SertifikaKutusu(Modifier.weight(1f), if (girilen.isEmpty()) "–" else "$ortalama", "Ortalama")
                 }
             }
 
             // Koşullar
             KartKutu {
-                Text("Lisans için iki koşul", style = MaterialTheme.typography.titleMedium)
+                Text("Lisans İçin İki Koşul", style = MaterialTheme.typography.titleMedium)
                 Bosluk(8)
-                KosulSatiri(hepsiGecti, "Her dersten en az 50")
+                KosulSatiri(hepsiGecti, "Her Dersten En Az 50")
                 Bosluk(6)
-                KosulSatiri(hepsiGirildi && ortalama >= 60, "Ortalama en az 60")
+                KosulSatiri(hepsiGirildi && ortalama >= 60, "Ortalama En Az 60")
             }
 
-            Text("Sınav puanların", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(start = 4.dp, top = 4.dp))
+            Text("Sınav Puanların", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(start = 4.dp, top = 4.dp))
             dersler.forEachIndexed { i, d ->
                 val s2 = etkinSonuc(sonuclar, d.kod)
                 val renk = dersRengi(d.kod)
@@ -443,7 +443,7 @@ private fun LisansSonucDetay(banka: SoruBankasi, depo: KullaniciDeposu, lisans: 
                     }
                     if (s2 == null) {
                         Text(
-                            "+ Puan gir",
+                            "+ Puan Gir",
                             style = MaterialTheme.typography.labelLarge,
                             color = Krem,
                             modifier = Modifier.clip(RoundedCornerShape(50)).background(Yesil).padding(horizontal = 14.dp, vertical = 9.dp),
@@ -456,7 +456,7 @@ private fun LisansSonucDetay(banka: SoruBankasi, depo: KullaniciDeposu, lisans: 
                             ) {
                                 Text("${s2.puan}", style = MaterialTheme.typography.titleMedium, color = Krem)
                             }
-                            Text("✎ düzenle", fontSize = 11.sp, color = MetinSoluk)
+                            Text("✎ Düzenle", fontSize = 11.sp, color = MetinSoluk)
                         }
                     }
                 }
@@ -505,7 +505,7 @@ private fun SonucPenceresi(
                 OutlinedTextField(
                     value = puan,
                     onValueChange = { yeni -> puan = yeni.filter { it.isDigit() }.take(3) },
-                    label = { Text("Aldığın puan (0–100)") },
+                    label = { Text("Aldığın Puan (0–100)") },
                     singleLine = true,
                     isError = puan.isNotEmpty() && !gecerli,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -513,7 +513,7 @@ private fun SonucPenceresi(
                 )
                 if (puan.isNotEmpty() && !gecerli) Text("Puan 0 ile 100 arasında olmalı.", color = YanlisKirmizi, fontSize = 13.sp)
                 OutlinedButton(onClick = { takvim = true }, modifier = Modifier.fillMaxWidth()) {
-                    Text(tarih?.let { "Sınav tarihi: ${uzunTarih(it)}" } ?: "Sınav tarihini seç (isteğe bağlı)")
+                    Text(tarih?.let { "Sınav Tarihi: ${uzunTarih(it)}" } ?: "Sınav Tarihini Seç (İsteğe Bağlı)")
                 }
                 if (sil != null) {
                     TextButton(onClick = sil) { Text("Sonucu kaldır", color = YanlisKirmizi) }
@@ -524,7 +524,7 @@ private fun SonucPenceresi(
         dismissButton = { TextButton(onClick = kapat) { Text("Vazgeç") } },
     )
     if (takvim) {
-        TarihPenceresi(tarih, kapat = { takvim = false }, gecmis = true, baslik = "Sınava girdiğin tarih") {
+        TarihPenceresi(tarih, kapat = { takvim = false }, gecmis = true, baslik = "Sınava Girdiğin Tarih") {
             tarih = it; takvim = false
         }
     }

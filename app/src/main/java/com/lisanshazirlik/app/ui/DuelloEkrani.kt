@@ -84,7 +84,7 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
                         }
                         durum = if (kayit != null) DuelloDurumu.Sonuc(kayit) else DuelloDurumu.Ana
                     } catch (e: Exception) {
-                        hata = e.message ?: "Bağlantı sorunu"; durum = DuelloDurumu.Ana
+                        hata = e.message ?: "Bağlantı Sorunu"; durum = DuelloDurumu.Ana
                     }
                 }
             }
@@ -107,7 +107,7 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text("⚔️", fontSize = 44.sp)
-                Text("Canlı düello", fontFamily = Baslik, fontSize = 22.sp, color = Krem)
+                Text("Canlı Düello", fontFamily = Baslik, fontSize = 22.sp, color = Krem)
                 Text(
                     "5 soru · en çok doğru yapan kazanır · eşitlikte hızlı olan",
                     color = KremSoluk,
@@ -122,12 +122,12 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
                 Button(
                     onClick = canliBasla,
                     modifier = Modifier.fillMaxWidth().height(56.dp),
-                ) { Text("⚔️ Rakip bul", fontSize = 18.sp) }
+                ) { Text("⚔️ Rakip Bul", fontSize = 18.sp) }
                 Text("Aynı derse çalışan biriyle anında eşleşirsin.", color = KremSoluk, fontSize = 12.sp)
             }
 
             KartKutu {
-                Text("Arkadaşınla yarış", style = MaterialTheme.typography.titleMedium)
+                Text("Arkadaşınla Yarış", style = MaterialTheme.typography.titleMedium)
                 Text("Soruları çöz, kodu arkadaşına gönder; o da aynı soruları çözsün.", color = MetinSoluk, style = MaterialTheme.typography.bodyMedium)
                 Bosluk(8)
                 OutlinedButton(
@@ -136,7 +136,7 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
                         if (s.isEmpty()) hata = "Bu dersin soruları henüz hazır değil. Eğitim'den başka bir ders seçebilirsin." else durum = DuelloDurumu.Oyun(s, null)
                     },
                     modifier = Modifier.fillMaxWidth().height(48.dp),
-                ) { Text("📤 Kodlu düello başlat") }
+                ) { Text("📤 Kodlu Düello Başlat") }
             }
 
             KartKutu {
@@ -146,7 +146,7 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
                     OutlinedTextField(
                         value = kod,
                         onValueChange = { kod = it.uppercase().filter { c -> c.isLetterOrDigit() }.take(6); hata = null },
-                        placeholder = { Text("Kod (6 harf)") },
+                        placeholder = { Text("Kod (6 Harf)") },
                         singleLine = true,
                         modifier = Modifier.weight(1f),
                     )
@@ -256,7 +256,7 @@ private fun DuelloSonucu(k: DuelloKaydi, uid: String, geri: () -> Unit) {
     val ctx = LocalContext.current
     val benKurucu = uid == k.kurucu
     val s = k.sonuc(uid)
-    Scaffold(topBar = { UstCubuk("Düello sonucu", geri) }, containerColor = Zemin) { ic ->
+    Scaffold(topBar = { UstCubuk("Düello Sonucu", geri) }, containerColor = Zemin) { ic ->
         Column(
             Modifier.fillMaxSize().padding(ic).verticalScroll(rememberScrollState()).padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -264,7 +264,7 @@ private fun DuelloSonucu(k: DuelloKaydi, uid: String, geri: () -> Unit) {
         ) {
             Text(when (s) { 1 -> "🏆"; 0 -> "🤝"; -1 -> "😤"; else -> "⏳" }, fontSize = 64.sp)
             Text(
-                when (s) { 1 -> "Kazandın!"; 0 -> "Berabere!"; -1 -> "Bu sefer kaybettin"; else -> "Rakibini bekliyorsun" },
+                when (s) { 1 -> "Kazandın!"; 0 -> "Berabere!"; -1 -> "Bu sefer kaybettin"; else -> "Rakibini Bekliyorsun" },
                 fontFamily = Baslik, fontSize = 28.sp,
             )
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -273,20 +273,20 @@ private fun DuelloSonucu(k: DuelloKaydi, uid: String, geri: () -> Unit) {
             }
             if (!k.bitti && benKurucu) {
                 KartKutu {
-                    Text("Kodu arkadaşına gönder", style = MaterialTheme.typography.titleMedium)
+                    Text("Kodu Arkadaşına Gönder", style = MaterialTheme.typography.titleMedium)
                     Bosluk(6)
                     Text(k.kod, fontFamily = Baslik, fontSize = 40.sp, color = Yesil, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                     Bosluk(8)
                     Button(
                         onClick = {
                             val metin = "Lisansla'da seni düelloya davet ediyorum! ⚔️ 5 soruda ${k.kurucuDogru} doğru yaptım, geçebilir misin? Uygulamada Düello → Kodla katıl: ${k.kod}"
-                            ctx.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, metin), "Düello kodunu paylaş"))
+                            ctx.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, metin), "Düello Kodunu Paylaş"))
                         },
                         modifier = Modifier.fillMaxWidth().height(50.dp),
                     ) { Text("📤 Paylaş") }
                 }
             }
-            OutlinedButton(onClick = geri, modifier = Modifier.fillMaxWidth().height(50.dp)) { Text("Düellolara dön") }
+            OutlinedButton(onClick = geri, modifier = Modifier.fillMaxWidth().height(50.dp)) { Text("Düellolara Dön") }
         }
     }
 }
@@ -302,6 +302,6 @@ private fun OyuncuKutusu(modifier: Modifier, ad: String, dogru: Int?, sure: Int?
         }
         Text(ad, style = MaterialTheme.typography.titleMedium, maxLines = 1)
         Text(if (dogru != null) "$dogru/5" else "–", fontFamily = Baslik, fontSize = 30.sp, color = Yesil)
-        Text(if (sure != null) "$sure sn" else "oynamadı", color = MetinSoluk, fontSize = 12.sp)
+        Text(if (sure != null) "$sure sn" else "Oynamadı", color = MetinSoluk, fontSize = 12.sp)
     }
 }

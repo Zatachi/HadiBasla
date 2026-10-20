@@ -62,11 +62,11 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
 
     val bannerlar = buildList {
         videolar.lastOrNull()?.let { (d, kn) ->
-            add(Banner("YENİ VİDEO", kn.ad, "${d.kisaAd} · sesli animasyonlu anlatım", "🎬", YesilKoyu) { y.konuAc(kn.id) })
+            add(Banner("YENİ VİDEO", kn.ad, "${d.kisaAd} · Sesli Animasyonlu Anlatım", "🎬", YesilKoyu) { y.konuAc(kn.id) })
         }
-        add(Banner("HAFTALIK LİG", "İlk 3'e ${Oyun.HAFTALIK_ODUL_GUN} gün Premium", "Soru çöz, XP topla, zirveye çık", "🏆", Color(0xFF7A5A12)) { y.basariAc(BasariBolumu.SIRALAMA) })
-        add(Banner("DAVET ET", "3 arkadaşına 7 gün Premium", "Davet kodunu paylaş, birlikte çalışın", "🎁", Color(0xFF7A2E3A)) { y.basariAc(BasariBolumu.DAVET) })
-        add(Banner("DENEME", "Gerçek sınav gibi dene", "25 soru · 45 dakika · anında sonuç", "⏱", Color(0xFF24476B)) { y.sekmeAc(Sekme.DENEME) })
+        add(Banner("HAFTALIK LİG", "İlk 3'e ${Oyun.HAFTALIK_ODUL_GUN} Gün Premium", "Soru Çöz, XP Topla, Zirveye Çık", "🏆", Color(0xFF7A5A12)) { y.basariAc(BasariBolumu.SIRALAMA) })
+        add(Banner("DAVET ET", "3 Arkadaşına 7 Gün Premium", "Davet Kodunu Paylaş, Birlikte Çalışın", "🎁", Color(0xFF7A2E3A)) { y.basariAc(BasariBolumu.DAVET) })
+        add(Banner("DENEME", "Gerçek Sınav Gibi Dene", "25 Soru · 45 Dakika · Anında Sonuç", "⏱", Color(0xFF24476B)) { y.sekmeAc(Sekme.DENEME) })
     }
 
     val kisayollar = listOf(
@@ -109,11 +109,11 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
             val bekleyen = com.lisanshazirlik.app.data.Tekrar.bekleyenler(banka, depo, listOfNotNull(odak?.kod)).size
             Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 OneCikan(
-                    Modifier.weight(1f), "▶", "Shorts", odak?.let { "${it.kod} · kısa videolar ve sorular" } ?: "Kısa videolar ve hızlı sorular",
+                    Modifier.weight(1f), "▶", "Shorts", odak?.let { "${it.kod} · Kısa Videolar ve Sorular" } ?: "Kısa Videolar ve Hızlı Sorular",
                     androidx.compose.ui.graphics.Color(0xFF7A2E3A), y.shorts,
                 )
                 OneCikan(
-                    Modifier.weight(1f), "🔁", "Günün 5 dakikası",
+                    Modifier.weight(1f), "🔁", "Günün 5 Dakikası",
                     if (bekleyen > 0) "${odak?.kod.orEmpty()} · $bekleyen soru tekrar zamanında" else "${odak?.kod.orEmpty()} · akıllı tekrar turu",
                     YesilKoyu, y.gunun5,
                 )
@@ -212,7 +212,7 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
             ) {
                 Text(
                     when {
-                        enYakin == null -> "📅  Sınav tarihini ekle"
+                        enYakin == null -> "📅  Sınav Tarihini Ekle"
                         enYakin.kalanGun() == 0L -> "📅  ${banka.ders(enYakin.ders)?.kisaAd} sınavı bugün!"
                         else -> "📅  ${banka.ders(enYakin.ders)?.kisaAd} sınavına ${enYakin.kalanGun()} gün"
                     },
@@ -230,7 +230,7 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
 
         // Videolar
         if (videolar.isEmpty()) {
-            item { BolumBasligi("Video anlatımlar") }
+            item { BolumBasligi("Video Anlatımlar") }
             item {
                 Text(
                     "🎬 ${banka.lisans(k?.lisans)?.kisaAd ?: "Bu lisans"} videoları hazırlanıyor.",
@@ -241,7 +241,7 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
             }
         }
         if (videolar.isNotEmpty()) {
-            item { BolumBasligi("Video anlatımlar", "Tümü") { y.sekmeAc(Sekme.DERSLER) } }
+            item { BolumBasligi("Video Anlatımlar", "Tümü") { y.sekmeAc(Sekme.DERSLER) } }
             item {
                 LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     items(videolar.reversed(), key = { "v" + it.second.id }) { (d, kn) ->
@@ -303,7 +303,7 @@ private fun Liderler(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y:
     }
 
     Column {
-        BolumBasligi("🏆 Haftanın liderleri", "Tümü") { y.basariAc(BasariBolumu.SIRALAMA) }
+        BolumBasligi("🏆 Haftanın Liderleri", "Tümü") { y.basariAc(BasariBolumu.SIRALAMA) }
         Bosluk(8)
         KartKutu(Modifier.padding(horizontal = 16.dp), tikla = { y.basariAc(BasariBolumu.SIRALAMA) }) {
             val liste = ilk
@@ -322,7 +322,7 @@ private fun Liderler(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y:
             Bosluk(12)
             Text(
                 when {
-                    k?.siralamaKatil != true -> "Sen de katıl, adın listede görünsün →"
+                    k?.siralamaKatil != true -> "Sen de Katıl, Adın Listede Görünsün →"
                     siram != null -> "Sen bu hafta $siram. sıradasın · ${k?.buHaftaXp() ?: 0} XP"
                     else -> "Bu hafta soru çöz, listeye gir."
                 },

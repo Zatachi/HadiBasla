@@ -3,11 +3,11 @@ package com.lisanshazirlik.app.data
 /** Eğitim paketi: bir dersin konularını sırayla öğren → tekrar et → soru çöz, sonunda ders denemesi. */
 object Paket {
     enum class Tur(val simge: String, val ad: String) {
-        VIDEO("🎬", "Video anlatım"),
-        OZET("📖", "Konu özeti"),
-        KARTLAR("🃏", "Bilgi kartları"),
-        SORU("✏️", "Konu soruları"),
-        DENEME("⏱", "Ders denemesi"),
+        VIDEO("🎬", "Video Anlatım"),
+        OZET("📖", "Konu Özeti"),
+        KARTLAR("🃏", "Bilgi Kartları"),
+        SORU("✏️", "Konu Soruları"),
+        DENEME("⏱", "Ders Denemesi"),
     }
 
     data class Adim(val id: String, val tur: Tur, val konu: Konu?, val baslik: String)

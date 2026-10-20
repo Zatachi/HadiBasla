@@ -66,8 +66,8 @@ fun denemeSoruSayisi(banka: SoruBankasi, dersler: List<com.lisanshazirlik.app.da
 fun denemeSuresiDk(adet: Int): Int = (adet * SINAV_DAKIKA + SINAV_SORU - 1) / SINAV_SORU
 
 fun denemeBasligi(kapsam: String, banka: SoruBankasi): String = when {
-    kapsam == "genel" -> "Genel deneme"
-    kapsam.startsWith("konu:") -> banka.konu(kapsam.removePrefix("konu:"))?.second?.ad ?: "Konu testi"
+    kapsam == "genel" -> "Genel Deneme"
+    kapsam.startsWith("konu:") -> banka.konu(kapsam.removePrefix("konu:"))?.second?.ad ?: "Konu Testi"
     else -> banka.ders(kapsam)?.kisaAd ?: "Deneme"
 }
 
@@ -126,7 +126,7 @@ fun DenemeEkrani(
     BackHandler(enabled = !bitti) { cikSor = true }
 
     if (sorular.isEmpty()) {
-        Scaffold(topBar = { UstCubuk("Deneme sınavı", geri) }, containerColor = Zemin) { ic ->
+        Scaffold(topBar = { UstCubuk("Deneme Sınavı", geri) }, containerColor = Zemin) { ic ->
             Text("Deneme için henüz yeterli soru yok.", modifier = Modifier.padding(ic).padding(24.dp))
         }
         return
@@ -223,19 +223,19 @@ fun DenemeEkrani(
         val bos = sorular.size - cevaplar.size
         AlertDialog(
             onDismissRequest = { bitirSor = false },
-            title = { Text("Sınavı bitir") },
+            title = { Text("Sınavı Bitir") },
             text = { Text(if (bos > 0) "$bos soruyu boş bıraktın. Yine de bitirmek istiyor musun?" else "Cevaplarını göndermek üzeresin.") },
             confirmButton = { TextButton(onClick = { bitirSor = false; bitir() }) { Text("Bitir") } },
-            dismissButton = { TextButton(onClick = { bitirSor = false }) { Text("Devam et") } },
+            dismissButton = { TextButton(onClick = { bitirSor = false }) { Text("Devam Et") } },
         )
     }
     if (cikSor) {
         AlertDialog(
             onDismissRequest = { cikSor = false },
-            title = { Text("Sınavdan çık") },
+            title = { Text("Sınavdan Çık") },
             text = { Text("Çıkarsan bu denemedeki cevapların kaydedilmez.") },
             confirmButton = { TextButton(onClick = { cikSor = false; bitti = true; geri() }) { Text("Çık") } },
-            dismissButton = { TextButton(onClick = { cikSor = false }) { Text("Devam et") } },
+            dismissButton = { TextButton(onClick = { cikSor = false }) { Text("Devam Et") } },
         )
     }
 }
@@ -269,7 +269,7 @@ private fun DenemeSonucuEkrani(
     val (dersPuanlari, ortalama, gecti) = denemeSonucuHesapla(sorular, cevaplar, banka)
     val incelenecek = sorular.indices.filter { cevaplar[it] != sorular[it].dogru }
 
-    Scaffold(topBar = { UstCubuk("Deneme sonucu", geri) }, containerColor = Zemin) { ic ->
+    Scaffold(topBar = { UstCubuk("Deneme Sonucu", geri) }, containerColor = Zemin) { ic ->
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(ic),
             contentPadding = PaddingValues(16.dp),
@@ -277,7 +277,7 @@ private fun DenemeSonucuEkrani(
         ) {
             item {
                 KartKutu {
-                    Etiket("Ortalama puan")
+                    Etiket("Ortalama Puan")
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text("$ortalama", fontFamily = Baslik, fontSize = 52.sp, color = if (gecti) DogruYesil else YanlisKirmizi)
                         Text(
@@ -309,7 +309,7 @@ private fun DenemeSonucuEkrani(
                 }
             }
             if (incelenecek.isNotEmpty()) {
-                item { Etiket("Yanlış ve boş sorular", Modifier.padding(start = 4.dp, top = 8.dp)) }
+                item { Etiket("Yanlış ve Boş Sorular", Modifier.padding(start = 4.dp, top = 8.dp)) }
                 items(incelenecek, key = { "inc$it" }) { i ->
                     val s = sorular[i]
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -317,7 +317,7 @@ private fun DenemeSonucuEkrani(
                             SoruMetni(s, "Soru ${i + 1} · ${banka.ders(s.ders)?.kisaAd ?: s.ders}")
                             cevaplar[i]?.let {
                                 Bosluk(8)
-                                Text("Senin cevabın: ${HARFLER[it]}) ${s.secenekler[it]}", style = MaterialTheme.typography.bodyMedium, color = YanlisKirmizi)
+                                Text("Senin Cevabın: ${HARFLER[it]}) ${s.secenekler[it]}", style = MaterialTheme.typography.bodyMedium, color = YanlisKirmizi)
                             }
                         }
                         Aciklama(s, cevaplar[i])
@@ -325,7 +325,7 @@ private fun DenemeSonucuEkrani(
                 }
             }
             item {
-                Button(onClick = geri, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Ana sayfaya dön") }
+                Button(onClick = geri, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Ana Sayfaya Dön") }
             }
         }
     }

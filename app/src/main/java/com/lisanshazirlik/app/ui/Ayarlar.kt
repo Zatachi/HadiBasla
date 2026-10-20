@@ -65,8 +65,8 @@ fun LisansSecici(lisanslar: List<Lisans>, secili: String?, icerikVar: (Lisans) -
                     Text(
                         when {
                             !l.aktif -> "Yakında"
-                            icerikVar(l) -> "${l.dersler.size} ders"
-                            else -> "${l.dersler.size} ders · içerik yakında"
+                            icerikVar(l) -> "${l.dersler.size} Ders"
+                            else -> "${l.dersler.size} Ders · İçerik Yakında"
                         },
                         style = MaterialTheme.typography.bodyMedium,
                         color = if (l.aktif && !icerikVar(l)) Sari2 else MetinSoluk,
@@ -110,7 +110,7 @@ fun HatirlatmaEkrani(kayit: YerelKayit, geri: () -> Unit) {
         if (verildi) ac() else izinReddedildi = true
     }
 
-    Scaffold(topBar = { UstCubuk("Günlük hatırlatma", geri) }, containerColor = Zemin) { ic ->
+    Scaffold(topBar = { UstCubuk("Günlük Hatırlatma", geri) }, containerColor = Zemin) { ic ->
         Column(
             Modifier.fillMaxSize().padding(ic).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -118,7 +118,7 @@ fun HatirlatmaEkrani(kayit: YerelKayit, geri: () -> Unit) {
             KartKutu {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
-                        Text("Her gün hatırlat", style = MaterialTheme.typography.titleMedium)
+                        Text("Her Gün Hatırlat", style = MaterialTheme.typography.titleMedium)
                         Text("Seçtiğin saatte çalışma bildirimi gelir.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                     }
                     Switch(
@@ -154,7 +154,7 @@ fun HatirlatmaEkrani(kayit: YerelKayit, geri: () -> Unit) {
         val durum = rememberTimePickerState(initialHour = dk / 60, initialMinute = dk % 60, is24Hour = true)
         AlertDialog(
             onDismissRequest = { saatSec = false },
-            title = { Text("Hatırlatma saati") },
+            title = { Text("Hatırlatma Saati") },
             text = { TimePicker(state = durum) },
             confirmButton = {
                 TextButton(onClick = {
