@@ -1,91 +1,187 @@
 {
   "dizi": "Takas'ın Sırları",
   "ders": "1012",
-  "not": "Her bölüm 40-55 sn. İlk cümle kanca, tek kavram, son cümle sıradaki bölüme merak. Metinler SPL notları rehber alınarak özgün yazılmıştır.",
+  "not": "Kitap sırasıyla: Temel Kavramlar → Takas, Saklama ve Kaydileştirme → Pay Piyasası → Borçlanma Araçları → Teminat. Her bölüm 40-60 sn; ilk cümle kanca, son cümle merak. SPL notları rehber alınarak özgün yazılmıştır.",
   "bolumler": [
     {
       "bolum": 1,
-      "baslik": "Hisseyi aldın ama henüz senin değil",
-      "metin": "Borsadan bir hisse aldın, ekranında görüyorsun. Ama sana bir sır vereyim: o hisse henüz tam olarak senin değil. Borsada alım satımın gerçekleştiği güne T günü diyoruz. Paranın gerçekten satıcıya, hissenin de gerçekten sana geçtiği an ise takas. Pay piyasasında takas, işlem gününden sonraki ikinci iş günü yapılır. Buna kısaca T artı iki denir. Yani pazartesi aldıysan, hisse çarşamba günü kesin olarak senin hesabına yerleşir. Takas tarihinden önce erkenden ödeyip işi bitirmek de mümkün değil; herkes aynı kurala uyar.",
-      "merak": "Peki araya hafta sonu girerse ne olur?",
-      "miniSoru": {"metin": "Pazartesi alınan hissenin takası ne zaman?", "secenekler": ["Salı", "Çarşamba"], "dogru": 1}
+      "konu": "1012-01",
+      "baslik": "Takas aslında ne demek?",
+      "metin": "Borsada bir düğmeye bastın, işlem gerçekleşti. Peki her şey bitti mi? Hayır, asıl iş şimdi başlıyor. Alım satım sadece bir anlaşma. Paranın gerçekten satıcıya, hissenin de gerçekten alıcıya geçmesi gerekiyor. İşte bu sürecin adı takas. Daha resmi söylersek: piyasada yapılan işlemlerden doğan yükümlülüklerin, Takasbank'ın belirlediği süre ve şartlarda üyeler tarafından yerine getirilmesiyle, taraflar arasında nakdin ve varlıkların el değiştirmesini sağlayan süreçlerin tamamı. Yani işlem bir söz, takas o sözün yerine getirilmesi.",
+      "merak": "Bu sözü kim tutturuyor? Sahnedeki oyuncularla tanışalım.",
+      "miniSoru": {
+        "metin": "Takas neyi ifade eder?",
+        "secenekler": [
+          "İşlemden doğan yükümlülüklerin yerine getirilmesini",
+          "Emrin borsaya iletilmesini"
+        ],
+        "dogru": 0
+      }
     },
     {
       "bolum": 2,
-      "baslik": "Hafta sonu sayılmaz",
-      "metin": "Cuma öğleden sonra hisse aldın. Takas pazar günü mü olur? Hayır. T artı iki hesabında sadece iş günleri sayılır. Peki iş günü ne demek? Hem Takasbank'ın hem de Borsa İstanbul Pay Piyasası'nın açık olduğu gün. Cumartesi ve pazar sayılmaz, resmi tatiller de sayılmaz. O yüzden cuma yapılan işlemin takası, bir sonraki salı günü gerçekleşir. Sınavda tarih sorusu gelirse önce takvime bak, tatilleri ayıkla, sonra iki iş günü say.",
-      "merak": "Bayram öncesi yarım günde işlem yaparsan ne olur?",
-      "miniSoru": {"metin": "Cuma yapılan işlemin takası hangi gün?", "secenekler": ["Pazar", "Salı"], "dogru": 1}
+      "konu": "1012-01",
+      "baslik": "Sahnedeki dört oyuncu",
+      "metin": "Bir hisse işleminin arkasında dört önemli kurum var. Birincisi Borsa İstanbul: alım ve satım emirleri burada buluşur, işlem burada gerçekleşir. İkincisi Takasbank, yani İstanbul Takas ve Saklama Bankası: işlemden sonra para ve varlık değişimini yönetir. Üçüncüsü MKK, Merkezi Kayıt Kuruluşu: kimin hangi sermaye piyasası aracına sahip olduğunun elektronik kaydı burada izlenir. Dördüncüsü Merkez Bankası: devlet iç borçlanma senetlerinin takasında rol oynar. Kısaca: borsa eşleştirir, Takasbank takas eder, MKK kaydeder.",
+      "merak": "Takasbank'ın en güçlü rolü ne? Hem alıcı hem satıcı olabiliyor.",
+      "miniSoru": {
+        "metin": "Kimin hangi araca sahip olduğunun kaydı nerede izlenir?",
+        "secenekler": [
+          "MKK",
+          "Borsa İstanbul"
+        ],
+        "dogru": 0
+      }
     },
     {
       "bolum": 3,
-      "baslik": "Yarım günün tuzağı",
-      "metin": "Bayram arifesinde borsa sadece yarım gün açık. O gün hisse aldın. Takasın ne zaman olur? İşte sınavın sevdiği tuzak: yarım günlerde takas yapılmaz. Yarım günde yapılan işlemler, bir önceki iş gününün işlemleriyle birleştirilir ve yarım günü izleyen ikinci iş gününde hep birlikte takas edilir. Yani yarım gün, takas takviminde kendi başına bir gün gibi davranmaz; bir önceki günün yanına eklenir.",
-      "merak": "Satıcı hissesini vermezse ne olacak? Takası kim garanti ediyor?",
-      "miniSoru": {"metin": "Yarım günde takas yapılır mı?", "secenekler": ["Evet", "Hayır"], "dogru": 1}
+      "konu": "1012-01",
+      "baslik": "Görünmeyen taraf: Merkezi karşı taraf",
+      "metin": "Sen bir hisse aldın ama satıcının kim olduğunu hiç bilmiyorsun. Ya parayı aldıktan sonra hisseyi vermezse? Bu riski üstlenen biri var: Takasbank. Takasbank, işlem eşleştiği anda araya girer. Alıcıya karşı satıcı, satıcıya karşı da alıcı olur. Buna merkezi karşı taraf, kısaca MKT hizmeti denir. İşlem eşleştiği an araya girme yöntemine de açık teklif yöntemi deniyor. Böylece sen karşındaki kişiyle değil, takasın tamamlanmasını taahhüt eden Takasbank'la muhatap olursun.",
+      "merak": "Hisseler kağıt olmaktan nasıl çıktı? MKK ve kaydileştirme.",
+      "miniSoru": {
+        "metin": "Merkezi karşı taraf, alıcıya karşı hangi rolü üstlenir?",
+        "secenekler": [
+          "Satıcı",
+          "Aracı"
+        ],
+        "dogru": 0
+      }
     },
     {
       "bolum": 4,
-      "baslik": "Görünmeyen taraf: Merkezi karşı taraf",
-      "metin": "Sen bir hisse aldın ama satıcının kim olduğunu hiç bilmiyorsun. Ya parayı aldıktan sonra hisseyi vermezse? Bu riski üstlenen biri var: Takasbank. Takasbank, işlem eşleştiği anda araya girer. Alıcıya karşı satıcı, satıcıya karşı da alıcı olur. Buna merkezi karşı taraf, kısaca MKT hizmeti denir. İşlem eşleştiği an araya girme yöntemine de açık teklif yöntemi deniyor. Böylece sen karşındaki kişiyle değil, takasın tamamlanmasını taahhüt eden Takasbank'la muhatap olursun.",
-      "merak": "Peki bir aracı kurum takas günü borcunu ödemezse ne olur?",
-      "miniSoru": {"metin": "Merkezi karşı taraf, alıcıya karşı hangi rolü üstlenir?", "secenekler": ["Satıcı", "Aracı"], "dogru": 0}
+      "konu": "1012-02",
+      "baslik": "Hisselerin evi: MKK",
+      "metin": "Eskiden hisse dediğin, kasada saklanan basılı bir kağıttı. Bugün öyle değil. Sermaye piyasası araçları artık senede bağlanmadan, elektronik ortamda kayden ihraç ediliyor. Buna kaydileştirme diyoruz. Bu kayıtların merkezi Merkezi Kayıt Kuruluşu, yani MKK. Haklar MKK tarafından izlenir; kayıtlar ise MKK'nın elektronik ortamında, MKK üyeleri tarafından tutulur. Esas olan, araçların hak sahibinin ismine açılmış hesaplarda izlenmesidir.",
+      "merak": "MKK'ya kimler üye olabilir?",
+      "miniSoru": {
+        "metin": "Kaydileştirilmiş araçlara ilişkin hakları kim izler?",
+        "secenekler": [
+          "MKK",
+          "Borsa İstanbul"
+        ],
+        "dogru": 0
+      }
     },
     {
       "bolum": 5,
-      "baslik": "Borç kapanmazsa: Temerrüt",
-      "metin": "Takas günü geldi, bir aracı kurum ya parasını ya da hisseyi yatıramadı. Buna temerrüt denir. Sistem bekler mi? Sadece bir süre. T artı üç günü saat on bire kadar borcunu kapatamayan aracı kurum adına, Borsa İstanbul'da aynı gün valörlü alım ya da satım yapılır ve borç re'sen kapatılır. Bu işlemler için borsada özel bir temerrüt sırası açılır. Yani sistem kendini korur; borç bir şekilde mutlaka kapanır.",
-      "merak": "Gecikmenin bir bedeli var mı? Mağdur olan ne kazanır?",
-      "miniSoru": {"metin": "Temerrüt halinde borç hangi gün saat 11'e kadar kapatılmalı?", "secenekler": ["T+3", "T+5"], "dogru": 0}
+      "konu": "1012-02",
+      "baslik": "MKK'nın üyeleri kimler?",
+      "metin": "MKK bir kayıt sistemi, ama kayıtları tek başına tutmuyor; üyeleriyle birlikte tutuyor. MKK'ya üye olması gereken kuruluşlar şunlar: sermaye piyasası aracı ihraç eden ihraççılar, saklama hizmeti vermeye yetkili yatırım kuruluşları, merkezi takas kuruluşları, Merkez Bankası ve yabancı merkezi saklama kuruluşları. Bir de MKK'nın önerip Kurul'un kabul ettiği diğer kuruluşlar var. Merkez Bankası'na ise talebi üzerine özel üyelik statüsü verilir. Yatırım kuruluşu olarak üye olabilmek için saklama hizmeti vermeye yetkili olmak gerekir.",
+      "merak": "Bir günde yüzlerce alım satım yapan kurum hepsini tek tek mi öder?",
+      "miniSoru": {
+        "metin": "MKK'ya üye olacak yatırım kuruluşunda ne aranır?",
+        "secenekler": [
+          "Saklama hizmeti yetkisi",
+          "Borsa kotasyonu"
+        ],
+        "dogru": 0
+      }
     },
     {
       "bolum": 6,
-      "baslik": "Gecikmenin bedeli",
-      "metin": "Borcunu zamanında ödemeyen üye bunu ucuza atlatamaz. Temerrüde düşen üye için temerrüt faizi hesaplanır ve bu tutarın, diğer yasal yükümlülüklerle birlikte, üç iş günü içinde ödenmesi gerekir. Peki alacağını geç alan taraf ne olacak? Ona da mağduriyet ödemesi yapılır: tahsil edilen temerrüt cezasının üçte ikisi. Ama bir şartla: alacaklı üyenin kendi takas yükümlülüklerini zamanında yerine getirmiş olması gerekir.",
-      "merak": "Bu kadar hisse ve para nerede tutuluyor? Hisselerin evi neresi?",
-      "miniSoru": {"metin": "Mağduriyet ödemesi temerrüt cezasının ne kadarıdır?", "secenekler": ["Yarısı", "Üçte ikisi"], "dogru": 1}
+      "konu": "1012-02",
+      "baslik": "Netleştirme: binlerce işlemi tek hesaba indirmek",
+      "metin": "Bir aracı kurum gün içinde aynı hisseden hem alıp hem sattı. Takas günü hepsini tek tek mi ödeyecek? Hayır. Aynı gün valörlü işlemlerde çok taraflı netleştirme esastır. Bir kıymette satışlar alışlardan düşülür, kalan net miktar kadar kıymet yükümlülüğü doğar. Bütün kıymetlerin alış ve satış tutarları da netleştirilir ve tek bir nakit borcu ya da alacağı oluşur. Bir ayrıntı daha: farklı günlerin yükümlülükleri birbirinden düşülmez. Bazı durumlarda ise işlemler netleştirme dışında bırakılıp brüt takas yapılabilir.",
+      "merak": "Fonların varlıkları nerede saklanıyor? Portföy saklayıcısıyla tanışalım.",
+      "miniSoru": {
+        "metin": "Farklı günlerin takas yükümlülükleri netleştirilir mi?",
+        "secenekler": [
+          "Evet",
+          "Hayır"
+        ],
+        "dogru": 1
+      }
     },
     {
       "bolum": 7,
-      "baslik": "Hisselerin evi: MKK",
-      "metin": "Eskiden hisse dediğin, kasada saklanan basılı bir kağıttı. Bugün öyle değil. Sermaye piyasası araçları artık senede bağlanmadan, elektronik ortamda kayden ihraç ediliyor. Buna kaydileştirme diyoruz. Bu kayıtların merkezi Merkezi Kayıt Kuruluşu, yani MKK. Haklar MKK tarafından izlenir; kayıtlar ise MKK'nın elektronik ortamında, MKK üyeleri tarafından tutulur. Esas olan, araçların hak sahibinin ismine açılmış hesaplarda izlenmesidir.",
-      "merak": "Takas günü hisse bir hesaptan diğerine nasıl yolculuk ediyor?",
-      "miniSoru": {"metin": "Kaydileştirilmiş araçlara ilişkin hakları kim izler?", "secenekler": ["MKK", "Borsa İstanbul"], "dogru": 0}
+      "konu": "1012-02",
+      "baslik": "Fonların kasası: Portföy saklayıcısı",
+      "metin": "Bir yatırım fonuna para yatırdın. Fonun aldığı hisseler, tahviller nerede duruyor? Fonu yöneten şirketin kasasında değil. Yatırım fonları ve yatırım ortaklıkları, yani kolektif yatırım kuruluşları, portföylerindeki varlıkları portföy saklayıcısı nezdinde saklamak zorundadır. Bu varlıklar saklayıcının kendi hesaplarından ayrı, fon adına ve fona ait olduğu açıkça belli olan hesaplarda tutulur. Önemli bir kural: her fon için yalnızca bir portföy saklayıcısı belirlenebilir. Böylece yönetim ile saklama birbirinden ayrılır ve yatırımcı korunur.",
+      "merak": "Artık pay piyasasına geçiyoruz. Hisseyi aldın ama henüz senin değil.",
+      "miniSoru": {
+        "metin": "Bir fon için kaç portföy saklayıcısı belirlenebilir?",
+        "secenekler": [
+          "Yalnızca bir",
+          "En fazla üç"
+        ],
+        "dogru": 0
+      }
     },
     {
       "bolum": 8,
-      "baslik": "Hesaptan hesaba yolculuk",
-      "metin": "Takas günü sabahı arka planda sessiz bir yolculuk başlar. Sattığın hisseler MKK'da takas için blokeye alınmıştı. T artı iki günü bu bloke otomatik olarak kalkar, hisseler önce aracı kurumun takas havuz hesabına, oradan da Takasbank'ın takas havuz hesabına aktarılır. Para tarafında ise aracı kurumlar, nakit takas borçlarını Takasbank'taki hesaplara saat on altı kırk beşe kadar yatırmak zorundadır. Teslim karşılığı ödeme ilkesi sayesinde hisse ve para birlikte el değiştirir.",
-      "merak": "Her şeyde takas T artı iki mi? Tahvilde durum çok farklı.",
-      "miniSoru": {"metin": "Pay piyasasında nakit takas borcu en geç saat kaçta yatırılmalı?", "secenekler": ["16:45", "18:00"], "dogru": 0}
+      "konu": "1012-03",
+      "baslik": "Hisseyi aldın ama henüz senin değil",
+      "metin": "Borsadan bir hisse aldın, ekranında görüyorsun. Ama sana bir sır vereyim: o hisse henüz tam olarak senin değil. Borsada alım satımın gerçekleştiği güne T günü diyoruz. Paranın gerçekten satıcıya, hissenin de gerçekten sana geçtiği an ise takas. Pay piyasasında takas, işlem gününden sonraki ikinci iş günü yapılır. Buna kısaca T artı iki denir. Yani pazartesi aldıysan, hisse çarşamba günü kesin olarak senin hesabına yerleşir. Takas tarihinden önce erkenden ödeyip işi bitirmek de mümkün değil; herkes aynı kurala uyar. Ve bir şey daha: bu hesapta yalnızca iş günleri sayılır. Cumartesi, pazar ve resmi tatiller hesaba girmez; cuma günü yapılan işlemin takası salı günü gerçekleşir.",
+      "merak": "Bayram öncesi yarım günde işlem yaparsan ne olur?",
+      "miniSoru": {
+        "metin": "Cuma yapılan işlemin takası hangi gün?",
+        "secenekler": [
+          "Pazar",
+          "Salı"
+        ],
+        "dogru": 1
+      }
     },
     {
       "bolum": 9,
-      "baslik": "Tahvilde beklemek yok",
-      "metin": "Hissede iki iş günü bekliyorsun. Peki devlet tahvili aldığında? Borçlanma araçları piyasasında takas çok daha hızlıdır: işlem hangi gün yapıldıysa takas da o gün, yani T günü gerçekleşir. Kıymet tarafında devlet iç borçlanma senetlerinin takası Merkez Bankası sisteminde, özel sektör borçlanma araçlarınınki MKK'da yapılır; nakit tarafı ise Takasbank'tadır. Kısacası: pay T artı iki, borçlanma aracı T günü.",
-      "merak": "Vadeli işlemlerde hesap her akşam görülür. Nasıl mı?",
-      "miniSoru": {"metin": "Borçlanma araçları piyasasında takas ne zaman olur?", "secenekler": ["T günü", "T+2"], "dogru": 0}
+      "konu": "1012-03",
+      "baslik": "Yarım günün tuzağı",
+      "metin": "Bayram arifesinde borsa sadece yarım gün açık. O gün hisse aldın. Takasın ne zaman olur? İşte sınavın sevdiği tuzak: yarım günlerde takas yapılmaz. Yarım günde yapılan işlemler, bir önceki iş gününün işlemleriyle birleştirilir ve yarım günü izleyen ikinci iş gününde hep birlikte takas edilir. Yani yarım gün, takas takviminde kendi başına bir gün gibi davranmaz; bir önceki günün yanına eklenir.",
+      "merak": "Takas günü biri borcunu ödemezse ne olur?",
+      "miniSoru": {
+        "metin": "Yarım günde takas yapılır mı?",
+        "secenekler": [
+          "Evet",
+          "Hayır"
+        ],
+        "dogru": 1
+      }
     },
     {
       "bolum": 10,
-      "baslik": "Vadelide her akşam hesap görülür",
-      "metin": "Vadeli bir sözleşme aldın. Kâr ya da zararın vade sonunu beklemez; her gün hesaplanır. Pozisyon açarken önce başlangıç teminatı yatırırsın. Bu, olası bir temerrütte pozisyonlar kapatılana kadar doğabilecek riski karşılamak için alınır. Sonra her gün sonunda pozisyonun, uzlaşma fiyatına göre yeniden değerlenir. Ortaya çıkan fark için değişim teminatı devreye girer. Yani vadeli işlemde hesap her akşam görülür.",
-      "merak": "Ya teminatın yetmezse? Telefonuna bir çağrı gelir.",
-      "miniSoru": {"metin": "Pozisyonların günlük değerlemesinden doğan farkı hangi teminat karşılar?", "secenekler": ["Başlangıç teminatı", "Değişim teminatı"], "dogru": 1}
+      "konu": "1012-03",
+      "baslik": "Borç kapanmazsa: Temerrüt",
+      "metin": "Takas günü geldi, bir aracı kurum ya parasını ya da hisseyi yatıramadı. Buna temerrüt denir. Sistem bekler mi? Sadece bir süre. T artı üç günü saat on bire kadar borcunu kapatamayan aracı kurum adına, Borsa İstanbul'da aynı gün valörlü alım ya da satım yapılır ve borç re'sen kapatılır. Bu işlemler için borsada özel bir temerrüt sırası açılır. Yani sistem kendini korur; borç bir şekilde mutlaka kapanır. Alacağını geç alan taraf da unutulmaz: temerrüt cezasının üçte ikisi ona mağduriyet ödemesi olarak verilir.",
+      "merak": "Hissede iki gün bekliyorsun. Tahvilde durum çok farklı.",
+      "miniSoru": {
+        "metin": "Mağduriyet ödemesi temerrüt cezasının ne kadarıdır?",
+        "secenekler": [
+          "Yarısı",
+          "Üçte ikisi"
+        ],
+        "dogru": 1
+      }
     },
     {
       "bolum": 11,
-      "baslik": "Teminat tamamlama çağrısı",
-      "metin": "Pozisyonların büyüdü ve risk limitini aştın. Takasbank bunu gün içinde takip eder. Limiti aşan kısım için ilave işlem teminatı istenir ve üyeye teminat tamamlama çağrısı yapılır. Bu yükümlülük, çağrıyı izleyen iş günü saat on beşe kadar yerine getirilmezse temerrüt hükümleri uygulanır. Risk limit oranı yüzde iki yüzü aşarsa, teminat yeterli olsa bile üyenin emir iletimi engellenebilir.",
-      "merak": "Her şey ters giderse son kalkan ne? Dizinin finali geliyor.",
-      "miniSoru": {"metin": "Teminat tamamlama çağrısı hangi saate kadar yerine getirilmeli?", "secenekler": ["Ertesi iş günü 15:00", "Aynı gün 12:00"], "dogru": 0}
+      "konu": "1012-04",
+      "baslik": "Tahvilde beklemek yok",
+      "metin": "Hissede iki iş günü bekliyorsun. Peki devlet tahvili aldığında? Borçlanma araçları piyasasında takas çok daha hızlıdır: işlem hangi gün yapıldıysa takas da o gün, yani T günü gerçekleşir. Kıymet tarafında devlet iç borçlanma senetlerinin takası Merkez Bankası sisteminde, özel sektör borçlanma araçlarınınki MKK'da yapılır; nakit tarafı ise Takasbank'tadır. Kısacası: pay T artı iki, borçlanma aracı T günü.",
+      "merak": "Vadeli işlemlerde hesap her akşam görülür. Teminatlar ve son kalkan: final bölümü.",
+      "miniSoru": {
+        "metin": "Borçlanma araçları piyasasında takas ne zaman olur?",
+        "secenekler": [
+          "T günü",
+          "T+2"
+        ],
+        "dogru": 0
+      }
     },
     {
       "bolum": 12,
-      "baslik": "Final: Son kalkan garanti fonu",
-      "metin": "Teminatlar yetmedi, bir üye yükümlülüğünü yerine getiremedi. Sistem çöker mi? Hayır, çünkü son bir kalkan var: garanti fonu. Takasbank nezdinde tutulan bu fon, teminatların dışındadır ve merkezi karşı taraf üyelerinin katkı paylarıyla oluşturulur. Amacı, takas yükümlülükleri yerine getirilmediğinde devreye girmektir. Tebrikler, diziyi bitirdin. Artık takasın sırlarını biliyorsun: T artı iki, iş günü, yarım gün, merkezi karşı taraf, temerrüt, MKK, teminat ve garanti fonu.",
+      "konu": "1012-06",
+      "baslik": "Final: Teminatlar ve son kalkan",
+      "metin": "Vadeli bir pozisyon açtın. Önce başlangıç teminatı yatırırsın; olası bir temerrütte pozisyonlar kapanana kadar doğacak riski karşılar. Her gün sonunda pozisyon yeniden değerlenir, ortaya çıkan fark için değişim teminatı devreye girer. Teminat yetmezse teminat tamamlama çağrısı gelir. Peki her şey ters giderse? Son kalkan garanti fonu: Takasbank nezdinde, teminatların dışında, üyelerin katkı paylarıyla oluşan fon. Tebrikler, diziyi bitirdin. Takası artık baştan sona biliyorsun.",
       "merak": "",
-      "miniSoru": {"metin": "Garanti fonu kimlerin katkı paylarıyla oluşur?", "secenekler": ["MKT üyelerinin", "Yatırımcıların"], "dogru": 0}
+      "miniSoru": {
+        "metin": "Garanti fonu kimlerin katkı paylarıyla oluşur?",
+        "secenekler": [
+          "MKT üyelerinin",
+          "Yatırımcıların"
+        ],
+        "dogru": 0
+      }
     }
   ]
 }
