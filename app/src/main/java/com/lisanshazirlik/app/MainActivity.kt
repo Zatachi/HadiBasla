@@ -76,6 +76,7 @@ private sealed interface Ekran {
     data object Kulaklik : Ekran
     data object Duello : Ekran
     data object GununBes : Ekran
+    data object CanliDuello : Ekran
     data class Hedef(val ders: String?) : Ekran
     data object Gorus : Ekran
     data object Aydinlatma : Ekran
@@ -229,7 +230,7 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
     Kabuk(
         sekme,
         sekmeSec = { yigin = emptyList(); basariIlk = com.lisanshazirlik.app.ui.BasariBolumu.BEN; sekme = it },
-        menuGoster = ust !is Ekran.Deneme && ust !is Ekran.Shorts && ust !is Ekran.Kulaklik && !(ust is Ekran.PaketAdim && ust.adimId.endsWith(":deneme")),
+        menuGoster = ust !is Ekran.Deneme && ust !is Ekran.CanliDuello && ust !is Ekran.Shorts && ust !is Ekran.Kulaklik && !(ust is Ekran.PaketAdim && ust.adimId.endsWith(":deneme")),
     ) { ic ->
         if (ust == null) {
             when (sekme) {
@@ -288,7 +289,8 @@ private fun AltEkran(
             Ekran.Shorts -> com.lisanshazirlik.app.ui.ShortsEkrani(banka, depo, cevapla, konuAc = { git(Ekran.Konu(it)) }, geri = geri)
             Ekran.GununBes -> com.lisanshazirlik.app.ui.GununBesEkrani(banka, depo, basla = { b, s -> git(Ekran.Coz(b, s, "tekrar")) }, geri = geri)
             Ekran.Kulaklik -> com.lisanshazirlik.app.ui.KulaklikEkrani(banka, depo, cevapla, geri = geri)
-            Ekran.Duello -> com.lisanshazirlik.app.ui.DuelloEkrani(banka, depo, hesap.uid, cevapla, geri = geri)
+            Ekran.Duello -> com.lisanshazirlik.app.ui.DuelloEkrani(banka, depo, hesap.uid, cevapla, geri = geri, canliBasla = { git(Ekran.CanliDuello) })
+            Ekran.CanliDuello -> com.lisanshazirlik.app.ui.CanliDuelloEkrani(banka, depo, cevapla, geri = geri)
             is Ekran.DenemeListesi -> com.lisanshazirlik.app.ui.DenemeListesiEkrani(
                 ust.ders, banka, depo,
                 ac = { no ->

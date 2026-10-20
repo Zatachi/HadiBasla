@@ -54,7 +54,7 @@ private sealed interface DuelloDurumu {
 }
 
 @Composable
-fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapla: (Soru, Boolean) -> Unit, geri: () -> Unit) {
+fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapla: (Soru, Boolean) -> Unit, geri: () -> Unit, canliBasla: () -> Unit = {}) {
     var durum by remember { mutableStateOf<DuelloDurumu>(DuelloDurumu.Ana) }
     var hata by remember { mutableStateOf<String?>(null) }
     var bekle by remember { mutableStateOf(false) }
@@ -107,7 +107,7 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text("⚔️", fontSize = 44.sp)
-                Text("Arkadaşınla yarış", fontFamily = Baslik, fontSize = 22.sp, color = Krem)
+                Text("Canlı düello", fontFamily = Baslik, fontSize = 22.sp, color = Krem)
                 Text(
                     "5 soru · en çok doğru yapan kazanır · eşitlikte hızlı olan",
                     color = KremSoluk,
@@ -118,12 +118,23 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
                 Text("Ders: ${odak?.kisaAd ?: "-"}", color = Altin, style = MaterialTheme.typography.labelLarge)
                 Bosluk(8)
                 Button(
+                    onClick = canliBasla,
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                ) { Text("⚔️ Rakip bul", fontSize = 18.sp) }
+                Text("Aynı derse çalışan biriyle anında eşleşirsin.", color = KremSoluk, fontSize = 12.sp)
+            }
+
+            KartKutu {
+                Text("Arkadaşınla yarış", style = MaterialTheme.typography.titleMedium)
+                Text("Soruları çöz, kodu arkadaşına gönder; o da aynı soruları çözsün.", color = MetinSoluk, style = MaterialTheme.typography.bodyMedium)
+                Bosluk(8)
+                OutlinedButton(
                     onClick = {
                         val s = Duello.sorulariSec(banka, dersler)
                         if (s.isEmpty()) hata = "Bu dersin soruları henüz hazır değil. Eğitim'den başka bir ders seçebilirsin." else durum = DuelloDurumu.Oyun(s, null)
                     },
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
-                ) { Text("⚔️ Yeni düello başlat") }
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                ) { Text("📤 Kodlu düello başlat") }
             }
 
             KartKutu {

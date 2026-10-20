@@ -70,6 +70,27 @@ service cloud.firestore {
     }
 
     // ---- Davet ----
+    // ---- Canlı düello: rakip arayanlar ve maçlar ----
+    match /bekleyenler/{uid} {
+      allow read: if girisli();
+      allow create: if girisli() && request.auth.uid == uid
+        && veri().keys().hasOnly(['uid', 'ad', 'ders', 'lisans', 'zaman', 'mac'])
+        && veri().mac == null && veri().ad is string && veri().ad.size() <= 40;
+      allow delete: if girisli() && request.auth.uid == uid;
+      allow update: if girisli() && request.auth.uid != uid && resource.data.mac == null
+        && veri().diff(resource.data).affectedKeys().hasOnly(['mac']) && veri().mac is string;
+    }
+
+    match /maclar/{id} {
+      allow read: if girisli() && request.auth.uid in resource.data.oyuncular;
+      allow create: if girisli() && request.auth.uid in veri().oyuncular && veri().oyuncular.size() == 2
+        && veri().keys().hasOnly(['oyuncular', 'adlar', 'sorular', 'ders', 'zaman', 'ilerleme'])
+        && veri().sorular.size() <= 10;
+      allow update: if girisli() && request.auth.uid in resource.data.oyuncular
+        && veri().diff(resource.data).affectedKeys().hasOnly(['ilerleme'])
+        && veri().ilerleme.diff(resource.data.ilerleme).affectedKeys().hasOnly([request.auth.uid]);
+    }
+
     match /kodlar/{kod} {
       allow read: if girisli();
       allow create: if girisli() && veri().uid == request.auth.uid && kod.size() == 8;
