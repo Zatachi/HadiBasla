@@ -186,6 +186,7 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
         )
     }
 
+    var basariIlk by remember { mutableStateOf(com.lisanshazirlik.app.ui.BasariBolumu.BEN) }
     val y = Yonlendirici(
         dersAc = { git(Ekran.Ders(it)) },
         coz = { baslik, sorular, konuId, mod ->
@@ -205,6 +206,8 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
         hatirlatma = { git(Ekran.Hatirlatma) },
         paketAc = { git(Ekran.Paket(it)) },
         paketAdimAc = { d, a -> git(Ekran.PaketAdim(d, a)) },
+        sekmeAc = { yigin = emptyList(); basariIlk = com.lisanshazirlik.app.ui.BasariBolumu.BEN; sekme = it },
+        basariAc = { yigin = emptyList(); basariIlk = it; sekme = Sekme.BASARI },
     )
 
     BackHandler(enabled = yigin.isNotEmpty() || sekme != Sekme.ANA) {
@@ -216,15 +219,15 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
     // Bir sekmeye dokunmak o sekmenin başına döner.
     Kabuk(
         sekme,
-        sekmeSec = { yigin = emptyList(); sekme = it },
+        sekmeSec = { yigin = emptyList(); basariIlk = com.lisanshazirlik.app.ui.BasariBolumu.BEN; sekme = it },
         menuGoster = ust !is Ekran.Deneme && !(ust is Ekran.PaketAdim && ust.adimId.endsWith(":deneme")),
     ) { ic ->
         if (ust == null) {
             when (sekme) {
-                Sekme.ANA -> AnaSekme(banka, depo, y, ic)
+                Sekme.ANA -> AnaSekme(banka, depo, hesap.uid, y, ic)
                 Sekme.DERSLER -> DerslerSekme(banka, depo, y, ic)
                 Sekme.DENEME -> DenemeSekme(banka, depo, y, ic)
-                Sekme.BASARI -> BasariSekme(banka, depo, hesap, davetDurumu, y.konuAc, y.sonuclar, ic)
+                Sekme.BASARI -> BasariSekme(banka, depo, hesap, davetDurumu, y.konuAc, y.sonuclar, ic, basariIlk)
                 Sekme.PROFIL -> ProfilSekme(banka, depo, hesap, kayit, y, ic)
             }
         } else {

@@ -65,8 +65,9 @@ fun BasariSekme(
     konuAc: (String) -> Unit,
     sonuclarAc: () -> Unit,
     ic: PaddingValues,
+    ilkBolum: BasariBolumu = BasariBolumu.BEN,
 ) {
-    var bolum by remember { mutableStateOf(BasariBolumu.BEN) }
+    var bolum by remember(ilkBolum) { mutableStateOf(ilkBolum) }
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.background(Yesil)) {
             SekmeBasligi("Başarı")
