@@ -39,10 +39,52 @@ object Topluluk {
 
     // ---------------------------------------------------------------- sıralama
 
+    // ---- Takma adlar: her ad tek bir kullanıcıya ayrılır (takmaAdlar/{küçük harf ad} → uid).
+
+    fun adAnahtari(ad: String): String = ad.trim().lowercase(java.util.Locale.ROOT)
+    private val AD_DESENI = Regex("^[\\p{L}\\p{N}_.\\- ]{2,20}$")
+    fun adGecerli(ad: String): Boolean = AD_DESENI.matches(ad.trim())
+
+    class AdAlinmis : Exception("Bu takma ad başka biri tarafından kullanılıyor. Başka bir ad seç.")
+
+    private var ayrilmis: String? = null
+
+    /** Adı bu kullanıcıya ayırır. Başkasına aitse false döner. */
+    suspend fun adAyir(uid: String, ad: String): Boolean {
+        val anahtar = adAnahtari(ad)
+        if (ayrilmis == "$uid/$anahtar") return true
+        val ref = db.collection("takmaAdlar").document(anahtar)
+        val snap = ref.get(com.google.firebase.firestore.Source.SERVER).await()
+        val sonuc = if (snap.exists()) {
+            snap.getString("uid") == uid
+        } else {
+            try {
+                ref.set(mapOf("uid" to uid)).await(); true
+            } catch (e: com.google.firebase.firestore.FirebaseFirestoreException) {
+                if (e.code == com.google.firebase.firestore.FirebaseFirestoreException.Code.PERMISSION_DENIED) false else throw e
+            }
+        }
+        if (sonuc) ayrilmis = "$uid/$anahtar"
+        return sonuc
+    }
+
+    private fun eskiAdlariBirak(uid: String, haric: String?) {
+        db.collection("takmaAdlar").whereEqualTo("uid", uid).get().addOnSuccessListener { q ->
+            q.documents.filter { it.id != haric }.forEach { it.reference.delete() }
+        }
+    }
+
     /** Kullanıcının herkese açık sıralama kaydını günceller (sadece katıldıysa). */
-    fun profilYaz(uid: String, depo: KullaniciDeposu, banka: SoruBankasi) {
+    suspend fun profilYaz(uid: String, depo: KullaniciDeposu, banka: SoruBankasi) {
         val k = depo.kullanici ?: return
         if (!k.siralamaKatil) return
+        // Ad başkasına aitse (eski kayıtlarda aynı ad olabilir) kullanıcıdan yeni ad istenir.
+        val sahip = try { adAyir(uid, k.takmaAd) } catch (e: Exception) { return }
+        if (!sahip) {
+            depo.alanYaz(mapOf("siralamaKatil" to false, "adCakisma" to true))
+            db.collection("siralama").document(uid).delete()
+            return
+        }
         val il = depo.ilerleme
         val cozulen = il.size
         val dogru = il.values.count { it == 1 }
@@ -73,19 +115,25 @@ object Topluluk {
         db.collection("siralama").document(uid).set(veri, SetOptions.merge())
     }
 
-    fun katil(uid: String, depo: KullaniciDeposu, banka: SoruBankasi, takmaAd: String, duvar: Boolean) {
-        depo.alanYaz(mapOf("siralamaKatil" to true, "takmaAd" to takmaAd.trim().take(20), "duvar" to duvar))
+    /** Adı ayırır ve sıralamaya katılır. Ad alınmışsa [AdAlinmis] fırlatır. */
+    suspend fun katil(uid: String, depo: KullaniciDeposu, banka: SoruBankasi, takmaAd: String, duvar: Boolean) {
+        val temiz = takmaAd.trim().replace(Regex("\\s+"), " ").take(20)
+        if (!adAyir(uid, temiz)) throw AdAlinmis()
+        eskiAdlariBirak(uid, adAnahtari(temiz))
+        depo.alanYaz(mapOf("siralamaKatil" to true, "takmaAd" to temiz, "duvar" to duvar, "adCakisma" to false))
         // Kullanıcı kaydı güncellenince profilYaz ana ekrandan tekrar çağrılır; ilk kaydı hemen yazalım.
         val k = depo.kullanici ?: return
         db.collection("siralama").document(uid).set(
-            mapOf("takmaAd" to takmaAd.trim().take(20), "seviye" to Oyun.seviye(k.xp).ad, "xp" to k.xp, "zaman" to FieldValue.serverTimestamp()),
+            mapOf("takmaAd" to temiz, "seviye" to Oyun.seviye(k.xp).ad, "xp" to k.xp, "zaman" to FieldValue.serverTimestamp()),
             SetOptions.merge(),
-        )
+        ).await()
     }
 
     fun ayril(uid: String, depo: KullaniciDeposu) {
         depo.alanYaz(mapOf("siralamaKatil" to false))
         db.collection("siralama").document(uid).delete()
+        ayrilmis = null
+        eskiAdlariBirak(uid, null)
     }
 
     suspend fun liste(tablo: Tablo, sinir: Long = 50): List<SiralamaSatiri> {

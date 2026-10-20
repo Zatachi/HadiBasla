@@ -303,7 +303,10 @@ private fun KatilEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String, 
     var ad by remember { mutableStateOf("") }
     var onay by remember { mutableStateOf(false) }
     var duvar by remember { mutableStateOf(false) }
-    val gecerli = ad.trim().length in 2..20
+    var hata by remember { mutableStateOf<String?>(null) }
+    var bekle by remember { mutableStateOf(false) }
+    val kapsam = rememberCoroutineScope()
+    val gecerli = Topluluk.adGecerli(ad)
     Column(
         Modifier.fillMaxSize().padding(bottom = ic.calculateBottomPadding()).verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -314,13 +317,26 @@ private fun KatilEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String, 
             "Haftalık ligde yarış, ilk 3'e girersen ${Oyun.HAFTALIK_ODUL_GUN} gün Premium kazan. Sıralamalarda gerçek adın değil, seçtiğin takma ad görünür.",
             style = MaterialTheme.typography.bodyLarge,
         )
+        if (depo.kullanici?.adCakisma == true) {
+            Text(
+                "\"${depo.kullanici?.takmaAd}\" adı başka bir kullanıcıya ait. Sıralamada görünmek için kendine yeni bir takma ad seç.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = YanlisKirmizi,
+            )
+        }
         OutlinedTextField(
             value = ad,
-            onValueChange = { ad = it.take(20) },
+            onValueChange = { ad = it.take(20); hata = null },
+            supportingText = {
+                Text(
+                    hata ?: "2-20 karakter; harf, rakam, boşluk, nokta, tire ve alt çizgi. Her ad tek kişiye ait olur.",
+                    color = if (hata != null) YanlisKirmizi else MetinSoluk,
+                )
+            },
             label = { Text("Takma adın") },
             placeholder = { Text("Boğa34") },
             singleLine = true,
-            isError = ad.isNotEmpty() && !gecerli,
+            isError = hata != null || (ad.isNotEmpty() && !gecerli),
             modifier = Modifier.fillMaxWidth(),
         )
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickableIf(true) { onay = !onay }) {
@@ -332,8 +348,20 @@ private fun KatilEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String, 
             Text("Sınavı geçtiğimde \"Geçenler duvarı\"nda da görüneyim (isteğe bağlı).", style = MaterialTheme.typography.bodyMedium)
         }
         Button(
-            onClick = { Topluluk.katil(uid, depo, banka, ad, duvar) },
-            enabled = gecerli && onay,
+            onClick = {
+                bekle = true
+                kapsam.launch {
+                    try {
+                        Topluluk.katil(uid, depo, banka, ad, duvar)
+                    } catch (e: Topluluk.AdAlinmis) {
+                        hata = e.message
+                    } catch (e: Exception) {
+                        hata = "Bağlantı kurulamadı. İnternetini kontrol edip tekrar dene."
+                    }
+                    bekle = false
+                }
+            },
+            enabled = gecerli && onay && !bekle,
             modifier = Modifier.fillMaxWidth().height(52.dp),
         ) { Text("Katıl") }
         Text(

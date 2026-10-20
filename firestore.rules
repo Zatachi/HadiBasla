@@ -43,7 +43,16 @@ service cloud.firestore {
       allow delete: if girisli() && request.auth.uid == uid;
       allow create, update: if girisli() && request.auth.uid == uid
         && veri().takmaAd is string && veri().takmaAd.size() >= 2 && veri().takmaAd.size() <= 20
-        && veri().size() <= 80;
+        && veri().size() <= 80
+        && get(/databases/$(database)/documents/takmaAdlar/$(veri().takmaAd.lower())).data.uid == request.auth.uid;
+    }
+
+    // Her takma ad tek kullanıcıya ait; güncelleme yok, sadece sahibi bırakabilir.
+    match /takmaAdlar/{ad} {
+      allow read: if girisli();
+      allow create: if girisli() && veri().uid == request.auth.uid && veri().keys().hasOnly(['uid'])
+        && ad.size() >= 2 && ad.size() <= 20;
+      allow delete: if girisli() && resource.data.uid == request.auth.uid;
     }
 
     // ---- Davet ----
