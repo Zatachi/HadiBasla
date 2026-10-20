@@ -1,5 +1,8 @@
 package com.lisanshazirlik.app.ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -253,64 +256,101 @@ fun SonuclarEkrani(banka: SoruBankasi, depo: KullaniciDeposu, lisans: String?, g
     val hepsiGecti = hepsiGirildi && girilen.all { it.puan >= 50 }
     val lisansTamam = hepsiGecti && ortalama >= 60
 
+    val gecilen = girilen.count { it.puan >= 50 }
     Scaffold(topBar = { UstCubuk("Sertifikalarım", geri) }, containerColor = Zemin) { ic ->
         Column(
             Modifier.fillMaxSize().padding(ic).verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text(l?.ad ?: "Lisans sınavı", style = MaterialTheme.typography.titleLarge)
-            KartKutu {
-                when {
-                    lisansTamam -> {
-                        Text("Lisans koşulunu sağladın 🎉", style = MaterialTheme.typography.titleMedium, color = DogruYesil)
-                        Bosluk(4)
-                        Text("Bütün derslerden en az 50 ve ortalaman $ortalama. Tebrikler! Lisans başvurunu yapmayı unutma.", style = MaterialTheme.typography.bodyMedium)
-                    }
-                    hepsiGecti -> {
-                        Text("Ortalaman $ortalama", style = MaterialTheme.typography.titleMedium, color = Sari)
-                        Bosluk(4)
-                        Text("Bütün derslerden geçtin ama lisans için ortalamanın en az 60 olması gerekiyor. Düşük puanlı bir derse yeniden girerek ortalamanı yükseltebilirsin.", style = MaterialTheme.typography.bodyMedium)
-                    }
-                    else -> {
-                        Text("${dersler.size} dersten ${girilen.count { it.puan >= 50 }} ders geçildi", style = MaterialTheme.typography.titleMedium)
-                        Bosluk(4)
-                        Text("Lisans için her dersten en az 50 almalı, ortalaman da en az 60 olmalı.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
-                    }
-                }
-                if (girilen.isNotEmpty()) {
-                    Bosluk(10)
-                    Ilerleme(girilen.count { it.puan >= 50 } / dersler.size.toFloat())
+            // Sertifika kartı
+            Column(
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(Yesil).padding(18.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                androidx.compose.foundation.Image(
+                    androidx.compose.ui.res.painterResource(com.lisanshazirlik.app.R.drawable.ic_sertifika),
+                    contentDescription = null,
+                    modifier = Modifier.size(56.dp),
+                )
+                Bosluk(6)
+                Text(l?.kisaAd ?: "Lisans", fontFamily = Baslik, fontSize = 22.sp, color = Krem)
+                Text(
+                    when {
+                        lisansTamam -> "Lisans koşulunu sağladın 🎉"
+                        hepsiGecti -> "Ortalamanı 60'a çıkarman gerekiyor"
+                        else -> "Lisans yolundaki durumun"
+                    },
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (lisansTamam) Altin else KremSoluk,
+                )
+                Bosluk(14)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    SertifikaKutusu(Modifier.weight(1f), "$gecilen/${dersler.size}", "geçilen ders")
+                    SertifikaKutusu(Modifier.weight(1f), if (girilen.isEmpty()) "–" else "$ortalama", "ortalama")
                 }
             }
-            dersler.forEach { d ->
-                val s = sonuclar[d.kod]
-                KartKutu(tikla = { duzenlenen = d.kod }) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) {
-                            Text(d.ad, style = MaterialTheme.typography.titleMedium)
+
+            // Koşullar
+            KartKutu {
+                Text("Lisans için iki koşul", style = MaterialTheme.typography.titleMedium)
+                Bosluk(8)
+                KosulSatiri(hepsiGecti, "Her dersten en az 50")
+                Bosluk(6)
+                KosulSatiri(hepsiGirildi && ortalama >= 60, "Ortalama en az 60")
+            }
+
+            Text("Sınav puanların", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(start = 4.dp, top = 4.dp))
+            dersler.forEachIndexed { i, d ->
+                val s2 = sonuclar[d.kod]
+                val renk = SEVIYE_RENKLERI[i % SEVIYE_RENKLERI.size]
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Kart)
+                        .border(1.dp, Cizgi, RoundedCornerShape(16.dp))
+                        .clickable { duzenlenen = d.kod }
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(renk), contentAlignment = Alignment.Center) {
+                        Text(d.kod, style = MaterialTheme.typography.labelLarge, color = Krem)
+                    }
+                    Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+                        Text(d.kisaAd, style = MaterialTheme.typography.titleMedium, maxLines = 2, lineHeight = 20.sp)
+                        if (s2 != null) {
                             Text(
-                                when {
-                                    s == null -> "Sonuç girilmedi · dokun ve ekle"
-                                    s.tarih != null -> uzunTarih(s.tarih)
-                                    else -> "Tarih girilmedi"
-                                },
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MetinSoluk,
+                                if (s2.puan >= 50) "✓ Geçtin" else "✗ Kaldın",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = if (s2.puan >= 50) DogruYesil else YanlisKirmizi,
                             )
                         }
-                        if (s != null) {
-                            Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 8.dp)) {
-                                Text("${s.puan}", style = MaterialTheme.typography.headlineSmall, color = if (s.puan >= 50) DogruYesil else YanlisKirmizi)
-                                Text(if (s.puan >= 50) "Geçti" else "Kaldı", style = MaterialTheme.typography.bodyMedium, fontSize = 12.sp, color = if (s.puan >= 50) DogruYesil else YanlisKirmizi)
+                    }
+                    if (s2 == null) {
+                        Text(
+                            "+ Puan gir",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Krem,
+                            modifier = Modifier.clip(RoundedCornerShape(50)).background(Yesil).padding(horizontal = 14.dp, vertical = 9.dp),
+                        )
+                    } else {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Box(
+                                Modifier.size(48.dp).clip(CircleShape).background(if (s2.puan >= 50) DogruYesil else YanlisKirmizi),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text("${s2.puan}", style = MaterialTheme.typography.titleMedium, color = Krem)
                             }
+                            Text("✎ düzenle", fontSize = 11.sp, color = MetinSoluk)
                         }
                     }
                 }
             }
             Text(
-                "Sonuçların sadece senin hesabında tutulur. Bir dersten 50 ve üzeri girdiğinde o dersin hedefi \"geçildi\" olarak işaretlenir.",
+                "🔒 Puanların sadece senin hesabında durur.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MetinSoluk,
+                modifier = Modifier.padding(start = 4.dp),
             )
         }
     }
@@ -372,5 +412,30 @@ private fun SonucPenceresi(
         TarihPenceresi(tarih, kapat = { takvim = false }, gecmis = true, baslik = "Sınava girdiğin tarih") {
             tarih = it; takvim = false
         }
+    }
+}
+
+@Composable
+private fun SertifikaKutusu(modifier: Modifier, deger: String, etiket: String) {
+    Column(
+        modifier.clip(RoundedCornerShape(12.dp)).background(YesilKoyu).padding(vertical = 10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(deger, fontFamily = Baslik, fontSize = 24.sp, color = Altin)
+        Text(etiket, fontSize = 12.sp, color = KremSoluk)
+    }
+}
+
+@Composable
+private fun KosulSatiri(tamam: Boolean, metin: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            Modifier.size(24.dp).clip(CircleShape).background(if (tamam) DogruYesil else Zemin)
+                .border(1.dp, if (tamam) DogruYesil else Cizgi, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (tamam) Text("✓", color = Krem, fontSize = 13.sp)
+        }
+        Text(metin, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(start = 10.dp), color = if (tamam) DogruYesil else Metin)
     }
 }
