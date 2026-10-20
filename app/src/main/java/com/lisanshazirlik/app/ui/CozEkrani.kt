@@ -43,6 +43,8 @@ fun CozEkrani(
     kayit: YerelKayit,
     cevapla: (Soru, Boolean) -> Unit,
     geri: () -> Unit,
+    /** Eğitim paketinde: sonuç ekranında "Devam et" gösterilir. */
+    bitti: ((dogru: Int, toplam: Int) -> Unit)? = null,
 ) {
     var liste by remember { mutableStateOf(sorular) }
     var sira by remember { mutableIntStateOf(0) }
@@ -100,6 +102,7 @@ fun CozEkrani(
                     liste = liste.shuffled(); sira = 0; secim = null; dogruSayi = 0; bitti = false
                 },
                 geri = geri,
+                devam = bitti?.let { b -> { b(dogruSayi, liste.size) } },
             )
             return@Scaffold
         }
@@ -146,7 +149,7 @@ fun CozEkrani(
 }
 
 @Composable
-private fun Sonuc(dogru: Int, toplam: Int, modifier: Modifier, tekrar: () -> Unit, geri: () -> Unit) {
+private fun Sonuc(dogru: Int, toplam: Int, modifier: Modifier, tekrar: () -> Unit, geri: () -> Unit, devam: (() -> Unit)? = null) {
     val oran = yuzde(dogru, toplam)
     Column(
         modifier.fillMaxSize().padding(24.dp),
@@ -170,8 +173,14 @@ private fun Sonuc(dogru: Int, toplam: Int, modifier: Modifier, tekrar: () -> Uni
             textAlign = TextAlign.Center,
         )
         Bosluk(28)
-        Button(onClick = tekrar, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Tekrar çöz") }
-        Bosluk(10)
-        OutlinedButton(onClick = geri, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Geri dön") }
+        if (devam != null) {
+            Button(onClick = devam, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Devam et") }
+            Bosluk(10)
+            OutlinedButton(onClick = tekrar, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Tekrar çöz") }
+        } else {
+            Button(onClick = tekrar, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Tekrar çöz") }
+            Bosluk(10)
+            OutlinedButton(onClick = geri, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Geri dön") }
+        }
     }
 }

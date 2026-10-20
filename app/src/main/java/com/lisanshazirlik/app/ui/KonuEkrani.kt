@@ -180,7 +180,7 @@ private fun vurgula(metin: String): androidx.compose.ui.text.AnnotatedString =
 /** Konu özeti: her sayfada tek fikir, kaydırarak okunur; son sayfa "Akılda kalsın". */
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
-fun OzetEkrani(ders: Ders, konu: Konu, coz: (() -> Unit)?, kartlar: (() -> Unit)?, geri: () -> Unit) {
+fun OzetEkrani(ders: Ders, konu: Konu, coz: (() -> Unit)?, kartlar: (() -> Unit)?, geri: () -> Unit, bitti: (() -> Unit)? = null) {
     val sayfalar = remember(konu.id) { ozetSayfalari(konu.ozet) }
     val durum = androidx.compose.foundation.pager.rememberPagerState { sayfalar.size }
     val kapsam = androidx.compose.runtime.rememberCoroutineScope()
@@ -206,6 +206,8 @@ fun OzetEkrani(ders: Ders, konu: Konu, coz: (() -> Unit)?, kartlar: (() -> Unit)
                             onClick = { kapsam.launch { durum.animateScrollToPage(durum.currentPage + 1) } },
                             modifier = Modifier.weight(1f).height(52.dp),
                         ) { Text("İleri") }
+                    } else if (bitti != null) {
+                        Button(onClick = bitti, modifier = Modifier.weight(1f).height(52.dp)) { Text("Okudum, devam et") }
                     } else {
                         if (kartlar != null) {
                             OutlinedButton(onClick = kartlar, modifier = Modifier.weight(1f).height(52.dp)) { Text("Bilgi kartları") }
@@ -323,7 +325,7 @@ private fun AkildaKalsin(s: OzetSayfasi) {
 
 /** Dokununca dönen bilgi kartları. "Biliyorum" desteden çıkarır, "Tekrar et" sona atar. */
 @Composable
-fun KartlarEkrani(konu: Konu, geri: () -> Unit) {
+fun KartlarEkrani(konu: Konu, geri: () -> Unit, bitti: (() -> Unit)? = null) {
     var deste by remember { mutableStateOf(konu.kartlar.shuffled()) }
     var ters by remember { mutableStateOf(false) }
     var bilinen by remember { mutableStateOf(0) }
@@ -347,10 +349,17 @@ fun KartlarEkrani(konu: Konu, geri: () -> Unit) {
                 Text("Desteyi bitirdin", style = MaterialTheme.typography.headlineSmall)
                 Text("${konu.kartlar.size} kartın hepsini bildin.", style = MaterialTheme.typography.bodyLarge, color = MetinSoluk)
                 Bosluk(12)
-                Button(onClick = { deste = konu.kartlar.shuffled(); bilinen = 0; ters = false }, modifier = Modifier.fillMaxWidth().height(52.dp)) {
-                    Text("Baştan başla")
+                if (bitti != null) {
+                    Button(onClick = bitti, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Devam et") }
+                    OutlinedButton(onClick = { deste = konu.kartlar.shuffled(); bilinen = 0; ters = false }, modifier = Modifier.fillMaxWidth().height(52.dp)) {
+                        Text("Baştan başla")
+                    }
+                } else {
+                    Button(onClick = { deste = konu.kartlar.shuffled(); bilinen = 0; ters = false }, modifier = Modifier.fillMaxWidth().height(52.dp)) {
+                        Text("Baştan başla")
+                    }
+                    OutlinedButton(onClick = geri, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Konuya dön") }
                 }
-                OutlinedButton(onClick = geri, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Konuya dön") }
                 return@Column
             }
             val kart: BilgiKarti = deste.first()

@@ -42,6 +42,8 @@ import com.lisanshazirlik.app.ui.LisansEkrani
 import com.lisanshazirlik.app.ui.OzetEkrani
 import com.lisanshazirlik.app.ui.SonuclarEkrani
 import com.lisanshazirlik.app.ui.VideoEkrani
+import com.lisanshazirlik.app.ui.PaketEkrani
+import com.lisanshazirlik.app.ui.PaketGecisEkrani
 import com.lisanshazirlik.app.ui.calismaSirasi
 import com.lisanshazirlik.app.ui.konuTestiSorulari
 import com.lisanshazirlik.app.ui.CozEkrani
@@ -81,6 +83,9 @@ private sealed interface Ekran {
     data object Lisans : Ekran
     data object Hatirlatma : Ekran
     data class Video(val baslik: String, val adres: String) : Ekran
+    data class Paket(val ders: String) : Ekran
+    data class PaketAdim(val ders: String, val adimId: String) : Ekran
+    data class PaketGecis(val ders: String, val bitenId: String, val sonuc: String?) : Ekran
 }
 
 class MainActivity : ComponentActivity() {
@@ -198,6 +203,7 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
         sonuclar = { git(Ekran.Sonuclar) },
         lisans = { git(Ekran.Lisans) },
         hatirlatma = { git(Ekran.Hatirlatma) },
+        paketAc = { git(Ekran.Paket(it)) },
     )
 
     BackHandler(enabled = yigin.isNotEmpty() || sekme != Sekme.ANA) {
@@ -210,7 +216,7 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
     Kabuk(
         sekme,
         sekmeSec = { yigin = emptyList(); sekme = it },
-        menuGoster = ust !is Ekran.Deneme,
+        menuGoster = ust !is Ekran.Deneme && !(ust is Ekran.PaketAdim && ust.adimId.endsWith(":deneme")),
     ) { ic ->
         if (ust == null) {
             when (sekme) {
@@ -256,6 +262,7 @@ private fun AltEkran(
                     coz = { b, s, konuId -> y.coz(b, s, konuId, "pratik") },
                     deneme = { y.dersDenemesi(ust.kod) },
                     konuAc = y.konuAc,
+                    paketAc = { y.paketAc(ust.kod) },
                     geri = geri,
                 )
             }
@@ -309,6 +316,50 @@ private fun AltEkran(
             Ekran.Lisans -> LisansEkrani(banka.lisanslar, depo.kullanici?.lisans, sec = { depo.lisansSec(it) }, geri = geri)
             Ekran.Hatirlatma -> HatirlatmaEkrani(kayit, geri = geri)
             is Ekran.Video -> VideoEkrani(ust.baslik, ust.adres, geri = geri)
+            is Ekran.Paket -> PaketEkrani(ust.ders, banka, depo, adimAc = { git(Ekran.PaketAdim(ust.ders, it.id)) }, geri = geri)
+            is Ekran.PaketGecis -> PaketGecisEkrani(
+                ust.ders, ust.bitenId, banka, depo, ust.sonuc,
+                adimAc = { geri(); git(Ekran.PaketAdim(ust.ders, it.id)) },
+                pakete = geri,
+            )
+            is Ekran.PaketAdim -> {
+                val a = com.lisanshazirlik.app.data.Paket.adim(banka, ust.ders, ust.adimId)
+                val dersBilgi = banka.ders(ust.ders)
+                if (a == null || dersBilgi == null) {
+                    Yukleniyor()
+                } else {
+                    val tamamla: (String?) -> Unit = { sonuc ->
+                        depo.paketAdimTamam(banka, ust.ders, a.id)
+                        geri()
+                        git(Ekran.PaketGecis(ust.ders, a.id, sonuc))
+                    }
+                    val konu = a.konu
+                    when (a.tur) {
+                        com.lisanshazirlik.app.data.Paket.Tur.VIDEO ->
+                            VideoEkrani(konu!!.ad, konu.video, geri = geri, bitti = { tamamla(null) })
+                        com.lisanshazirlik.app.data.Paket.Tur.OZET ->
+                            OzetEkrani(dersBilgi, konu!!, coz = null, kartlar = null, geri = geri, bitti = { tamamla(null) })
+                        com.lisanshazirlik.app.data.Paket.Tur.KARTLAR ->
+                            KartlarEkrani(konu!!, geri = geri, bitti = { tamamla(null) })
+                        com.lisanshazirlik.app.data.Paket.Tur.SORU -> {
+                            val sorular = remember(a.id) { calismaSirasi(banka.konuSorulari(konu!!.id), depo) }
+                            CozEkrani(konu!!.ad, sorular, "paket", banka, kayit, cevapla, geri = geri,
+                                bitti = { d, t -> tamamla("$t sorudan $d doğru") })
+                        }
+                        com.lisanshazirlik.app.data.Paket.Tur.DENEME -> {
+                            val sorular = remember(a.id) { dersDenemesiSorulari(banka, ust.ders) }
+                            DenemeEkrani(
+                                sorular, ust.ders, banka, cevapla,
+                                sonucKaydet = { kapsam, ort, gecti, puanlar, adet ->
+                                    depo.denemeKaydet(kapsam, ort, gecti, puanlar, adet)
+                                    depo.paketAdimTamam(banka, ust.ders, a.id)
+                                },
+                                geri = geri,
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }

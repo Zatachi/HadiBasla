@@ -40,6 +40,9 @@ data class Kullanici(
     val davetOdulu: Int = 0,
     val davetXp: Int = 0,
     val davetGecerli: Boolean = false,
+    /** Eğitim paketlerinde tamamlanan adımlar: ders kodu → adım kimlikleri. */
+    val paketler: Map<String, List<String>> = emptyMap(),
+    val sonPaket: String? = null,
 ) {
     /** Bu haftanın XP'si (hafta değiştiyse 0). */
     fun buHaftaXp(): Int = if (hafta == Oyun.hafta()) xpHafta else 0
@@ -286,6 +289,22 @@ class KullaniciDeposu(val uid: String) {
         kutlama = "🎁 $gun gün Premium kazandın!"
     }
 
+    /** Paket adımını tamamlar; paketin son adımıysa ödül verir. */
+    fun paketAdimTamam(banka: SoruBankasi, ders: String, adimId: String) {
+        val once = Paket.tamamlananlar(this, ders)
+        if (adimId in once) return
+        kok.set(mapOf("paketler" to mapOf(ders to FieldValue.arrayUnion(adimId)), "sonPaket" to ders), SetOptions.merge())
+        val tum = Paket.adimlar(banka, ders).map { it.id }.toSet()
+        if (tum.isNotEmpty() && tum.all { it in once || it == adimId }) {
+            xpEkle(Paket.XP_PAKET, mapOf("rozetler" to mapOf("paket_tamam" to bugunKey)))
+            kutlama = "🎓 ${banka.ders(ders)?.kisaAd ?: ders} paketini bitirdin! +${Paket.XP_PAKET} XP"
+        }
+    }
+
+    fun paketSifirla(ders: String) {
+        kok.set(mapOf("paketler" to mapOf(ders to FieldValue.delete())), SetOptions.merge())
+    }
+
     fun alanYaz(alanlar: Map<String, Any?>) {
         kok.set(alanlar, SetOptions.merge())
     }
@@ -352,6 +371,10 @@ class KullaniciDeposu(val uid: String) {
         davetOdulu = getLong("davetOdulu")?.toInt() ?: 0,
         davetXp = getLong("davetXp")?.toInt() ?: 0,
         davetGecerli = getBoolean("davetGecerli") ?: false,
+        paketler = (get("paketler") as? Map<*, *>)?.entries?.associate { (k, v) ->
+            k.toString() to ((v as? List<*>)?.map { it.toString() } ?: emptyList())
+        } ?: emptyMap(),
+        sonPaket = getString("sonPaket"),
     )
 
     private fun DocumentSnapshot.deneme(): DenemeKaydi? = runCatching {

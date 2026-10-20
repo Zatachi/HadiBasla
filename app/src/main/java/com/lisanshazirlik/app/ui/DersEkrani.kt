@@ -14,6 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.draw.clip
 import com.lisanshazirlik.app.data.Ders
 import com.lisanshazirlik.app.data.Soru
 import com.lisanshazirlik.app.data.SoruBankasi
@@ -26,6 +30,7 @@ fun DersEkrani(
     coz: (baslik: String, sorular: List<Soru>, konuId: String?) -> Unit,
     deneme: () -> Unit,
     konuAc: (String) -> Unit,
+    paketAc: () -> Unit,
     geri: () -> Unit,
 ) {
     val tumu = banka.dersSorulari(ders.kod)
@@ -40,6 +45,24 @@ fun DersEkrani(
                 Text(ders.ad, style = MaterialTheme.typography.titleLarge)
                 Bosluk(4)
                 Text("Ders kodu ${ders.kod}" + if (ders.aciklama.isNotBlank()) " · ${ders.aciklama}" else "", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+            }
+            item {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp))
+                        .background(Yesil)
+                        .clickableIf(true, paketAc)
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text("📦", fontSize = 28.sp)
+                    androidx.compose.foundation.layout.Column(Modifier.weight(1f).padding(start = 12.dp)) {
+                        Text("Eğitim paketi", style = MaterialTheme.typography.titleMedium, color = Krem)
+                        Text("Konu konu öğren, tekrar et, soru çöz; sonunda deneme.", style = MaterialTheme.typography.bodyMedium, color = KremSoluk)
+                    }
+                    Text("›", fontSize = 26.sp, color = Altin)
+                }
             }
             item {
                 KartKutu(

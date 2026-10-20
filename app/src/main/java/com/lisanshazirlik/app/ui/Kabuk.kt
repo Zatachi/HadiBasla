@@ -68,6 +68,7 @@ class Yonlendirici(
     val sonuclar: () -> Unit,
     val lisans: () -> Unit,
     val hatirlatma: () -> Unit,
+    val paketAc: (String) -> Unit,
 )
 
 @Composable
@@ -223,6 +224,39 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: Pad
                     style = MaterialTheme.typography.bodyMedium,
                     color = MetinSoluk,
                 )
+            }
+        }
+
+        item {
+            val paketDers = k?.sonPaket ?: aktif.firstOrNull()?.ders ?: banka.lisansDersleri(k?.lisans).firstOrNull()?.kod
+            val pd = paketDers?.let { banka.ders(it) }
+            if (pd != null) {
+                val adimlar = com.lisanshazirlik.app.data.Paket.adimlar(banka, pd.kod)
+                val bitti = com.lisanshazirlik.app.data.Paket.tamamlananlar(depo, pd.kod)
+                val tamam = adimlar.count { it.id in bitti }
+                val sonraki = adimlar.firstOrNull { it.id !in bitti }
+                Row(
+                    Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(YesilKoyu)
+                        .clickableIf(true) { y.paketAc(pd.kod) }
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text("📦", fontSize = 26.sp)
+                    Column(Modifier.weight(1f).padding(start = 12.dp)) {
+                        Text(if (tamam == 0) "Eğitim paketiyle başla" else "Paketine devam et", style = MaterialTheme.typography.bodyMedium, color = KremSoluk)
+                        Text(pd.kisaAd, style = MaterialTheme.typography.titleMedium, color = Krem)
+                        Text(
+                            if (sonraki == null) "Paket tamamlandı ✓" else "Adım ${tamam + 1}/${adimlar.size} · ${sonraki.tur.ad}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = KremSoluk,
+                        )
+                    }
+                    Text("▶", color = Altin, fontSize = 22.sp)
+                }
             }
         }
 

@@ -67,6 +67,7 @@ object Oyun {
         Rozet("deneme_80", "🎯", "Keskin nişancı", "Bir denemeden 80 ve üzeri aldın"),
         Rozet("konu_tam", "✅", "Konu tamam", "Bir konunun bütün sorularını doğru yaptın"),
         Rozet("ders_usta", "🧠", "Ders ustası", "Bir dersin sorularının %80'ini doğru yaptın"),
+        Rozet("paket_tamam", "📦", "Paket tamam", "Bir eğitim paketini baştan sona bitirdin"),
         Rozet("sinav_gecti", "🎓", "Geçtim!", "Gerçek sınavda bir dersten geçtin"),
         Rozet("lisans", "🏆", "Lisanslı", "Lisans koşulunu sağladın"),
         Rozet("davet_1", "🤝", "Tavsiye", "Bir arkadaşını getirdin"),
@@ -104,6 +105,7 @@ object Oyun {
         if (gecerliDavet >= 5) s += "davet_5"
         if (gecerliDavet >= 10) s += "davet_10"
         if (k?.rozetler?.containsKey("lig_ilk3") == true) s += "lig_ilk3"
+        if (banka.dersler.any { Paket.tamamMi(banka, depo, it.kod) }) s += "paket_tamam"
         return s
     }
 
