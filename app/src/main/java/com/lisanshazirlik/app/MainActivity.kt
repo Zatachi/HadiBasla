@@ -340,7 +340,7 @@ private fun AltEkran(
                 if (dk == null) Yukleniyor() else KartlarEkrani(dk.second, geri = geri)
             }
             Ekran.Sonuclar -> SonuclarEkrani(banka, depo, depo.kullanici?.lisans, geri = geri)
-            Ekran.Lisans -> LisansEkrani(banka.lisanslar, depo.kullanici?.lisans, sec = { depo.lisansSec(it) }, geri = geri, icerikVar = { banka.icerikVar(it) })
+            Ekran.Lisans -> LisansEkrani(banka, depo, sec = { depo.lisansSec(it) }, geri = geri)
             Ekran.Hatirlatma -> HatirlatmaEkrani(kayit, geri = geri)
             is Ekran.Video -> {
                 val vk = banka.dersler.flatMap { it.konular }.firstOrNull { it.video == ust.adres }

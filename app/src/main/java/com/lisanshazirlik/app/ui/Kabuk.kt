@@ -422,7 +422,7 @@ val SEVIYE_RENKLERI = listOf(
     androidx.compose.ui.graphics.Color(0xFF5B3E6B),
 )
 
-private fun seviyeSimgesi(kod: String): String = when (kod) {
+fun seviyeSimgesi(kod: String): String = when (kod) {
     "duzey1" -> "🎓"
     "duzey2" -> "📈"
     "duzey3" -> "🏛"

@@ -1,5 +1,9 @@
 package com.lisanshazirlik.app.ui
 
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Box
 import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -42,51 +46,93 @@ import com.lisanshazirlik.app.data.Hatirlatma
 import com.lisanshazirlik.app.data.Lisans
 import com.lisanshazirlik.app.data.YerelKayit
 
-/** Lisans listesi; aktif olmayanlar "Yakında" olarak gösterilir. */
+/** Lisans kartları: iki sütunlu, her lisansın kendi rengi ve simgesi; seçili olan altın çerçeveli. */
 @Composable
-fun LisansSecici(lisanslar: List<Lisans>, secili: String?, icerikVar: (Lisans) -> Boolean = { true }, sec: (String) -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        lisanslar.forEach { l ->
-            val s = l.kod == secili
-            val sekil = RoundedCornerShape(12.dp)
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .clip(sekil)
-                    .background(if (s) YesilAcik else Kart)
-                    .border(if (s) 2.dp else 1.dp, if (s) Yesil else Cizgi, sekil)
-                    .clickableIf(l.aktif) { sec(l.kod) }
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                RadioButton(selected = s, onClick = if (l.aktif) ({ sec(l.kod) }) else null, enabled = l.aktif)
-                Column(Modifier.weight(1f)) {
-                    Text(l.ad, style = MaterialTheme.typography.titleMedium, color = if (l.aktif) Metin else MetinSoluk)
-                    Text(
-                        when {
-                            !l.aktif -> "Yakında"
-                            icerikVar(l) -> "${l.dersler.size} Ders"
-                            else -> "${l.dersler.size} Ders · İçerik Yakında"
-                        },
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = if (l.aktif && !icerikVar(l)) Sari2 else MetinSoluk,
-                    )
+fun LisansSecici(
+    lisanslar: List<Lisans>,
+    secili: String?,
+    icerikVar: (Lisans) -> Boolean = { true },
+    ilerleme: ((Lisans) -> Pair<Int, Int>)? = null,
+    sec: (String) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        lisanslar.chunked(2).forEach { satir ->
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                satir.forEach { l ->
+                    val i = lisanslar.indexOf(l)
+                    val renk = SEVIYE_RENKLERI[i % SEVIYE_RENKLERI.size]
+                    val s = l.kod == secili
+                    val hazir = icerikVar(l)
+                    val sekil = RoundedCornerShape(18.dp)
+                    Box(
+                        Modifier
+                            .weight(1f)
+                            .height(150.dp)
+                            .clip(sekil)
+                            .background(renk.copy(alpha = if (hazir) 1f else 0.7f))
+                            .border(if (s) 3.dp else 0.dp, if (s) Altin else androidx.compose.ui.graphics.Color.Transparent, sekil)
+                            .clickableIf(l.aktif) { sec(l.kod) }
+                            .padding(14.dp),
+                    ) {
+                        Column(Modifier.fillMaxSize()) {
+                            Box(Modifier.size(40.dp).clip(CircleShape).background(androidx.compose.ui.graphics.Color(0x33FFFFFF)), contentAlignment = Alignment.Center) {
+                                Text(seviyeSimgesi(l.kod), fontSize = 20.sp)
+                            }
+                            Box(Modifier.weight(1f))
+                            Text(l.kisaAd, style = MaterialTheme.typography.titleMedium, color = Krem, maxLines = 2, lineHeight = 20.sp)
+                            Bosluk(2)
+                            val ilr = ilerleme?.invoke(l)
+                            if (ilr != null && ilr.first > 0) {
+                                Text("${ilr.first}/${ilr.second} Ders Geçildi", fontSize = 12.sp, color = Altin)
+                                Bosluk(4)
+                                Box(Modifier.fillMaxWidth().height(4.dp).clip(RoundedCornerShape(2.dp)).background(androidx.compose.ui.graphics.Color(0x33FFFFFF))) {
+                                    Box(Modifier.fillMaxWidth(ilr.first / ilr.second.toFloat()).height(4.dp).background(Altin))
+                                }
+                            } else {
+                                Text(
+                                    if (!l.aktif) "Yakında" else if (hazir) "${l.dersler.size} Ders" else "${l.dersler.size} Ders · İçerik Yakında",
+                                    fontSize = 12.sp, color = KremSoluk,
+                                )
+                            }
+                        }
+                        if (s) {
+                            Box(
+                                Modifier.align(Alignment.TopEnd).size(26.dp).clip(CircleShape).background(Altin),
+                                contentAlignment = Alignment.Center,
+                            ) { Text("✓", color = YesilKoyu, fontSize = 14.sp) }
+                        }
+                    }
                 }
+                if (satir.size == 1) Box(Modifier.weight(1f))
             }
         }
     }
 }
 
 @Composable
-fun LisansEkrani(lisanslar: List<Lisans>, secili: String?, sec: (String) -> Unit, geri: () -> Unit, icerikVar: (Lisans) -> Boolean = { true }) {
+fun LisansEkrani(
+    banka: com.lisanshazirlik.app.data.SoruBankasi,
+    depo: com.lisanshazirlik.app.data.KullaniciDeposu,
+    sec: (String) -> Unit,
+    geri: () -> Unit,
+) {
     Scaffold(topBar = { UstCubuk("Sınavım", geri) }, containerColor = Zemin) { ic ->
-        Column(
-            Modifier.fillMaxSize().padding(ic).verticalScroll(rememberScrollState()).padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Text("Hangi lisans sınavına hazırlanıyorsun?", style = MaterialTheme.typography.titleLarge)
-            Text("Dersler, denemeler ve istatistikler seçtiğin lisansa göre gösterilir.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
-            LisansSecici(lisanslar, secili, icerikVar) { sec(it); geri() }
+        Column(Modifier.fillMaxSize().padding(ic).verticalScroll(rememberScrollState())) {
+            Column(Modifier.fillMaxWidth().background(Yesil).padding(start = 20.dp, end = 20.dp, bottom = 18.dp)) {
+                Text("Hangi Lisansa Hazırlanıyorsun?", fontFamily = Baslik, fontSize = 22.sp, color = Krem)
+                Bosluk(4)
+                Text("Dersler, denemeler ve istatistikler bu seçime göre gelir.", style = MaterialTheme.typography.bodyMedium, color = KremSoluk)
+            }
+            Column(Modifier.padding(16.dp)) {
+                LisansSecici(
+                    banka.lisanslar,
+                    depo.kullanici?.lisans,
+                    icerikVar = { banka.icerikVar(it) },
+                    ilerleme = { l -> lisansDurumu(banka, depo.sonuclar, l.kod).let { it.second to it.third } },
+                ) { sec(it); geri() }
+                Bosluk(12)
+                Text("Ortak dersler bütün lisanslarda geçerli sayılır.", fontSize = 12.sp, color = MetinSoluk)
+            }
         }
     }
 }
