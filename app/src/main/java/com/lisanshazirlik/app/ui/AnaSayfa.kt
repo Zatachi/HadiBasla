@@ -75,7 +75,7 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
 
     val kisayollar = listOf(
         Kisayol("", "Eğitim", com.lisanshazirlik.app.R.drawable.ic_egitim) { y.sekmeAc(Sekme.DERSLER) },
-        Kisayol("⏱", "Deneme") { y.sekmeAc(Sekme.DENEME) },
+        Kisayol("", "Deneme", com.lisanshazirlik.app.R.drawable.ic_deneme) { y.sekmeAc(Sekme.DENEME) },
         Kisayol("❌", "Yanlışlarım") {
             if (yanlislar.isNotEmpty()) y.coz("Yanlışlarım", yanlislar.shuffled(), null, "yanlislar") else y.sekmeAc(Sekme.DERSLER)
         },
