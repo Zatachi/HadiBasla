@@ -57,11 +57,11 @@ import com.lisanshazirlik.app.data.SoruBankasi
 import kotlin.math.ceil
 
 enum class Sekme(val ad: String, val ikon: ImageVector, val resim: Int? = null) {
-    ANA("Ana sayfa", Icons.Filled.Home),
+    ANA("Ana sayfa", Icons.Filled.Home, com.lisanshazirlik.app.R.drawable.ic_ana),
     DERSLER("Eğitim", Icons.Filled.PlayArrow, com.lisanshazirlik.app.R.drawable.ic_egitim),
-    DENEME("Deneme", Icons.Filled.CheckCircle),
-    BASARI("Başarı", Icons.Filled.Star),
-    PROFIL("Profil", Icons.Filled.Person),
+    DENEME("Deneme", Icons.Filled.CheckCircle, com.lisanshazirlik.app.R.drawable.ic_deneme),
+    BASARI("Başarı", Icons.Filled.Star, com.lisanshazirlik.app.R.drawable.ic_basari),
+    PROFIL("Profil", Icons.Filled.Person, com.lisanshazirlik.app.R.drawable.ic_profil),
 }
 
 /** Ekranlar arası geçişler; ekranlar birbirini doğrudan tanımaz. */
