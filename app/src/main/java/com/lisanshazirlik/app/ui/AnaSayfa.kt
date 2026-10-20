@@ -54,10 +54,6 @@ private data class Kisayol(val simge: String, val ad: String, val resim: Int? = 
 fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlendirici, ic: PaddingValues) {
     val k = depo.kullanici
     val dersler = banka.lisansDersleri(k?.lisans)
-    val lisansSorulari = dersler.flatMap { banka.dersSorulari(it.kod) }
-    val gununSorusu = lisansSorulari.takeIf { it.isNotEmpty() }?.let {
-        it[(java.time.LocalDate.now().toEpochDay() % it.size).toInt()]
-    }
     val yanlislar = depo.yanlislar().mapNotNull { banka.bul(it) }
     val videolar = dersler.flatMap { d -> d.konular.filter { it.video.isNotBlank() }.map { d to it } }
     val enYakin = depo.aktifHedefler().filter { (it.kalanGun() ?: -1L) >= 0 }.minByOrNull { it.kalanGun()!! }
@@ -79,7 +75,6 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
         Kisayol("❌", "Yanlışlarım") {
             if (yanlislar.isNotEmpty()) y.coz("Yanlışlarım", yanlislar.shuffled(), null, "yanlislar") else y.sekmeAc(Sekme.DERSLER)
         },
-        Kisayol("💡", "Günün sorusu") { gununSorusu?.let { y.coz("Günün sorusu", listOf(it), null, "gunun") } },
         Kisayol("🏆", "Sıralama") { y.basariAc(BasariBolumu.SIRALAMA) },
         Kisayol("", "Sertifikalarım", com.lisanshazirlik.app.R.drawable.ic_sertifika, y.sonuclar),
     )
@@ -238,24 +233,6 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
             }
         }
 
-        // Günün sorusu
-        if (gununSorusu != null) {
-            item {
-                val cevap = depo.ilerleme[gununSorusu.id]
-                KartKutu(Modifier.padding(horizontal = 16.dp), tikla = { y.coz("Günün sorusu", listOf(gununSorusu), null, "gunun") }) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Etiket("💡 Günün sorusu", Modifier.weight(1f))
-                        Text(
-                            when (cevap) { null -> "Çöz"; 1 -> "✓ Doğru"; else -> "Tekrar dene" },
-                            style = MaterialTheme.typography.labelLarge,
-                            color = when (cevap) { null -> Yesil; 1 -> DogruYesil; else -> YanlisKirmizi },
-                        )
-                    }
-                    Bosluk(6)
-                    Text(gununSorusu.metin, style = MaterialTheme.typography.bodyMedium, maxLines = 3, overflow = TextOverflow.Ellipsis)
-                }
-            }
-        }
     }
 }
 
