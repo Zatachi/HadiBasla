@@ -310,7 +310,7 @@ private fun AltEkran(
                 sonucKaydet = { kapsam, ort, gecti, puanlar, adet -> depo.denemeKaydet(kapsam, ort, gecti, puanlar, adet, ust.no) },
                 geri = geri,
             )
-            Ekran.Shorts -> com.lisanshazirlik.app.ui.ShortsEkrani(banka, depo, konuAc = { git(Ekran.Konu(it)) }, takmaAdSec = { yigin = emptyList(); basariIlk = com.lisanshazirlik.app.ui.BasariBolumu.SIRALAMA; sekme = Sekme.BASARI }, geri = geri)
+            Ekran.Shorts -> com.lisanshazirlik.app.ui.ShortsEkrani(banka, depo, konuAc = { git(Ekran.Konu(it)) }, takmaAdSec = { y.basariAc(com.lisanshazirlik.app.ui.BasariBolumu.SIRALAMA) }, geri = geri)
             Ekran.Hazirlik -> com.lisanshazirlik.app.ui.HazirlikEkrani(banka, depo, dersAc = { y.paketAc(it) }, geri = geri)
             Ekran.GununBes -> com.lisanshazirlik.app.ui.GununBesEkrani(banka, depo, basla = { b, s -> git(Ekran.Coz(b, s, "tekrar")) }, geri = geri)
             Ekran.Kulaklik -> com.lisanshazirlik.app.ui.KulaklikEkrani(banka, depo, cevapla, geri = geri)
