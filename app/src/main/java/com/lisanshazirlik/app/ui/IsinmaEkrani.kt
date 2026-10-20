@@ -41,7 +41,7 @@ fun IsinmaEkrani(konuAd: String, sorular: List<Soru>, geri: () -> Unit, bitti: (
         ) {
             if (son) {
                 Text("🔥", style = MaterialTheme.typography.displayMedium)
-                Text("${sorular.size} sorudan $dogru tanesini bildin", style = MaterialTheme.typography.titleLarge)
+                Text("${sorular.size} Sorudan $dogru Tanesini Bildin", style = MaterialTheme.typography.titleLarge)
                 Text(
                     if (dogru == sorular.size) "Konuya hâkimsin gibi görünüyor. Yine de anlatım cevapların nedenini pekiştirecek."
                     else "Bilemediklerinin cevabı birazdan anlatımda. Dikkatle izle!",
@@ -52,7 +52,7 @@ fun IsinmaEkrani(konuAd: String, sorular: List<Soru>, geri: () -> Unit, bitti: (
                 return@Column
             }
             val soru = sorular[sira]
-            Etiket("Isınma ${sira + 1}/${sorular.size} · yanlış yapman normal, puana yazılmaz")
+            Etiket("Isınma ${sira + 1}/${sorular.size} · Yanlış Yapman Normal, Puana Yazılmaz")
             Text(soru.metin, style = MaterialTheme.typography.titleMedium)
             soru.secenekler.forEachIndexed { i, m ->
                 val d = when {

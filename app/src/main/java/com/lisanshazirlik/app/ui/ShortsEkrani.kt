@@ -234,7 +234,7 @@ private fun KisaVideo(
                     cevap?.let { Text(if (it == m.dogru) "✓ Doğru!" else "✗ Doğrusu: ${m.secenekler[m.dogru]}", color = if (it == m.dogru) DogruYesil else YanlisKirmizi) }
                 }
                 if (kisa.merak.isNotBlank()) {
-                    Text("Sıradaki bölümde: ${kisa.merak}", color = KremSoluk, textAlign = TextAlign.Center, fontSize = 14.sp)
+                    Text("Sıradaki Bölümde: ${kisa.merak}", color = KremSoluk, textAlign = TextAlign.Center, fontSize = 14.sp)
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(

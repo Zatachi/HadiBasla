@@ -56,13 +56,43 @@ fun HedefSecici(
     dersSec: (String) -> Unit,
     tarih: LocalDate?,
     tarihSec: (LocalDate) -> Unit,
+    /** Verilirse üstte lisans çipleri çıkar; bütün lisansların dersleri seçilebilir. */
+    banka: SoruBankasi? = null,
+    baslangicLisans: String? = null,
+    /** Zaten hedefi olan dersler: listede görünür ama seçilemez. */
+    hedefli: Set<String> = emptySet(),
 ) {
     var takvim by remember { mutableStateOf(false) }
+    var lisansFiltre by remember { mutableStateOf(baslangicLisans) }
+    val gosterilen = when {
+        banka == null -> dersler
+        lisansFiltre == null -> banka.dersler
+        else -> banka.lisansDersleri(lisansFiltre)
+    }
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         // 1. adım: ders
         AdimBasligi("1", "Ders Seç")
-        dersler.forEach { d ->
+        if (banka != null) {
+            androidx.compose.foundation.lazy.LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                val secenekler = banka.lisanslar.map { it.kod to it.kisaAd } + (null to "Tüm Dersler")
+                items(secenekler.size) { i ->
+                    val (kod, ad) = secenekler[i]
+                    val s = kod == lisansFiltre
+                    Text(
+                        ad, style = MaterialTheme.typography.labelLarge, color = if (s) Krem else Yesil, maxLines = 1,
+                        modifier = Modifier.clip(RoundedCornerShape(50)).background(if (s) Yesil else YesilAcik)
+                            .clickable { lisansFiltre = kod }.padding(horizontal = 14.dp, vertical = 8.dp),
+                    )
+                }
+            }
+            Text(
+                "${gosterilen.size} Ders · Ortak Dersler Bütün Lisanslarda Geçerli",
+                style = MaterialTheme.typography.bodyMedium, color = MetinSoluk,
+            )
+        }
+        gosterilen.forEach { d ->
             val s = d.kod == secili
+            val var_ = d.kod in hedefli && d.kod != secili
             val sekil = RoundedCornerShape(16.dp)
             Row(
                 Modifier
@@ -70,7 +100,7 @@ fun HedefSecici(
                     .clip(sekil)
                     .background(Kart)
                     .border(if (s) 2.dp else 1.dp, if (s) dersRengi(d.kod) else Cizgi, sekil)
-                    .clickable { dersSec(d.kod) }
+                    .clickable(enabled = !var_) { dersSec(d.kod) }
                     .padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -78,7 +108,9 @@ fun HedefSecici(
                     Text(d.kod, style = MaterialTheme.typography.labelLarge, color = Krem)
                 }
                 Text(d.kisaAd, style = MaterialTheme.typography.titleMedium, maxLines = 2, lineHeight = 20.sp, modifier = Modifier.weight(1f).padding(horizontal = 12.dp))
-                Box(
+                if (var_) {
+                    Text("Hedefin Var", style = MaterialTheme.typography.labelMedium, color = MetinSoluk)
+                } else Box(
                     Modifier.size(26.dp).clip(CircleShape).background(if (s) dersRengi(d.kod) else Zemin).border(1.dp, if (s) dersRengi(d.kod) else Cizgi, CircleShape),
                     contentAlignment = Alignment.Center,
                 ) { if (s) Text("✓", color = Krem, fontSize = 13.sp) }
@@ -117,7 +149,7 @@ fun HedefSecici(
                     color = if (tarih != null) Krem else Metin,
                 )
                 Text(
-                    if (gun == null) "Kalan günü ve günlük hedefini hesaplarız" else if (gun == 0L) "Sınav bugün" else "$gun gün kaldı",
+                    if (gun == null) "Kalan Gün ve Günlük Hedef Hesaplanır" else if (gun == 0L) "Sınav Bugün" else "$gun Gün Kaldı",
                     style = MaterialTheme.typography.bodyMedium,
                     color = if (tarih != null) Altin else MetinSoluk,
                 )
@@ -200,8 +232,10 @@ fun HedefEkrani(
     geri: () -> Unit,
 ) {
     val mevcut: Hedef? = duzenlenen?.let { depo.hedef(it) }
-    val bosDersler = banka.lisansDersleri(depo.kullanici?.lisans).filter { d -> d.kod == duzenlenen || depo.hedef(d.kod) == null }
-    var ders by remember { mutableStateOf(duzenlenen ?: bosDersler.firstOrNull()?.kod) }
+    val bosDersler = banka.dersler.filter { d -> d.kod == duzenlenen || depo.hedef(d.kod) == null }
+    var ders by remember {
+        mutableStateOf(duzenlenen ?: banka.lisansDersleri(depo.kullanici?.lisans).firstOrNull { depo.hedef(it.kod) == null }?.kod ?: bosDersler.firstOrNull()?.kod)
+    }
     var tarih by remember { mutableStateOf(mevcut?.sinavTarihi) }
     var silSor by remember { mutableStateOf(false) }
     var tarihsizSor by remember { mutableStateOf(false) }
@@ -216,7 +250,7 @@ fun HedefEkrani(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             if (bosDersler.isEmpty()) {
-                Text("Bu lisanstaki bütün dersler için hedefin var. Bir hedefi düzenlemek için Ana sayfadaki kartına dokun.")
+                Text("Bütün Dersler İçin Hedefin Var")
                 return@Column
             }
             HedefSecici(
@@ -225,6 +259,9 @@ fun HedefEkrani(
                 dersSec = { ders = it },
                 tarih = tarih,
                 tarihSec = { tarih = it },
+                banka = if (mevcut == null) banka else null,
+                baslangicLisans = depo.kullanici?.lisans,
+                hedefli = depo.hedefler.map { it.ders }.toSet(),
             )
             Bosluk(8)
             Button(
@@ -261,7 +298,7 @@ fun HedefEkrani(
     if (silSor && mevcut != null) {
         AlertDialog(
             onDismissRequest = { silSor = false },
-            title = { Text("Hedefi kaldır") },
+            title = { Text("Hedefi Kaldır") },
             text = { Text("Bu dersin sınav tarihi ve geri sayımı kaldırılır. Çözdüğün sorular silinmez.") },
             confirmButton = { TextButton(onClick = { depo.hedefSil(mevcut.ders); silSor = false; geri() }) { Text("Kaldır", color = YanlisKirmizi) } },
             dismissButton = { TextButton(onClick = { silSor = false }) { Text("Vazgeç") } },

@@ -248,7 +248,7 @@ class KullaniciDeposu(val uid: String) {
         kok.set(alanlar, SetOptions.merge())
         val once = Oyun.seviye(k?.xp ?: 0)
         val sonra = Oyun.seviye((k?.xp ?: 0) + miktar)
-        if (sonra != once) kutlama = "Yeni seviye: ${sonra.ad}"
+        if (sonra != once) kutlama = "Yeni Seviye: ${sonra.ad}"
     }
 
     fun cevapKaydet(soru: Soru, dogru: Boolean, gunlukHedef: Int = Int.MAX_VALUE) {
@@ -333,7 +333,7 @@ class KullaniciDeposu(val uid: String) {
         val bugun = bugunKey
         xpEkle(Oyun.XP_ROZET * yeni.size, mapOf("rozetler" to yeni.associateWith { bugun }))
         val r = Oyun.ROZETLER.firstOrNull { it.id in yeni }
-        if (r != null) kutlama = "${r.simge} Yeni rozet: ${r.ad}"
+        if (r != null) kutlama = "${r.simge} Yeni Rozet: ${r.ad}"
     }
 
     fun paylasildi() {
@@ -348,7 +348,7 @@ class KullaniciDeposu(val uid: String) {
         val simdi = LocalDate.now()
         val bas = kullanici?.odulPremiumBitis?.takeIf { !it.isBefore(simdi) } ?: simdi
         kok.set(ekAlanlar + mapOf("odulPremiumBitis" to bas.plusDays(gun.toLong()).toString()), SetOptions.merge())
-        kutlama = "🎁 $gun gün Premium kazandın!"
+        kutlama = "🎁 $gun Gün Premium Kazandın!"
     }
 
     /** Paket adımını tamamlar; paketin son adımıysa ödül verir. */
@@ -375,7 +375,7 @@ class KullaniciDeposu(val uid: String) {
         kok.set(mapOf("lisans" to kod), SetOptions.merge())
     }
 
-    /** Gerçek sınav puanı. 50 ve üzeri girilirse o dersin hedefi "geçildi" olur. */
+    /** Gerçek sınav puanı. 50 ve üzeri girilirse o dersin hedefi "Geçildi" olur. */
     fun sonucKaydet(ders: String, puan: Int, tarih: LocalDate?) {
         kok.collection("sonuclar").document(ders).set(
             mapOf("puan" to puan.coerceIn(0, 100), "tarih" to tarih?.toString(), "zaman" to FieldValue.serverTimestamp())

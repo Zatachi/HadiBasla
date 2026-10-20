@@ -73,7 +73,7 @@ fun GorusEkrani(geri: () -> Unit) {
                 placeholder = { Text("Görüşün") },
             )
             Text(
-                "İsmin ya da iletişim bilgin alınmaz; görüşün anonim olarak iletilir.",
+                "İsmin ya da İletişim Bilgin Alınmaz; Görüşün Anonim Olarak İletilir.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MetinSoluk,
             )

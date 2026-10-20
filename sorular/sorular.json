@@ -175,13 +175,13 @@
           "ad": "Meslek Kuralları ve Etik İlkeler"
         }
       ],
-      "aciklama": "SPK Kanunu, özel durumlar, kurumsal yönetim, yatırım fonları ve meslek kuralları"
+      "aciklama": "SPK Kanunu, Özel Durumlar, Kurumsal Yönetim, Yatırım Fonları ve Meslek Kuralları"
     },
     {
       "kod": "1002",
       "ad": "Geniş Kapsamlı Sermaye Piyasası Mevzuatı ve Meslek Kuralları",
       "kisaAd": "Geniş Kapsamlı Mevzuat ve Meslek Kuralları",
-      "aciklama": "Dar kapsamlı konuların tamamı ve daha geniş mevzuat; bu dersi geçmek dar kapsamlıyı da geçmiş sayılır",
+      "aciklama": "Dar Kapsamlı Konuların Tamamı ve Daha Geniş Mevzuat; Bu Dersi Geçmek Dar Kapsamlıyı da Geçmiş Sayılır",
       "konular": []
     },
     {
@@ -210,13 +210,13 @@
           "ad": "Vergilendirme (GVK Geçici 67)"
         }
       ],
-      "aciklama": "Paylar, tahviller ve bonolar, yatırım fonları, türev araçlar ve vergilendirme"
+      "aciklama": "Paylar, Tahviller ve Bonolar, Yatırım Fonları, Türev Araçlar ve Vergilendirme"
     },
     {
       "kod": "1004",
       "ad": "Sermaye Piyasası Araçları 2",
       "kisaAd": "Sermaye Piyasası Araçları 2",
-      "aciklama": "İleri düzey sermaye piyasası araçları",
+      "aciklama": "İleri Düzey Sermaye Piyasası Araçları",
       "konular": []
     },
     {
@@ -249,48 +249,48 @@
           "ad": "Uzaktan Kimlik Tespiti"
         }
       ],
-      "aciklama": "Aracı kurumlar, yatırım hizmetleri, kredili işlemler, kitle fonlaması ve uzaktan kimlik tespiti"
+      "aciklama": "Aracı Kurumlar, Yatırım Hizmetleri, Kredili İşlemler, Kitle Fonlaması ve Uzaktan Kimlik Tespiti"
     },
     {
       "kod": "1006",
       "ad": "Finansal Piyasalar",
       "kisaAd": "Finansal Piyasalar",
-      "aciklama": "Para, sermaye ve döviz piyasalarının işleyişi",
+      "aciklama": "Para, Sermaye ve Döviz Piyasalarının İşleyişi",
       "konular": []
     },
     {
       "kod": "1007",
       "ad": "Finansal Yönetim ve Mali Analiz",
       "kisaAd": "Finansal Yönetim ve Mali Analiz",
-      "aciklama": "Finansal tablolar, oran analizi ve finansal yönetim",
+      "aciklama": "Finansal Tablolar, Oran Analizi ve Finansal Yönetim",
       "konular": []
     },
     {
       "kod": "1008",
       "ad": "Genel Ekonomi",
       "kisaAd": "Genel Ekonomi",
-      "aciklama": "Mikro ve makro ekonominin temel kavramları",
+      "aciklama": "Mikro ve Makro Ekonominin Temel Kavramları",
       "konular": []
     },
     {
       "kod": "1009",
       "ad": "Temel Finans Matematiği ve Değerleme Yöntemleri",
       "kisaAd": "Finans Matematiği ve Değerleme",
-      "aciklama": "Paranın zaman değeri, getiri ve değerleme yöntemleri",
+      "aciklama": "Paranın Zaman Değeri, Getiri ve Değerleme Yöntemleri",
       "konular": []
     },
     {
       "kod": "1010",
       "ad": "Ticaret Hukuku",
       "kisaAd": "Ticaret Hukuku",
-      "aciklama": "Ticari işletme, şirketler ve kıymetli evrak",
+      "aciklama": "Ticari İşletme, Şirketler ve Kıymetli Evrak",
       "konular": []
     },
     {
       "kod": "1011",
       "ad": "Türev Araçlar, Piyasalar ve Risk Yönetimi",
       "kisaAd": "Türev Araçlar ve Risk Yönetimi",
-      "aciklama": "Vadeli işlemler, opsiyonlar ve risk yönetimi",
+      "aciklama": "Vadeli İşlemler, Opsiyonlar ve Risk Yönetimi",
       "konular": []
     },
     {
@@ -351,83 +351,83 @@
           "ad": "Takasbank Teminat Yönetimi"
         }
       ],
-      "aciklama": "Takas ve saklama, MKK, pay ve borçlanma araçları takası, VİOP ve teminat yönetimi"
+      "aciklama": "Takas ve Saklama, MKK, Pay ve Borçlanma Araçları Takası, VİOP ve Teminat Yönetimi"
     },
     {
       "kod": "1013",
       "ad": "Kurumlarda ve Sermaye Piyasasında Vergilendirme",
       "kisaAd": "Kurumlarda ve SP'de Vergilendirme",
-      "aciklama": "Kurumlar vergisi ve sermaye piyasası gelirlerinin vergilendirilmesi",
+      "aciklama": "Kurumlar Vergisi ve Sermaye Piyasası Gelirlerinin Vergilendirilmesi",
       "konular": []
     },
     {
       "kod": "1014",
       "ad": "Gayrimenkul Değerleme Esasları",
       "kisaAd": "Gayrimenkul Değerleme Esasları",
-      "aciklama": "Değerleme yaklaşımları ve değerleme raporları",
+      "aciklama": "Değerleme Yaklaşımları ve Değerleme Raporları",
       "konular": []
     },
     {
       "kod": "1015",
       "ad": "İnşaat ve Gayrimenkul Muhasebesi",
       "kisaAd": "İnşaat ve Gayrimenkul Muhasebesi",
-      "aciklama": "İnşaat maliyetleri ve gayrimenkul muhasebesi",
+      "aciklama": "İnşaat Maliyetleri ve Gayrimenkul Muhasebesi",
       "konular": []
     },
     {
       "kod": "1016",
       "ad": "Muhasebe ve Finansal Raporlama",
       "kisaAd": "Muhasebe ve Finansal Raporlama",
-      "aciklama": "Muhasebe ilkeleri ve finansal raporlama standartları",
+      "aciklama": "Muhasebe İlkeleri ve Finansal Raporlama Standartları",
       "konular": []
     },
     {
       "kod": "1017",
       "ad": "Kredi Derecelendirmesi",
       "kisaAd": "Kredi Derecelendirmesi",
-      "aciklama": "Kredi derecelendirme süreci ve yöntemleri",
+      "aciklama": "Kredi Derecelendirme Süreci ve Yöntemleri",
       "konular": []
     },
     {
       "kod": "1018",
       "ad": "Kurumsal Yönetim",
       "kisaAd": "Kurumsal Yönetim",
-      "aciklama": "Kurumsal yönetim ilkeleri ve derecelendirme",
+      "aciklama": "Kurumsal Yönetim İlkeleri ve Derecelendirme",
       "konular": []
     },
     {
       "kod": "1019",
       "ad": "Gayrimenkul Mevzuatı",
       "kisaAd": "Gayrimenkul Mevzuatı",
-      "aciklama": "İmar, tapu ve gayrimenkul ile ilgili mevzuat",
+      "aciklama": "İmar, Tapu ve Gayrimenkul ile İlgili Mevzuat",
       "konular": []
     },
     {
       "kod": "1020",
       "ad": "Bilgi Sistemleri Yönetimi ve Denetimi",
       "kisaAd": "Bilgi Sistemleri Yönetimi ve Denetimi",
-      "aciklama": "BT yönetişimi ve bilgi sistemleri denetimi",
+      "aciklama": "BT Yönetişimi ve Bilgi Sistemleri Denetimi",
       "konular": []
     },
     {
       "kod": "1021",
       "ad": "Bilgi Sistemleri Geliştirilmesi ve Uygulanması",
       "kisaAd": "BS Geliştirilmesi ve Uygulanması",
-      "aciklama": "Yazılım geliştirme ve sistem edinimi",
+      "aciklama": "Yazılım Geliştirme ve Sistem Edinimi",
       "konular": []
     },
     {
       "kod": "1022",
       "ad": "Bilgi Sistemleri İşletimi",
       "kisaAd": "Bilgi Sistemleri İşletimi",
-      "aciklama": "BT operasyonları ve süreklilik",
+      "aciklama": "BT Operasyonları ve Süreklilik",
       "konular": []
     },
     {
       "kod": "1023",
       "ad": "Bilgi Sistemleri Güvenliği",
       "kisaAd": "Bilgi Sistemleri Güvenliği",
-      "aciklama": "Bilgi güvenliği ve erişim kontrolleri",
+      "aciklama": "Bilgi Güvenliği ve Erişim Kontrolleri",
       "konular": []
     }
   ],

@@ -121,7 +121,7 @@ fun LisansEkrani(
             Column(Modifier.fillMaxWidth().background(Yesil).padding(start = 20.dp, end = 20.dp, bottom = 18.dp)) {
                 Text("Hangi Lisansa Hazırlanıyorsun?", fontFamily = Baslik, fontSize = 22.sp, color = Krem)
                 Bosluk(4)
-                Text("Dersler, denemeler ve istatistikler bu seçime göre gelir.", style = MaterialTheme.typography.bodyMedium, color = KremSoluk)
+                Text("Dersler, Denemeler ve İstatistikler Bu Seçime Göre Gelir.", style = MaterialTheme.typography.bodyMedium, color = KremSoluk)
             }
             Column(Modifier.padding(16.dp)) {
                 LisansSecici(
@@ -131,7 +131,7 @@ fun LisansEkrani(
                     ilerleme = { l -> lisansDurumu(banka, depo.sonuclar, l.kod).let { it.second to it.third } },
                 ) { sec(it); geri() }
                 Bosluk(12)
-                Text("Ortak dersler bütün lisanslarda geçerli sayılır.", fontSize = 12.sp, color = MetinSoluk)
+                Text("Ortak Dersler Bütün Lisanslarda Geçerli Sayılır.", fontSize = 12.sp, color = MetinSoluk)
             }
         }
     }
@@ -165,7 +165,7 @@ fun HatirlatmaEkrani(kayit: YerelKayit, geri: () -> Unit) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text("Her Gün Hatırlat", style = MaterialTheme.typography.titleMedium)
-                        Text("Seçtiğin saatte çalışma bildirimi gelir.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                        Text("Seçtiğin Saatte Çalışma Bildirimi Gelir.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                     }
                     Switch(
                         checked = kayit.hatirlatmaAcik,
@@ -221,7 +221,7 @@ private val Sari2 = androidx.compose.ui.graphics.Color(0xFFB07A10)
 fun LisansPenceresi(banka: com.lisanshazirlik.app.data.SoruBankasi, secili: String?, kapat: () -> Unit, sec: (String) -> Unit) {
     androidx.compose.material3.AlertDialog(
         onDismissRequest = kapat,
-        title = { Text("Hangi lisans?") },
+        title = { Text("Hangi Lisans?") },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 LisansSecici(banka.lisanslar, secili, { l -> banka.icerikVar(l) }) { sec(it); kapat() }

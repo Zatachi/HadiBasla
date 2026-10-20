@@ -77,11 +77,11 @@ fun KarsilamaEkrani(devam: () -> Unit) {
     }
     Column(Modifier.fillMaxSize().background(Zemin).navigationBarsPadding()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
-            YesilUst("Lisansla'ya Hoş Geldin", "Sermaye piyasası lisans sınavlarına adım adım hazırlan.")
+            YesilUst("Lisansla'ya Hoş Geldin", "Sermaye Piyasası Lisans Sınavlarına Adım Adım Hazırlan.")
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                Ozellik("Çalıştığın dersi ve sınav tarihini seç, kaç gün kaldığını takip et.")
-                Ozellik("Her gün sana uygun sayıda soru çöz, serini bozma.")
-                Ozellik("Yanlışlarını ve zayıf konularını tekrar et, deneme sınavlarıyla kendini ölç.")
+                Ozellik("Çalıştığın Dersi ve Sınav Tarihini Seç, Kaç Gün Kaldığını Takip Et.")
+                Ozellik("Her Gün Sana Uygun Sayıda Soru Çöz, Serini Bozma.")
+                Ozellik("Yanlışlarını ve Zayıf Konularını Tekrar Et, Deneme Sınavlarıyla Kendini Ölç.")
                 Bosluk(4)
                 KartKutu {
                     Text("Kişisel Verilerin", style = MaterialTheme.typography.titleMedium)
@@ -99,7 +99,7 @@ fun KarsilamaEkrani(devam: () -> Unit) {
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Checkbox(checked = okudum, onCheckedChange = { okudum = it })
-                    Text("Kişisel verilerin korunmasına ilişkin aydınlatma metnini okudum.", style = MaterialTheme.typography.bodyMedium)
+                    Text("Kişisel Verilerin Korunmasına İlişkin Aydınlatma Metnini Okudum.", style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }
@@ -145,7 +145,7 @@ fun GirisEkrani(hesap: Hesap, girildi: (googleAdi: String?) -> Unit) {
 
     Column(Modifier.fillMaxSize().background(Zemin).navigationBarsPadding()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
-            YesilUst("Hesabını Oluştur", "İlerlemen hesabında saklanır; telefon değiştirsen de kaybolmaz.")
+            YesilUst("Hesabını Oluştur", "İlerlemen Hesabında Saklanır; Telefon Değiştirsen de Kaybolmaz.")
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Button(
                     onClick = { calistir { hesap.googleIleGiris(baglam) } },
@@ -165,7 +165,7 @@ fun GirisEkrani(hesap: Hesap, girildi: (googleAdi: String?) -> Unit) {
                 if (bekliyor) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp, color = Yesil)
-                        Text("Giriş yapılıyor…", modifier = Modifier.padding(start = 10.dp))
+                        Text("Giriş Yapılıyor…", modifier = Modifier.padding(start = 10.dp))
                     }
                 }
                 hata?.let { Text(it, color = YanlisKirmizi, style = MaterialTheme.typography.bodyMedium) }
@@ -192,7 +192,7 @@ fun KurulumEkrani(
     Column(Modifier.fillMaxSize().background(Zemin).navigationBarsPadding().imePadding()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
             if (adim == 0) {
-                YesilUst("Seni nasıl çağıralım?", "Ana sayfada bu isimle karşılanacaksın.")
+                YesilUst("Seni Nasıl Çağıralım?", "Ana Sayfada Bu İsimle Karşılanacaksın.")
                 Column(Modifier.padding(20.dp)) {
                     OutlinedTextField(
                         value = ad,
@@ -202,17 +202,17 @@ fun KurulumEkrani(
                         modifier = Modifier.fillMaxWidth(),
                     )
                     Bosluk(8)
-                    Text("Sadece adın yeterli, soyadına gerek yok.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                    Text("Sadece Adın Yeterli, Soyadına Gerek Yok.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 }
             } else if (adim == 1) {
-                YesilUst("Hangi sınava hazırlanıyorsun?", "Dersler ve denemeler buna göre hazırlanır.")
+                YesilUst("Hangi Sınava Hazırlanıyorsun?", "Dersler ve Denemeler Buna Göre Hazırlanır.")
                 Column(Modifier.padding(20.dp)) {
                     LisansSecici(banka.lisanslar, lisans, { l -> banka.icerikVar(l) }) { lisans = it }
                 }
             } else {
-                YesilUst("İlk Hedefin", "Bir derse odaklan; diğerlerini sonra eklersin.")
+                YesilUst("İlk Hedefin", "Bir Derse Odaklan; Diğerlerini Sonra Eklersin.")
                 Column(Modifier.padding(20.dp)) {
-                    HedefSecici(banka.lisansDersleri(lisans), ders, { ders = it }, tarih, { tarih = it })
+                    HedefSecici(banka.lisansDersleri(lisans), ders, { ders = it }, tarih, { tarih = it }, banka = banka, baslangicLisans = lisans)
                 }
             }
         }

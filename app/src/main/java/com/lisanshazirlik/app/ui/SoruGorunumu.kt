@@ -102,13 +102,13 @@ fun Aciklama(soru: Soru, verilen: Int?) {
     }
 }
 
-/** Her sorunun altındaki "işine yaradı mı?" ve "Hata Bildir" bölümü. */
+/** Her sorunun altındaki "İşine Yaradı Mı?" ve "Hata Bildir" bölümü. */
 @Composable
 fun SoruGeriBildirimi(soru: Soru, mevcutOy: Int, oyVer: (Int) -> Unit) {
     var hataAcik by remember { mutableStateOf(false) }
     var hataGonderildi by remember(soru.id) { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("Bu soru işine yaradı mı?", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+        Text("Bu Soru İşine Yaradı Mı?", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
             OySecenegi("👍 Evet", mevcutOy == 1) { oyVer(if (mevcutOy == 1) 0 else 1) }
             OySecenegi("👎 Hayır", mevcutOy == -1) { oyVer(if (mevcutOy == -1) 0 else -1) }

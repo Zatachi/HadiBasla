@@ -39,7 +39,7 @@ import com.lisanshazirlik.app.data.KullaniciDeposu
 import com.lisanshazirlik.app.data.Paket
 import com.lisanshazirlik.app.data.SoruBankasi
 
-/** Bir dersin eğitim paketi: adımların listesi ve "devam et" düğmesi. */
+/** Bir dersin eğitim paketi: adımların listesi ve "Devam Et" düğmesi. */
 @Composable
 fun PaketEkrani(
     dersKod: String,
@@ -115,7 +115,7 @@ fun PaketEkrani(
                     Text("⏱", fontSize = 22.sp)
                     Column(Modifier.weight(1f).padding(start = 12.dp)) {
                         Text("Bu Dersin Denemeleri", style = MaterialTheme.typography.titleMedium)
-                        Text("10 deneme · gerçek sınav gibi 25 soru, 45 dk", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                        Text("10 Deneme · Gerçek Sınav Gibi 25 Soru, 45 dk", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                     }
                     Text("›", fontSize = 24.sp, color = Yesil)
                 }
@@ -211,7 +211,7 @@ fun PaketGecisEkrani(
             Bosluk(8)
             OutlinedButton(onClick = pakete, modifier = Modifier.fillMaxWidth().height(50.dp)) { Text("Pakete Dön") }
         } else {
-            Text("Paketi bitirdin 🎉", style = MaterialTheme.typography.titleLarge, color = DogruYesil)
+            Text("Paketi Bitirdin 🎉", style = MaterialTheme.typography.titleLarge, color = DogruYesil)
             Bosluk(16)
             Button(onClick = pakete, modifier = Modifier.fillMaxWidth().height(54.dp)) { Text("Pakete Dön") }
         }

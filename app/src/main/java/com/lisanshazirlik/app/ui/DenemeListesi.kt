@@ -135,7 +135,7 @@ fun DenemeListesiEkrani(
                         Text(
                             when {
                                 !hazir -> "${DENEME_ADLARI[no - 1]} · hazırlanıyor"
-                                son != null -> "${DENEME_ADLARI[no - 1]} · son puan ${son.ortalama} ${if (son.gecti) "✓" else ""}"
+                                son != null -> "${DENEME_ADLARI[no - 1]} · Son Puan ${son.ortalama} ${if (son.gecti) "✓" else ""}"
                                 else -> DENEME_ADLARI[no - 1]
                             },
                             style = MaterialTheme.typography.bodyMedium,

@@ -108,7 +108,7 @@ fun VideoEkrani(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    Text("⏸ Video durdu: bakalım aklında kaldı mı?", color = Yesil, style = MaterialTheme.typography.labelLarge)
+                    Text("⏸ Video Durdu: Bakalım Aklında Kaldı Mı?", color = Yesil, style = MaterialTheme.typography.labelLarge)
                     Text(soru.metin, style = MaterialTheme.typography.titleMedium)
                     soru.secenekler.forEachIndexed { i, m ->
                         val durum = when {

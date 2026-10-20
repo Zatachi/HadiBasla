@@ -172,7 +172,7 @@ private fun RozetKarti(depo: KullaniciDeposu) {
             Bosluk(12)
             Text("${r.simge} ${r.ad}", style = MaterialTheme.typography.titleMedium)
             Text(
-                r.aciklama + (kazanilan[r.id]?.let { " · Kazanıldı" } ?: " · Henüz kazanılmadı"),
+                r.aciklama + (kazanilan[r.id]?.let { " · Kazanıldı" } ?: " · Henüz Kazanılmadı"),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MetinSoluk,
             )
@@ -250,7 +250,7 @@ private fun SiralamaBolumu(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hes
                 if (benimSiram != null && benimDegerim != null) {
                     SiralamaSatirGorunumu(benimSiram!!, SiralamaSatiri(uid, k.takmaAd, Oyun.seviye(k.xp).ad, benimDegerim!!), tablo, true)
                 } else {
-                    Text("Bu sıralamada henüz yer almıyorsun.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                    Text("Bu Sıralamada Henüz Yer Almıyorsun.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 }
             }
         }
@@ -287,7 +287,7 @@ private fun SiralamaSatirGorunumu(sira: Long, s: SiralamaSatiri, tablo: Tablo, b
             Text(basHarf(s.takmaAd), color = Krem, style = MaterialTheme.typography.labelLarge)
         }
         Column(Modifier.weight(1f).padding(start = 10.dp)) {
-            Text(s.takmaAd + if (ben) " (sen)" else "", style = MaterialTheme.typography.titleMedium, maxLines = 1)
+            Text(s.takmaAd + if (ben) " (Sen)" else "", style = MaterialTheme.typography.titleMedium, maxLines = 1)
             Text(s.seviye, style = MaterialTheme.typography.bodyMedium, fontSize = 12.sp, color = MetinSoluk)
         }
         Text(
@@ -341,11 +341,11 @@ private fun KatilEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String, 
         )
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickableIf(true) { onay = !onay }) {
             Checkbox(checked = onay, onCheckedChange = { onay = it })
-            Text("Takma adımın, seviyemin ve puanlarımın sıralamalarda diğer kullanıcılara gösterilmesine açık rıza veriyorum.", style = MaterialTheme.typography.bodyMedium)
+            Text("Takma Adımın, Seviyemin ve Puanlarımın Sıralamalarda Diğer Kullanıcılara Gösterilmesine Açık Rıza Veriyorum.", style = MaterialTheme.typography.bodyMedium)
         }
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickableIf(true) { duvar = !duvar }) {
             Checkbox(checked = duvar, onCheckedChange = { duvar = it })
-            Text("Sınavı geçtiğimde \"Geçenler duvarı\"nda da görüneyim (isteğe bağlı).", style = MaterialTheme.typography.bodyMedium)
+            Text("Sınavı Geçtiğimde \"Geçenler Duvarı\"nda da Görüneyim (İsteğe Bağlı).", style = MaterialTheme.typography.bodyMedium)
         }
         Button(
             onClick = {
@@ -443,13 +443,13 @@ private fun DavetBolumu(depo: KullaniciDeposu, hesap: Hesap, durum: Topluluk.Dav
             OdulSatiri("🌟", "10 Arkadaş", "Fenomen Rozeti", gecerli >= 10)
             k?.odulPremiumBitis?.let {
                 Bosluk(6)
-                Text("Premium: ${uzunTarih(it)} tarihine kadar", style = MaterialTheme.typography.bodyMedium, color = DogruYesil)
+                Text("Premium: ${uzunTarih(it)} Tarihine Kadar", style = MaterialTheme.typography.bodyMedium, color = DogruYesil)
             }
         }
 
         if (k?.davetEden == null) {
             KartKutu {
-                Text("Davet kodun var mı?", style = MaterialTheme.typography.titleMedium)
+                Text("Davet Kodun Var Mı?", style = MaterialTheme.typography.titleMedium)
                 Bosluk(4)
                 Text("Seni davet edenin kodunu gir, sen de +${Oyun.XP_DAVET_EDILEN} XP hoş geldin bonusu kazan.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 Bosluk(8)

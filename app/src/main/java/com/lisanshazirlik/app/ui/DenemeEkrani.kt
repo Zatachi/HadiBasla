@@ -127,7 +127,7 @@ fun DenemeEkrani(
 
     if (sorular.isEmpty()) {
         Scaffold(topBar = { UstCubuk("Deneme Sınavı", geri) }, containerColor = Zemin) { ic ->
-            Text("Deneme için henüz yeterli soru yok.", modifier = Modifier.padding(ic).padding(24.dp))
+            Text("Deneme İçin Henüz Yeterli Soru Yok.", modifier = Modifier.padding(ic).padding(24.dp))
         }
         return
     }
@@ -224,7 +224,7 @@ fun DenemeEkrani(
         AlertDialog(
             onDismissRequest = { bitirSor = false },
             title = { Text("Sınavı Bitir") },
-            text = { Text(if (bos > 0) "$bos soruyu boş bıraktın. Yine de bitirmek istiyor musun?" else "Cevaplarını göndermek üzeresin.") },
+            text = { Text(if (bos > 0) "$bos soruyu boş bıraktın. Yine de bitirmek istiyor musun?" else "Cevaplarını Göndermek Üzeresin.") },
             confirmButton = { TextButton(onClick = { bitirSor = false; bitir() }) { Text("Bitir") } },
             dismissButton = { TextButton(onClick = { bitirSor = false }) { Text("Devam Et") } },
         )
@@ -233,7 +233,7 @@ fun DenemeEkrani(
         AlertDialog(
             onDismissRequest = { cikSor = false },
             title = { Text("Sınavdan Çık") },
-            text = { Text("Çıkarsan bu denemedeki cevapların kaydedilmez.") },
+            text = { Text("Çıkarsan Bu Denemedeki Cevapların Kaydedilmez.") },
             confirmButton = { TextButton(onClick = { cikSor = false; bitti = true; geri() }) { Text("Çık") } },
             dismissButton = { TextButton(onClick = { cikSor = false }) { Text("Devam Et") } },
         )
@@ -300,7 +300,7 @@ private fun DenemeSonucuEkrani(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
                             Text(ders.kisaAd, style = MaterialTheme.typography.titleMedium)
-                            Text("$t sorudan $d doğru", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                            Text("$t Sorudan $d Doğru", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                         }
                         Text("$p", style = MaterialTheme.typography.titleLarge, color = if (p >= 50) DogruYesil else YanlisKirmizi)
                     }

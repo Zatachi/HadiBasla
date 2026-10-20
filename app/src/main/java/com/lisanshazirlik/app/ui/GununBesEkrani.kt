@@ -42,7 +42,7 @@ fun GununBesEkrani(banka: SoruBankasi, depo: KullaniciDeposu, basla: (baslik: St
             Modifier.fillMaxSize().padding(ic).verticalScroll(rememberScrollState()).padding(vertical = 16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            Text("Hangi derse çalışıyorsun?", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(horizontal = 20.dp))
+            Text("Hangi Derse Çalışıyorsun?", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(horizontal = 20.dp))
             OdakSecici(banka, depo, kod)
             Column(
                 Modifier.padding(horizontal = 16.dp).fillMaxWidth().clip(RoundedCornerShape(20.dp))
@@ -62,13 +62,13 @@ fun GununBesEkrani(banka: SoruBankasi, depo: KullaniciDeposu, basla: (baslik: St
                 when {
                     oturum.isEmpty() -> "Bu dersin soruları henüz hazır değil. Başka bir ders seçebilirsin."
                     bekleyen.isNotEmpty() -> "Unutmaya başladığın ${bekleyen.size} soru tam zamanında geri geldi. Doğru bildiklerin daha seyrek gelir."
-                    else -> "Bugün tekrar zamanı gelen soru yok; yeni sorularla devam ediyoruz."
+                    else -> "Bugün Tekrar Zamanı Gelen Soru Yok; Yeni Sorularla Devam Ediyoruz."
                 },
                 color = MetinSoluk,
                 modifier = Modifier.padding(horizontal = 20.dp),
             )
             Button(
-                onClick = { basla("Günün 5 dakikası · ${odak?.kisaAd.orEmpty()}", oturum) },
+                onClick = { basla("Günün 5 Dakikası · ${odak?.kisaAd.orEmpty()}", oturum) },
                 enabled = oturum.isNotEmpty(),
                 modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth().height(56.dp),
             ) { Text("▶ Başla") }

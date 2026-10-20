@@ -23,7 +23,7 @@ import com.lisanshazirlik.app.R
 fun aydinlatmaMetni(baglam: Context): String =
     runCatching {
         baglam.resources.openRawResource(R.raw.aydinlatma).bufferedReader(Charsets.UTF_8).use { it.readText() }
-    }.getOrDefault("Aydınlatma metni yüklenemedi.")
+    }.getOrDefault("Aydınlatma Metni Yüklenemedi.")
         .replace("{{AD_SOYAD}}", BuildConfig.AD_SOYAD)
         .replace("{{EPOSTA}}", BuildConfig.EPOSTA)
         .replace("{{TARIH}}", BuildConfig.METIN_TARIHI)

@@ -114,7 +114,7 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
                 )
                 OneCikan(
                     Modifier.weight(1f), "🔁", "Günün 5 Dakikası",
-                    if (bekleyen > 0) "${odak?.kod.orEmpty()} · $bekleyen soru tekrar zamanında" else "${odak?.kod.orEmpty()} · akıllı tekrar turu",
+                    if (bekleyen > 0) "${odak?.kod.orEmpty()} · $bekleyen Soru Tekrar Zamanında" else "${odak?.kod.orEmpty()} · Akıllı Tekrar Turu",
                     YesilKoyu, y.gunun5,
                 )
             }
@@ -214,7 +214,7 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
                     when {
                         enYakin == null -> "📅  Sınav Tarihini Ekle"
                         enYakin.kalanGun() == 0L -> "📅  ${banka.ders(enYakin.ders)?.kisaAd} sınavı bugün!"
-                        else -> "📅  ${banka.ders(enYakin.ders)?.kisaAd} sınavına ${enYakin.kalanGun()} gün"
+                        else -> "📅  ${banka.ders(enYakin.ders)?.kisaAd} Sınavına ${enYakin.kalanGun()} Gün"
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.weight(1f),
@@ -308,7 +308,7 @@ private fun Liderler(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y:
         KartKutu(Modifier.padding(horizontal = 16.dp), tikla = { y.basariAc(BasariBolumu.SIRALAMA) }) {
             val liste = ilk
             when {
-                hata -> Text("Sıralama şu an yüklenemedi.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                hata -> Text("Sıralama Şu An Yüklenemedi.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 liste == null -> Text("Yükleniyor…", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 liste.isEmpty() -> Text("Bu hafta lig yeni başladı. İlk sen ol!", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 else -> Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Bottom) {
@@ -323,8 +323,8 @@ private fun Liderler(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y:
             Text(
                 when {
                     k?.siralamaKatil != true -> "Sen de Katıl, Adın Listede Görünsün →"
-                    siram != null -> "Sen bu hafta $siram. sıradasın · ${k?.buHaftaXp() ?: 0} XP"
-                    else -> "Bu hafta soru çöz, listeye gir."
+                    siram != null -> "Sen Bu Hafta $siram. Sıradasın · ${k?.buHaftaXp() ?: 0} XP"
+                    else -> "Bu Hafta Soru Çöz, Listeye Gir."
                 },
                 style = MaterialTheme.typography.labelLarge,
                 color = Yesil,

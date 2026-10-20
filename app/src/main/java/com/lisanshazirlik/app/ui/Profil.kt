@@ -133,17 +133,17 @@ fun ProfilSekme(
                 ) {
                     Text("⚠️ Hesabın Sadece Bu Telefonda", style = MaterialTheme.typography.titleMedium, color = Color(0xFF7A5A12))
                     Bosluk(2)
-                    Text("Telefon değişirse ilerlemen kaybolur.", style = MaterialTheme.typography.bodyMedium, color = Color(0xFF7A5A12))
+                    Text("Telefon Değişirse İlerlemen Kaybolur.", style = MaterialTheme.typography.bodyMedium, color = Color(0xFF7A5A12))
                     Bosluk(10)
                     Button(
-                        onClick = { calistir("Google hesabına bağlanıyor…") { hesap.googleIleGiris(baglam) } },
+                        onClick = { calistir("Google Hesabına Bağlanıyor…") { hesap.googleIleGiris(baglam) } },
                         enabled = bekliyor == null,
                         modifier = Modifier.fillMaxWidth().height(48.dp),
                     ) { Text("Google ile Kalıcı Yap") }
                 }
             }
             k?.odulPremiumBitis?.takeIf { k.premiumAktif() }?.let {
-                Text("🎁 Ödül Premium · ${uzunTarih(it)} tarihine kadar", style = MaterialTheme.typography.labelLarge, color = DogruYesil)
+                Text("🎁 Ödül Premium · ${uzunTarih(it)} Tarihine Kadar", style = MaterialTheme.typography.labelLarge, color = DogruYesil)
             }
 
             Etiket("Çalışmam", Modifier.padding(start = 4.dp, top = 4.dp))
@@ -188,7 +188,7 @@ fun ProfilSekme(
 
             Column(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Text("Lisansla ${BuildConfig.VERSION_NAME}", fontSize = 12.sp, color = MetinSoluk)
-                Text("Bağımsız bir çalışma aracıdır.", fontSize = 12.sp, color = MetinSoluk)
+                Text("Bağımsız Bir Çalışma Aracıdır.", fontSize = 12.sp, color = MetinSoluk)
             }
         }
     }
@@ -213,7 +213,7 @@ fun ProfilSekme(
             title = { Text("Çıkış Yap") },
             text = { Text("Verilerin Google hesabında saklanmaya devam eder. Tekrar girdiğinde kaldığın yerden devam edersin.") },
             confirmButton = {
-                TextButton(onClick = { cikisSor = false; calistir("Çıkış yapılıyor…") { hesap.cikis(baglam) } }) { Text("Çıkış Yap") }
+                TextButton(onClick = { cikisSor = false; calistir("Çıkış Yapılıyor…") { hesap.cikis(baglam) } }) { Text("Çıkış Yap") }
             },
             dismissButton = { TextButton(onClick = { cikisSor = false }) { Text("Vazgeç") } },
         )
@@ -231,7 +231,7 @@ fun ProfilSekme(
             confirmButton = {
                 TextButton(onClick = {
                     silSor = false
-                    calistir("Hesabın siliniyor…") { hesap.hesabiSil(baglam); kayit.temizle() }
+                    calistir("Hesabın Siliniyor…") { hesap.hesabiSil(baglam); kayit.temizle() }
                 }) { Text("Kalıcı Olarak Sil", color = YanlisKirmizi) }
             },
             dismissButton = { TextButton(onClick = { silSor = false }) { Text("Vazgeç") } },
@@ -328,7 +328,7 @@ fun VerilerimEkrani(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap, ger
                 BilgiSatiri("Kullanıcı Kimliği", (hesap.uid ?: "").take(10) + "…")
                 Bosluk(6)
                 Text(
-                    "E-posta adresin Lisansla veritabanına kaydedilmez; yalnızca Google girişinde doğrulama için kullanılır.",
+                    "E-posta Adresin Lisansla Veritabanına Kaydedilmez; Yalnızca Google Girişinde Doğrulama İçin Kullanılır.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MetinSoluk,
                 )
@@ -344,7 +344,7 @@ fun VerilerimEkrani(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap, ger
             KartKutu {
                 Etiket("Hedeflerin")
                 Bosluk(8)
-                if (depo.hedefler.isEmpty()) Text("Hedef yok.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                if (depo.hedefler.isEmpty()) Text("Hedef Yok.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 depo.hedefler.forEach { h ->
                     BilgiSatiri(banka.ders(h.ders)?.kisaAd ?: h.ders, if (h.gecti) "Geçildi" else h.sinavTarihi?.let { uzunTarih(it) } ?: "Tarih Seçilmedi")
                 }
@@ -358,7 +358,7 @@ fun VerilerimEkrani(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap, ger
                 )
             }
             Text(
-                "Düzeltme, silme ya da başka bir talebin için: ${BuildConfig.EPOSTA}",
+                "Düzeltme, Silme ya da Başka Bir Talebin İçin: ${BuildConfig.EPOSTA}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MetinSoluk,
             )
@@ -375,7 +375,7 @@ fun PremiumEkrani(depo: KullaniciDeposu, geri: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             if (depo.kullanici?.premium == true) {
-                Text("Premium üyeliğin aktif.", style = MaterialTheme.typography.headlineSmall)
+                Text("Premium Üyeliğin Aktif.", style = MaterialTheme.typography.headlineSmall)
             } else {
                 Text("Premium ile Tüm Soru Bankası", style = MaterialTheme.typography.headlineSmall)
                 listOf(
@@ -384,7 +384,7 @@ fun PremiumEkrani(depo: KullaniciDeposu, geri: () -> Unit) {
                     "Ayrıntılı Konu İstatistikleri",
                 ).forEach { Text("•  $it", style = MaterialTheme.typography.bodyLarge) }
                 Bosluk(8)
-                Text("Satın alma yakında açılacak.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                Text("Satın Alma Yakında Açılacak.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
             }
         }
     }

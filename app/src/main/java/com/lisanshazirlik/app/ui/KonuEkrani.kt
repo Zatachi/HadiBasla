@@ -78,7 +78,7 @@ fun KonuEkrani(
             KartKutu {
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text("$cozulen", style = MaterialTheme.typography.headlineSmall)
-                    Text(" / ${sorular.size} soru çözüldü", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk, modifier = Modifier.padding(bottom = 3.dp))
+                    Text(" / ${sorular.size} Soru Çözüldü", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk, modifier = Modifier.padding(bottom = 3.dp))
                 }
                 Bosluk(10)
                 Ilerleme(if (sorular.isEmpty()) 0f else cozulen / sorular.size.toFloat())
@@ -346,8 +346,8 @@ fun KartlarEkrani(konu: Konu, geri: () -> Unit, bitti: (() -> Unit)? = null) {
         ) {
             if (deste.isEmpty()) {
                 Bosluk(40)
-                Text("Desteyi bitirdin", style = MaterialTheme.typography.headlineSmall)
-                Text("${konu.kartlar.size} kartın hepsini bildin.", style = MaterialTheme.typography.bodyLarge, color = MetinSoluk)
+                Text("Desteyi Bitirdin", style = MaterialTheme.typography.headlineSmall)
+                Text("${konu.kartlar.size} Kartın Hepsini Bildin.", style = MaterialTheme.typography.bodyLarge, color = MetinSoluk)
                 Bosluk(12)
                 if (bitti != null) {
                     Button(onClick = bitti, modifier = Modifier.fillMaxWidth().height(52.dp)) { Text("Devam Et") }
@@ -386,7 +386,7 @@ fun KartlarEkrani(konu: Konu, geri: () -> Unit, bitti: (() -> Unit)? = null) {
                     )
                 }
             }
-            Text(if (ters) "Ne kadar iyi bildin?" else "Cevabı Görmek İçin Karta Dokun", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+            Text(if (ters) "Ne Kadar İyi Bildin?" else "Cevabı Görmek İçin Karta Dokun", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedButton(
                     onClick = { deste = deste.drop(1) + kart; ters = false },

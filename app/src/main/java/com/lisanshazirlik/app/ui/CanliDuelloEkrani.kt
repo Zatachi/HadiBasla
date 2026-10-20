@@ -76,7 +76,7 @@ fun CanliDuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, cevapla: (Soru,
 
     if (ders == null || banka.dersSorulari(ders).isEmpty()) {
         Scaffold(topBar = { UstCubuk("Canlı Düello", geri) }, containerColor = Zemin) { ic ->
-            Text("Bu dersin soruları henüz hazır değil.", modifier = Modifier.padding(ic).padding(24.dp))
+            Text("Bu Dersin Soruları Henüz Hazır Değil.", modifier = Modifier.padding(ic).padding(24.dp))
         }
         return
     }
@@ -205,7 +205,7 @@ private fun AramaEkrani(dersAd: String, gecen: Int, eslesti: Boolean = false, va
             Text("⚔️", fontSize = 60.sp)
         }
         Bosluk(24)
-        Text(if (eslesti) "Rakip Bulundu!" else "Rakip aranıyor…", fontFamily = Baslik, fontSize = 26.sp, color = Krem)
+        Text(if (eslesti) "Rakip Bulundu!" else "Rakip Aranıyor…", fontFamily = Baslik, fontSize = 26.sp, color = Krem)
         Text(dersAd, color = Altin, style = MaterialTheme.typography.labelLarge)
         Bosluk(8)
         if (!eslesti) {
@@ -302,8 +302,8 @@ private fun CanliOyun(
                     Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(YanlisZemin).padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    Text("Düellodan çıkmak istiyor musun?", style = MaterialTheme.typography.titleMedium)
-                    Text("Bitirmeden çıkarsan bu düelloyu kaybetmiş sayılırsın.", color = MetinSoluk)
+                    Text("Düellodan Çıkmak İstiyor Musun?", style = MaterialTheme.typography.titleMedium)
+                    Text("Bitirmeden Çıkarsan Bu Düelloyu Kaybetmiş Sayılırsın.", color = MetinSoluk)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Button(onClick = { cikSor = false }, modifier = Modifier.weight(1f)) { Text("Devam Et") }
                         OutlinedButton(onClick = { cikSor = false; terkEt() }, modifier = Modifier.weight(1f)) { Text("Çık", color = YanlisKirmizi) }
@@ -313,21 +313,21 @@ private fun CanliOyun(
             if (bekliyor) {
                 Bosluk(16)
                 Text(
-                    if (rakip.bitti) "Sonuçlar hesaplanıyor…" else "Bitirdin! $rakipAd bekleniyor",
+                    if (rakip.bitti) "Sonuçlar Hesaplanıyor…" else "Bitirdin! $rakipAd Bekleniyor",
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 if (!rakip.bitti) {
                     Text(
-                        "$beklemeKalan sn içinde bitirmezse kazanmış sayılırsın.",
+                        "$beklemeKalan sn İçinde Bitirmezse Kazanmış Sayılırsın.",
                         color = MetinSoluk, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(),
                     )
                     Ilerleme(beklemeKalan / BEKLEME_SINIRI.toFloat())
                     OutlinedButton(onClick = { sonuclandir(ben) }, modifier = Modifier.fillMaxWidth().height(50.dp)) {
                         Text("Beklemeden Sonucu Gör")
                     }
-                    Text("Erken çıkman kaybettirmez; rakip bitirmediyse kazanırsın.", color = MetinSoluk, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                    Text("Erken Çıkman Kaybettirmez; Rakip Bitirmediyse Kazanırsın.", color = MetinSoluk, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
                 }
             } else {
                 val soru = sorular[sira]
@@ -378,12 +378,12 @@ private fun CanliSonuc(a: Asama.Sonuc, tekrar: () -> Unit, geri: () -> Unit) {
             Text(when (s) { 1 -> "🏆"; 0 -> "🤝"; else -> "😤" }, fontSize = 64.sp)
             Text(
                 when {
-                    a.benim.terk -> "Düellodan çıktın, bu maç kaybedildi"
+                    a.benim.terk -> "Düellodan Çıktın, Bu Maç Kaybedildi"
                     a.rakip?.terk == true -> "Rakip düellodan çıktı, kazandın!"
-                    a.rakip?.bitti != true -> "Rakip zamanında bitirmedi, kazandın!"
+                    a.rakip?.bitti != true -> "Rakip Zamanında Bitirmedi, Kazandın!"
                     s == 1 -> "Kazandın!"
                     s == 0 -> "Berabere!"
-                    else -> "Bu sefer kaybettin"
+                    else -> "Bu Sefer Kaybettin"
                 },
                 fontFamily = Baslik, fontSize = 26.sp, textAlign = TextAlign.Center,
             )
@@ -392,7 +392,7 @@ private fun CanliSonuc(a: Asama.Sonuc, tekrar: () -> Unit, geri: () -> Unit) {
                 SkorKutusu(Modifier.weight(1f), a.rakipAd, a.rakip ?: OyuncuDurumu(), 5, vurgu = false)
             }
             Text(
-                if (a.benim.terk) "XP kazanılmadı" else "+" + when (s) { 1 -> if (a.bot) 15 else 40; 0 -> if (a.bot) 8 else 20; else -> 5 } + " XP",
+                if (a.benim.terk) "XP Kazanılmadı" else "+" + when (s) { 1 -> if (a.bot) 15 else 40; 0 -> if (a.bot) 8 else 20; else -> 5 } + " XP",
                 color = Yesil, style = MaterialTheme.typography.titleMedium,
             )
             Button(onClick = tekrar, modifier = Modifier.fillMaxWidth().height(54.dp)) { Text("⚔️ Yeni Rakip Bul") }

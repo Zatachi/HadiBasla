@@ -96,9 +96,9 @@ object Duello {
 
     /** Kodu kontrol eder; oynanabilirse kaydı döner. */
     suspend fun katilKontrol(kod: String, uid: String): DuelloKaydi {
-        val k = getir(kod) ?: throw Hata("Bu kodla bir düello bulunamadı.")
+        val k = getir(kod) ?: throw Hata("Bu Kodla Bir Düello Bulunamadı.")
         if (k.kurucu == uid) throw Hata("Bu senin düellon. Kodu bir arkadaşına gönder.")
-        if (k.rakip != null) throw Hata("Bu düello zaten oynanmış.")
+        if (k.rakip != null) throw Hata("Bu Düello Zaten Oynanmış.")
         return k
     }
 

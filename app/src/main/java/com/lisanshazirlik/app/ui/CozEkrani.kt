@@ -55,7 +55,7 @@ fun CozEkrani(
 
     if (liste.isEmpty()) {
         Scaffold(topBar = { UstCubuk(baslik, geri) }, containerColor = Zemin) { ic ->
-            Text("Burada çözülecek soru kalmadı.", modifier = Modifier.padding(ic).padding(24.dp))
+            Text("Burada Çözülecek Soru Kalmadı.", modifier = Modifier.padding(ic).padding(24.dp))
         }
         return
     }
@@ -160,7 +160,7 @@ private fun Sonuc(dogru: Int, toplam: Int, modifier: Modifier, tekrar: () -> Uni
         Bosluk(8)
         Text("%$oran", fontFamily = Baslik, fontSize = 56.sp, color = if (oran >= 60) DogruYesil else YanlisKirmizi)
         Bosluk(4)
-        Text("$toplam sorudan $dogru doğru", style = MaterialTheme.typography.titleMedium)
+        Text("$toplam Sorudan $dogru Doğru", style = MaterialTheme.typography.titleMedium)
         Bosluk(8)
         Text(
             when {

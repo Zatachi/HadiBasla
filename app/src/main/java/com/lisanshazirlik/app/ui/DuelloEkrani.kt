@@ -109,13 +109,13 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
                 Text("⚔️", fontSize = 44.sp)
                 Text("Canlı Düello", fontFamily = Baslik, fontSize = 22.sp, color = Krem)
                 Text(
-                    "5 soru · en çok doğru yapan kazanır · eşitlikte hızlı olan",
+                    "5 Soru · En Çok Doğru Yapan Kazanır · Eşitlikte Hızlı Olan",
                     color = KremSoluk,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Bosluk(10)
-                Text("Hangi dersten?", color = Altin, style = MaterialTheme.typography.labelLarge)
+                Text("Hangi Dersten?", color = Altin, style = MaterialTheme.typography.labelLarge)
                 Bosluk(6)
                 OdakSecici(banka, depo, odak?.kod, koyu = true)
                 Bosluk(8)
@@ -123,12 +123,12 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
                     onClick = canliBasla,
                     modifier = Modifier.fillMaxWidth().height(56.dp),
                 ) { Text("⚔️ Rakip Bul", fontSize = 18.sp) }
-                Text("Aynı derse çalışan biriyle anında eşleşirsin.", color = KremSoluk, fontSize = 12.sp)
+                Text("Aynı Derse Çalışan Biriyle Anında Eşleşirsin.", color = KremSoluk, fontSize = 12.sp)
             }
 
             KartKutu {
                 Text("Arkadaşınla Yarış", style = MaterialTheme.typography.titleMedium)
-                Text("Soruları çöz, kodu arkadaşına gönder; o da aynı soruları çözsün.", color = MetinSoluk, style = MaterialTheme.typography.bodyMedium)
+                Text("Soruları Çöz, Kodu Arkadaşına Gönder; O da Aynı Soruları Çözsün.", color = MetinSoluk, style = MaterialTheme.typography.bodyMedium)
                 Bosluk(8)
                 OutlinedButton(
                     onClick = {
@@ -140,7 +140,7 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
             }
 
             KartKutu {
-                Text("Arkadaşın kod mu gönderdi?", style = MaterialTheme.typography.titleMedium)
+                Text("Arkadaşın Kod mu Gönderdi?", style = MaterialTheme.typography.titleMedium)
                 Bosluk(8)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     OutlinedTextField(
@@ -163,7 +163,7 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
                                 } catch (e: Duello.Hata) {
                                     hata = e.message
                                 } catch (e: Exception) {
-                                    hata = "Bağlantı kurulamadı."
+                                    hata = "Bağlantı Kurulamadı."
                                 }
                                 bekle = false
                             }
@@ -197,7 +197,7 @@ private fun DuelloSatiri(k: DuelloKaydi, uid: String, tikla: () -> Unit) {
     ) {
         Text(when (s) { 1 -> "🏆"; 0 -> "🤝"; -1 -> "😤"; else -> "⏳" }, fontSize = 26.sp)
         Column(Modifier.weight(1f).padding(start = 12.dp)) {
-            Text(if (k.bitti) "Sen vs $rakipAd" else "Rakip bekleniyor", style = MaterialTheme.typography.titleMedium)
+            Text(if (k.bitti) "Sen vs $rakipAd" else "Rakip Bekleniyor", style = MaterialTheme.typography.titleMedium)
             Text(if (k.bitti) "" else "Kod: ${k.kod}", color = MetinSoluk, fontSize = 13.sp)
         }
         if (k.bitti) {
@@ -264,7 +264,7 @@ private fun DuelloSonucu(k: DuelloKaydi, uid: String, geri: () -> Unit) {
         ) {
             Text(when (s) { 1 -> "🏆"; 0 -> "🤝"; -1 -> "😤"; else -> "⏳" }, fontSize = 64.sp)
             Text(
-                when (s) { 1 -> "Kazandın!"; 0 -> "Berabere!"; -1 -> "Bu sefer kaybettin"; else -> "Rakibini Bekliyorsun" },
+                when (s) { 1 -> "Kazandın!"; 0 -> "Berabere!"; -1 -> "Bu Sefer Kaybettin"; else -> "Rakibini Bekliyorsun" },
                 fontFamily = Baslik, fontSize = 28.sp,
             )
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {

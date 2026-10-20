@@ -193,7 +193,7 @@ private fun OgrenmeYolu(
 
         if (adimlar.isEmpty()) {
             Bosluk(10)
-            Text("Bu dersin anlatımları hazırlanıyor.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+            Text("Bu Dersin Anlatımları Hazırlanıyor.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
             if (icerikliBaska != null) {
                 Bosluk(10)
                 Button(onClick = icerikliBaska.second, modifier = Modifier.fillMaxWidth().height(48.dp)) {
@@ -206,7 +206,7 @@ private fun OgrenmeYolu(
         Bosluk(10)
         Row(verticalAlignment = Alignment.CenterVertically) {
             Ilerleme(tamam / adimlar.size.toFloat(), Modifier.weight(1f))
-            Text("  $tamam/${adimlar.size} adım", style = MaterialTheme.typography.labelLarge, color = Yesil)
+            Text("  $tamam/${adimlar.size} Adım", style = MaterialTheme.typography.labelLarge, color = Yesil)
         }
         Bosluk(8)
 
@@ -248,7 +248,7 @@ private fun OgrenmeYolu(
                 Text(if (tamam == 0) "▶  Başla: ${siradaki.tur.ad}" else "▶  Devam Et: ${siradaki.tur.ad}")
             }
         } else {
-            Text("🏅 Bu paketi tamamladın!", style = MaterialTheme.typography.titleMedium, color = DogruYesil)
+            Text("🏅 Bu Paketi Tamamladın!", style = MaterialTheme.typography.titleMedium, color = DogruYesil)
             if (icerikliBaska != null) {
                 Bosluk(8)
                 OutlinedButton(onClick = icerikliBaska.second, modifier = Modifier.fillMaxWidth().height(48.dp)) {
@@ -320,7 +320,7 @@ private fun HedefKarti(h: Hedef, banka: SoruBankasi, cozulen: Set<String>, y: Yo
             Ilerleme(if (sorular.isEmpty()) 0f else c / sorular.size.toFloat())
             Bosluk(6)
             Row {
-                Text("${sorular.size} sorudan $c çözüldü", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk, modifier = Modifier.weight(1f))
+                Text("${sorular.size} Sorudan $c Çözüldü", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk, modifier = Modifier.weight(1f))
                 Text("Tarih Ekle", style = MaterialTheme.typography.labelLarge, color = Yesil, modifier = Modifier.clickableIf(true) { y.hedefAc(h.ders) })
             }
             return@KartKutu
@@ -343,7 +343,7 @@ private fun HedefKarti(h: Hedef, banka: SoruBankasi, cozulen: Set<String>, y: Yo
         Ilerleme(if (sorular.isEmpty()) 0f else c / sorular.size.toFloat())
         Bosluk(6)
         Row {
-            Text("${sorular.size} sorudan $c çözüldü", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk, modifier = Modifier.weight(1f))
+            Text("${sorular.size} Sorudan $c Çözüldü", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk, modifier = Modifier.weight(1f))
             Text(
                 "Düzenle",
                 style = MaterialTheme.typography.labelLarge,
@@ -382,7 +382,7 @@ fun DerslerSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic:
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             item {
-                Text("Hangi derse çalışacaksın?", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 4.dp, bottom = 2.dp))
+                Text("Hangi Derse Çalışacaksın?", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 4.dp, bottom = 2.dp))
             }
             items(dersler.withIndex().toList(), key = { "k" + it.value.kod }) { (i, d) ->
                 KursKarti(banka, depo, d, dersRengi(d.kod)) { y.paketAc(d.kod) }
@@ -450,8 +450,8 @@ private fun SeviyeSecimi(banka: SoruBankasi, depo: KullaniciDeposu, ic: PaddingV
         ) {
             item(span = { GridItemSpan(2) }) {
                 Column(Modifier.padding(horizontal = 4.dp, vertical = 4.dp)) {
-                    Text("Hangi lisansa hazırlanıyorsun?", style = MaterialTheme.typography.titleLarge)
-                    Text("Seçtiğin lisans hatırlanır; istediğin zaman değiştirebilirsin.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                    Text("Hangi Lisansa Hazırlanıyorsun?", style = MaterialTheme.typography.titleLarge)
+                    Text("Seçtiğin Lisans Hatırlanır; İstediğin Zaman Değiştirebilirsin.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 }
             }
             items(banka.lisanslar.size) { i ->
@@ -471,7 +471,7 @@ private fun SeviyeSecimi(banka: SoruBankasi, depo: KullaniciDeposu, ic: PaddingV
                         Text(seviyeSimgesi(l.kod), fontSize = 28.sp, modifier = Modifier.weight(1f))
                         if (buMu) {
                             Text(
-                                "Devam ediyorsun",
+                                "Devam Ediyorsun",
                                 style = MaterialTheme.typography.labelMedium,
                                 fontSize = 10.sp,
                                 color = renk,
@@ -533,7 +533,7 @@ private fun KursKarti(banka: SoruBankasi, depo: KullaniciDeposu, d: com.lisansha
             Text(d.kisaAd, style = MaterialTheme.typography.titleMedium, maxLines = 2, lineHeight = 20.sp)
             Bosluk(4)
             if (adimlar.isEmpty()) {
-                Text("${d.konular.size} konu · 🔜 hazırlanıyor", style = MaterialTheme.typography.bodyMedium, fontSize = 12.sp, color = MetinSoluk)
+                Text("${d.konular.size} Konu · 🔜 Hazırlanıyor", style = MaterialTheme.typography.bodyMedium, fontSize = 12.sp, color = MetinSoluk)
             } else {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(

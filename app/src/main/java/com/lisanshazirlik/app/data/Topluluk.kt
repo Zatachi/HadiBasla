@@ -28,13 +28,13 @@ object Topluluk {
 
     fun tablolar(banka: SoruBankasi, lisans: String?): List<Tablo> = listOf(
         Tablo("lig", "Haftalık Lig", "xp_${Oyun.hafta()}", "XP", "Pazartesi sıfırlanır. İlk 3'e ${Oyun.HAFTALIK_ODUL_GUN} gün Premium."),
-        Tablo("soru", "En Çok Soru", "cozulen", "soru", "Bugüne kadar çözülen soru sayısı."),
-        Tablo("oran", "Doğru Oranı", "oranUygun", "%", "En az 50 soru çözenler arasında."),
-        Tablo("deneme", "Deneme Şampiyonları", "enIyiDeneme", "puan", "Süreli denemelerdeki en yüksek puan."),
-        Tablo("seri", "En Uzun Seri", "enUzunSeri", "gün", "Üst üste en çok gün çalışanlar."),
-        Tablo("gelisim", "En Çok Gelişen", "gelisim", "puan", "İlk denemesine göre en çok puan artıranlar."),
+        Tablo("soru", "En Çok Soru", "cozulen", "soru", "Bugüne Kadar Çözülen Soru Sayısı."),
+        Tablo("oran", "Doğru Oranı", "oranUygun", "%", "En Az 50 Soru Çözenler Arasında."),
+        Tablo("deneme", "Deneme Şampiyonları", "enIyiDeneme", "puan", "Süreli Denemelerdeki En Yüksek Puan."),
+        Tablo("seri", "En Uzun Seri", "enUzunSeri", "Gün", "Üst Üste En Çok Gün Çalışanlar."),
+        Tablo("gelisim", "En Çok Gelişen", "gelisim", "puan", "İlk Denemesine Göre En Çok Puan Artıranlar."),
     ) + banka.lisansDersleri(lisans).map { d ->
-        Tablo("ders_${d.kod}", d.kisaAd, "dersDogru_${d.kod}", "doğru", "${d.ad} dersinde en çok doğru yapanlar.")
+        Tablo("ders_${d.kod}", d.kisaAd, "dersDogru_${d.kod}", "Doğru", "${d.ad} Dersinde En Çok Doğru Yapanlar.")
     } + Tablo("duvar", "Geçenler Duvarı", "gectiZaman", "", "Sınavı geçtiğini paylaşanlar. Tebrikler!")
 
     // ---------------------------------------------------------------- sıralama
@@ -191,8 +191,8 @@ object Topluluk {
     /** Davet kodunu kullanır. Sadece Google hesabıyla ve bir kez kullanılabilir. */
     suspend fun koduKullan(uid: String, misafir: Boolean, depo: KullaniciDeposu, girdi: String) {
         val k = depo.kullanici ?: throw DavetHatasi("Hesap bilgisi yüklenemedi. Tekrar dene.")
-        if (misafir) throw DavetHatasi("Davet kodu kullanmak için önce Profil'den Google hesabına bağlan.")
-        if (k.davetEden != null) throw DavetHatasi("Daha önce bir davet kodu kullandın.")
+        if (misafir) throw DavetHatasi("Davet Kodu Kullanmak İçin Önce Profil'den Google Hesabına Bağlan.")
+        if (k.davetEden != null) throw DavetHatasi("Daha Önce Bir Davet Kodu Kullandın.")
         val kod = Oyun.koduDuzelt(girdi)
         val sahip = db.collection("kodlar").document(kod).get().await().getString("uid")
             ?: throw DavetHatasi("Bu kod bulunamadı. Harfleri kontrol edip tekrar dene.")
@@ -204,7 +204,7 @@ object Topluluk {
         depo.kutlama = "🎁 Hoş geldin bonusu: +${Oyun.XP_DAVET_EDILEN} XP"
     }
 
-    /** Davet edilen kişi yeterince soru çözünce davet "geçerli" olur ve davet edene sayılır. */
+    /** Davet edilen kişi yeterince soru çözünce davet "Geçerli" olur ve davet edene sayılır. */
     fun gecerlilikKontrol(uid: String, depo: KullaniciDeposu) {
         val k = depo.kullanici ?: return
         if (k.davetEden == null || k.davetGecerli || depo.ilerleme.size < Oyun.DAVET_GECERLI_SORU) return

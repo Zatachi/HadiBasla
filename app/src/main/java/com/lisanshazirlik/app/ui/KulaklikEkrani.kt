@@ -160,7 +160,7 @@ fun KulaklikEkrani(banka: SoruBankasi, depo: KullaniciDeposu, cevapla: (Soru, Bo
 
         when {
             liste.isEmpty() -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Bu lisans için sesli içerik hazırlanıyor.", color = Krem, textAlign = TextAlign.Center, modifier = Modifier.padding(32.dp))
+                Text("Bu Lisans İçin Sesli İçerik Hazırlanıyor.", color = Krem, textAlign = TextAlign.Center, modifier = Modifier.padding(32.dp))
             }
             parca == null -> Column(
                 Modifier.fillMaxSize().padding(24.dp),
@@ -170,7 +170,7 @@ fun KulaklikEkrani(banka: SoruBankasi, depo: KullaniciDeposu, cevapla: (Soru, Bo
                 val soruSayisi = liste.count { it is Parca.Sesli }
                 Text("🎉", fontSize = 56.sp)
                 Text("Tur Bitti", color = Krem, fontFamily = Baslik, fontSize = 28.sp)
-                Text("$soruSayisi sorudan $dogruSayi doğru", color = Altin, fontSize = 18.sp)
+                Text("$soruSayisi Sorudan $dogruSayi Doğru", color = Altin, fontSize = 18.sp)
                 Bosluk(24)
                 BuyukDugme("⟲ Yeni Tur") { liste = kulaklikListesi(banka, dersler); sira = 0; dogruSayi = 0 }
                 Bosluk(10)
@@ -264,7 +264,7 @@ fun KulaklikEkrani(banka: SoruBankasi, depo: KullaniciDeposu, cevapla: (Soru, Bo
                         modifier = Modifier.clip(RoundedCornerShape(50)).clickable { tts?.stop(); sira++ }.padding(horizontal = 14.dp, vertical = 8.dp),
                     )
                 }
-                if (!ttsHazir) Text("Sesli okuma için telefonunda Türkçe metin okuma motoru gerekli.", color = KremSoluk, fontSize = 11.sp)
+                if (!ttsHazir) Text("Sesli Okuma İçin Telefonunda Türkçe Metin Okuma Motoru Gerekli.", color = KremSoluk, fontSize = 11.sp)
             }
         }
     }

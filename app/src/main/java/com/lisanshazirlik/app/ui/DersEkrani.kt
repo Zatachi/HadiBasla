@@ -59,7 +59,7 @@ fun DersEkrani(
                     Text("📦", fontSize = 28.sp)
                     androidx.compose.foundation.layout.Column(Modifier.weight(1f).padding(start = 12.dp)) {
                         Text("Eğitim Paketi", style = MaterialTheme.typography.titleMedium, color = Krem)
-                        Text("Konu konu öğren, tekrar et, soru çöz; sonunda deneme.", style = MaterialTheme.typography.bodyMedium, color = KremSoluk)
+                        Text("Konu Konu Öğren, Tekrar Et, Soru Çöz; Sonunda Deneme.", style = MaterialTheme.typography.bodyMedium, color = KremSoluk)
                     }
                     Text("›", fontSize = 26.sp, color = Altin)
                 }

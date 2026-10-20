@@ -114,7 +114,7 @@ fun uzunTarih(t: java.time.LocalDate): String = t.format(UZUN_TARIH)
 fun kisaTarih(t: java.time.LocalDate): String = t.format(KISA_TARIH)
 
 fun kalanGunYazisi(gun: Long): String = when {
-    gun > 1 -> "$gun gün kaldı"
+    gun > 1 -> "$gun Gün Kaldı"
     gun == 1L -> "Yarın"
     gun == 0L -> "Bugün"
     else -> "Sınav Tarihi Geçti"
