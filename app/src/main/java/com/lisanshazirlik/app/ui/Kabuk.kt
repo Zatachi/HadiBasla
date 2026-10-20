@@ -44,6 +44,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
@@ -55,9 +56,9 @@ import com.lisanshazirlik.app.data.Soru
 import com.lisanshazirlik.app.data.SoruBankasi
 import kotlin.math.ceil
 
-enum class Sekme(val ad: String, val ikon: ImageVector) {
+enum class Sekme(val ad: String, val ikon: ImageVector, val resim: Int? = null) {
     ANA("Ana sayfa", Icons.Filled.Home),
-    DERSLER("Eğitim", Icons.Filled.PlayArrow),
+    DERSLER("Eğitim", Icons.Filled.PlayArrow, com.lisanshazirlik.app.R.drawable.ic_egitim),
     DENEME("Deneme", Icons.Filled.CheckCircle),
     BASARI("Başarı", Icons.Filled.Star),
     PROFIL("Profil", Icons.Filled.Person),
@@ -99,7 +100,16 @@ fun Kabuk(
                     NavigationBarItem(
                         selected = s == sekme,
                         onClick = { sekmeSec(s) },
-                        icon = { Icon(s.ikon, contentDescription = null) },
+                        icon = {
+                            if (s.resim != null) {
+                                Icon(
+                                    androidx.compose.ui.res.painterResource(s.resim),
+                                    contentDescription = null,
+                                    tint = androidx.compose.ui.graphics.Color.Unspecified,
+                                    modifier = Modifier.size(28.dp).alpha(if (s == sekme) 1f else 0.6f),
+                                )
+                            } else Icon(s.ikon, contentDescription = null)
+                        },
                         label = { Text(s.ad, maxLines = 1, fontSize = 11.sp) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = Yesil,
@@ -412,7 +422,7 @@ fun DerslerSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic:
             }
             item {
                 KartKutu(tikla = y.sonuclar) {
-                    Text("Sınav sonuçlarım", style = MaterialTheme.typography.titleMedium)
+                    Text("Sertifikalarım", style = MaterialTheme.typography.titleMedium)
                     Bosluk(4)
                     Text("Girdiğin sınavların puanlarını kaydet, lisans durumunu gör.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 }

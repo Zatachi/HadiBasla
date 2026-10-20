@@ -47,7 +47,7 @@ import com.lisanshazirlik.app.data.Topluluk
 import kotlinx.coroutines.delay
 
 private data class Banner(val ust: String, val baslik: String, val alt: String, val simge: String, val renk: Color, val tikla: () -> Unit)
-private data class Kisayol(val simge: String, val ad: String, val tikla: () -> Unit)
+private data class Kisayol(val simge: String, val ad: String, val resim: Int? = null, val tikla: () -> Unit)
 
 /** Ana sayfa: uygulamanın vitrini. Öğrenme yolu Eğitim sekmesindedir. */
 @Composable
@@ -74,14 +74,14 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
     }
 
     val kisayollar = listOf(
-        Kisayol("📚", "Eğitim") { y.sekmeAc(Sekme.DERSLER) },
+        Kisayol("", "Eğitim", com.lisanshazirlik.app.R.drawable.ic_egitim) { y.sekmeAc(Sekme.DERSLER) },
         Kisayol("⏱", "Deneme") { y.sekmeAc(Sekme.DENEME) },
         Kisayol("❌", "Yanlışlarım") {
             if (yanlislar.isNotEmpty()) y.coz("Yanlışlarım", yanlislar.shuffled(), null, "yanlislar") else y.sekmeAc(Sekme.DERSLER)
         },
         Kisayol("💡", "Günün sorusu") { gununSorusu?.let { y.coz("Günün sorusu", listOf(it), null, "gunun") } },
         Kisayol("🏆", "Sıralama") { y.basariAc(BasariBolumu.SIRALAMA) },
-        Kisayol("📝", "Sonuçlarım", y.sonuclar),
+        Kisayol("", "Sertifikalarım", com.lisanshazirlik.app.R.drawable.ic_sertifika, y.sonuclar),
     )
 
     LazyColumn(
@@ -169,7 +169,13 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Box(Modifier.size(56.dp).clip(CircleShape).background(YesilAcik), contentAlignment = Alignment.Center) {
-                            Text(ky.simge, fontSize = 24.sp)
+                            if (ky.resim != null) {
+                                androidx.compose.foundation.Image(
+                                    androidx.compose.ui.res.painterResource(ky.resim),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(30.dp),
+                                )
+                            } else Text(ky.simge, fontSize = 24.sp)
                         }
                         Bosluk(6)
                         Text(ky.ad, style = MaterialTheme.typography.bodyMedium, fontSize = 12.sp, textAlign = TextAlign.Center, maxLines = 1)

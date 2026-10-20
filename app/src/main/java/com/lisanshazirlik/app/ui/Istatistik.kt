@@ -89,7 +89,7 @@ fun IstatistikSekme(
             }
 
             KartKutu(tikla = sonuclarAc) {
-                Text("Sınav sonuçlarım", style = MaterialTheme.typography.titleMedium)
+                Text("Sertifikalarım", style = MaterialTheme.typography.titleMedium)
                 Bosluk(4)
                 val girilen = dersler.count { it.kod in depo.sonuclar }
                 Text(
@@ -253,7 +253,7 @@ fun SonuclarEkrani(banka: SoruBankasi, depo: KullaniciDeposu, lisans: String?, g
     val hepsiGecti = hepsiGirildi && girilen.all { it.puan >= 50 }
     val lisansTamam = hepsiGecti && ortalama >= 60
 
-    Scaffold(topBar = { UstCubuk("Sınav sonuçlarım", geri) }, containerColor = Zemin) { ic ->
+    Scaffold(topBar = { UstCubuk("Sertifikalarım", geri) }, containerColor = Zemin) { ic ->
         Column(
             Modifier.fillMaxSize().padding(ic).verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
