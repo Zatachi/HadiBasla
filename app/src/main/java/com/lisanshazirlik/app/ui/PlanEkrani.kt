@@ -94,6 +94,17 @@ fun BugunkuPlanKarti(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici,
             Column(Modifier.weight(1f)) {
                 Text("BUGÜNKÜ PLANIN", color = Altin, style = MaterialTheme.typography.labelMedium)
                 Text(ders.kisaAd, color = Krem, fontFamily = Baslik, fontSize = 20.sp, maxLines = 1)
+                val kalan = depo.aktifHedefler().firstOrNull { it.ders == ders.kod }?.kalanGun()
+                Text(
+                    when {
+                        kalan == null -> "📅 Sınav Tarihini Ekle ›"
+                        kalan == 0L -> "📅 Sınavın Bugün, Başarılar"
+                        kalan > 0 -> "📅 Sınava $kalan Gün"
+                        else -> "📅 Sınav Tarihi Geçti"
+                    },
+                    color = Altin, style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.clickable { y.hedefAc(ders.kod) },
+                )
                 Text(
                     if (gorevler.isNotEmpty() && tamam == gorevler.size) "🎉 Bugünkü Planı Tamamladın" else "$tamam/${gorevler.size} Görev Tamamlandı",
                     color = KremSoluk, style = MaterialTheme.typography.bodyMedium,
