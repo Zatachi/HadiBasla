@@ -75,6 +75,8 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
         Kisayol("", "Yanlışlarım", com.lisanshazirlik.app.R.drawable.ic_yanlislar) {
             if (yanlislar.isNotEmpty()) y.coz("Yanlışlarım", yanlislar.shuffled(), null, "yanlislar") else y.sekmeAc(Sekme.DERSLER)
         },
+        Kisayol("⚔️", "Düello", tikla = y.duello),
+        Kisayol("🎧", "Kulaklık", tikla = y.kulaklik),
         Kisayol("🏆", "Sıralama") { y.basariAc(BasariBolumu.SIRALAMA) },
         Kisayol("", "Sertifikalarım", com.lisanshazirlik.app.R.drawable.ic_sertifika, y.sonuclar),
     )
@@ -98,6 +100,22 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
                 Rozet("🔥 ${depo.seri()}")
                 Box(Modifier.width(8.dp))
                 Rozet("⭐ ${k?.xp ?: 0}")
+            }
+        }
+
+        // Öne çıkan iki büyük kutu: Shorts ve Günün 5 dakikası
+        item {
+            val bekleyen = com.lisanshazirlik.app.data.Tekrar.bekleyenler(banka, depo, dersler.map { it.kod }).size
+            Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                OneCikan(
+                    Modifier.weight(1f), "▶", "Shorts", "Kısa videolar ve hızlı sorular",
+                    androidx.compose.ui.graphics.Color(0xFF7A2E3A), y.shorts,
+                )
+                OneCikan(
+                    Modifier.weight(1f), "🔁", "Günün 5 dakikası",
+                    if (bekleyen > 0) "$bekleyen soru tekrar zamanında" else "Akıllı tekrar turu",
+                    YesilKoyu, y.gunun5,
+                )
             }
         }
 
@@ -333,5 +351,19 @@ private fun Kursu(s: SiralamaSatiri?, i: Int) {
         ) {
             Text("${i + 1}", style = MaterialTheme.typography.titleMedium, color = if (i == 0) YesilKoyu else Yesil)
         }
+    }
+}
+
+@Composable
+private fun OneCikan(modifier: Modifier, simge: String, baslik: String, alt: String, renk: Color, tikla: () -> Unit) {
+    Column(
+        modifier.height(118.dp).clip(RoundedCornerShape(18.dp)).background(renk).clickable(onClick = tikla).padding(14.dp),
+    ) {
+        Box(Modifier.size(36.dp).clip(CircleShape).background(Altin), contentAlignment = Alignment.Center) {
+            Text(simge, color = renk, fontSize = 16.sp)
+        }
+        Box(Modifier.weight(1f))
+        Text(baslik, color = Krem, style = MaterialTheme.typography.titleMedium, maxLines = 1)
+        Text(alt, color = KremSoluk, fontSize = 12.sp, maxLines = 2, lineHeight = 15.sp)
     }
 }

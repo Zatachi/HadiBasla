@@ -72,6 +72,9 @@ private sealed interface Ekran {
     data class Coz(val baslik: String, val sorular: List<Soru>, val mod: String) : Ekran
     data class Deneme(val sorular: List<Soru>, val kapsam: String, val no: Int = 0) : Ekran
     data class DenemeListesi(val ders: String) : Ekran
+    data object Shorts : Ekran
+    data object Kulaklik : Ekran
+    data object Duello : Ekran
     data class Hedef(val ders: String?) : Ekran
     data object Gorus : Ekran
     data object Aydinlatma : Ekran
@@ -209,6 +212,13 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
         paketAdimAc = { d, a -> git(Ekran.PaketAdim(d, a)) },
         sekmeAc = { yigin = emptyList(); basariIlk = com.lisanshazirlik.app.ui.BasariBolumu.BEN; sekme = it },
         basariAc = { yigin = emptyList(); basariIlk = it; sekme = Sekme.BASARI },
+        shorts = { git(Ekran.Shorts) },
+        kulaklik = { git(Ekran.Kulaklik) },
+        duello = { git(Ekran.Duello) },
+        gunun5 = {
+            val dersler = banka.lisansDersleri(depo.kullanici?.lisans).map { it.kod }
+            git(Ekran.Coz("Günün 5 dakikası", com.lisanshazirlik.app.data.Tekrar.oturum(banka, depo, dersler), "tekrar"))
+        },
     )
 
     BackHandler(enabled = yigin.isNotEmpty() || sekme != Sekme.ANA) {
@@ -221,7 +231,7 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
     Kabuk(
         sekme,
         sekmeSec = { yigin = emptyList(); basariIlk = com.lisanshazirlik.app.ui.BasariBolumu.BEN; sekme = it },
-        menuGoster = ust !is Ekran.Deneme && !(ust is Ekran.PaketAdim && ust.adimId.endsWith(":deneme")),
+        menuGoster = ust !is Ekran.Deneme && ust !is Ekran.Shorts && ust !is Ekran.Kulaklik && !(ust is Ekran.PaketAdim && ust.adimId.endsWith(":deneme")),
     ) { ic ->
         if (ust == null) {
             when (sekme) {
@@ -277,6 +287,9 @@ private fun AltEkran(
                 sonucKaydet = { kapsam, ort, gecti, puanlar, adet -> depo.denemeKaydet(kapsam, ort, gecti, puanlar, adet, ust.no) },
                 geri = geri,
             )
+            Ekran.Shorts -> com.lisanshazirlik.app.ui.ShortsEkrani(banka, depo, cevapla, konuAc = { git(Ekran.Konu(it)) }, geri = geri)
+            Ekran.Kulaklik -> com.lisanshazirlik.app.ui.KulaklikEkrani(banka, depo, cevapla, geri = geri)
+            Ekran.Duello -> com.lisanshazirlik.app.ui.DuelloEkrani(banka, depo, hesap.uid, cevapla, geri = geri)
             is Ekran.DenemeListesi -> com.lisanshazirlik.app.ui.DenemeListesiEkrani(
                 ust.ders, banka, depo,
                 ac = { no ->
@@ -328,7 +341,11 @@ private fun AltEkran(
             Ekran.Sonuclar -> SonuclarEkrani(banka, depo, depo.kullanici?.lisans, geri = geri)
             Ekran.Lisans -> LisansEkrani(banka.lisanslar, depo.kullanici?.lisans, sec = { depo.lisansSec(it) }, geri = geri, icerikVar = { banka.icerikVar(it) })
             Ekran.Hatirlatma -> HatirlatmaEkrani(kayit, geri = geri)
-            is Ekran.Video -> VideoEkrani(ust.baslik, ust.adres, geri = geri)
+            is Ekran.Video -> {
+                val vk = banka.dersler.flatMap { it.konular }.firstOrNull { it.video == ust.adres }
+                VideoEkrani(ust.baslik, ust.adres, geri = geri,
+                    sorular = vk?.videoSorular.orEmpty().mapNotNull { vs -> banka.bul(vs.soru)?.let { vs to it } }, cevapla = cevapla)
+            }
             is Ekran.Paket -> PaketEkrani(ust.ders, banka, depo, adimAc = { git(Ekran.PaketAdim(ust.ders, it.id)) }, geri = geri, denemelerAc = { git(Ekran.DenemeListesi(ust.ders)) })
             is Ekran.PaketGecis -> PaketGecisEkrani(
                 ust.ders, ust.bitenId, banka, depo, ust.sonuc,
@@ -348,10 +365,18 @@ private fun AltEkran(
                     }
                     val konu = a.konu
                     when (a.tur) {
-                        com.lisanshazirlik.app.data.Paket.Tur.VIDEO ->
-                            VideoEkrani(konu!!.ad, konu.video, geri = geri, bitti = { tamamla(null) })
-                        com.lisanshazirlik.app.data.Paket.Tur.OZET ->
-                            OzetEkrani(dersBilgi, konu!!, coz = null, kartlar = null, geri = geri, bitti = { tamamla(null) })
+                        com.lisanshazirlik.app.data.Paket.Tur.VIDEO, com.lisanshazirlik.app.data.Paket.Tur.OZET -> {
+                            // Önce soru, sonra anlatım: adım ilk kez açılıyorsa 3 ısınma sorusu.
+                            var isinma by remember(a.id) { mutableStateOf(a.id !in com.lisanshazirlik.app.data.Paket.tamamlananlar(depo, ust.ders)) }
+                            val isinmaSorulari = remember(a.id) { banka.konuSorulari(konu!!.id).shuffled().take(3) }
+                            if (isinma && isinmaSorulari.isNotEmpty()) {
+                                com.lisanshazirlik.app.ui.IsinmaEkrani(konu!!.ad, isinmaSorulari, geri = geri) { isinma = false }
+                            } else if (a.tur == com.lisanshazirlik.app.data.Paket.Tur.VIDEO) {
+                                VideoEkrani(konu!!.ad, konu.video, geri = geri, bitti = { tamamla(null) }, sorular = konu.videoSorular.mapNotNull { vs -> banka.bul(vs.soru)?.let { vs to it } }, cevapla = cevapla)
+                            } else {
+                                OzetEkrani(dersBilgi, konu!!, coz = null, kartlar = null, geri = geri, bitti = { tamamla(null) })
+                            }
+                        }
                         com.lisanshazirlik.app.data.Paket.Tur.KARTLAR ->
                             KartlarEkrani(konu!!, geri = geri, bitti = { tamamla(null) })
                         com.lisanshazirlik.app.data.Paket.Tur.SORU -> {

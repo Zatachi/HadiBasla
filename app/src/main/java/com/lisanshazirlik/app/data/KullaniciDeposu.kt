@@ -112,6 +112,11 @@ class KullaniciDeposu(val uid: String) {
 
     private val dersIlerleme = mutableMapOf<String, Map<String, Int>>()
 
+    /** Aralıklı tekrar: soruId → (kutu 0-4, bir sonraki tekrar günü). */
+    var tekrar by mutableStateOf<Map<String, Pair<Int, LocalDate>>>(emptyMap())
+        private set
+    private val dersTekrar = mutableMapOf<String, Map<String, Pair<Int, LocalDate>>>()
+
     fun baslat() {
         dinleyiciler += kok.addSnapshotListener { s, _ ->
             if (s == null) return@addSnapshotListener
@@ -137,8 +142,15 @@ class KullaniciDeposu(val uid: String) {
                 @Suppress("UNCHECKED_CAST")
                 val s = (d.get("s") as? Map<String, Any?>).orEmpty()
                 dersIlerleme[d.id] = s.mapValues { (_, v) -> (v as? Number)?.toInt() ?: 0 }
+                @Suppress("UNCHECKED_CAST")
+                val r = (d.get("r") as? Map<String, Any?>).orEmpty()
+                dersTekrar[d.id] = r.mapNotNull { (id, v) ->
+                    val p = (v as? String)?.split("|") ?: return@mapNotNull null
+                    runCatching { id to (p[0].toInt() to LocalDate.parse(p[1])) }.getOrNull()
+                }.toMap()
             }
             ilerleme = dersIlerleme.values.fold(emptyMap()) { a, b -> a + b }
+            tekrar = dersTekrar.values.fold(emptyMap()) { a, b -> a + b }
         }
         val otuzGunOnce = LocalDate.now().minusDays(29).toString()
         dinleyiciler += kok.collection("gunler")
@@ -235,8 +247,15 @@ class KullaniciDeposu(val uid: String) {
     }
 
     fun cevapKaydet(soru: Soru, dogru: Boolean, gunlukHedef: Int = Int.MAX_VALUE) {
+        val (kutu, tarih) = Tekrar.sonraki(tekrar[soru.id]?.first, dogru)
         kok.collection("ilerleme").document(soru.ders)
-            .set(mapOf("s" to mapOf(soru.id to if (dogru) 1 else 0)), SetOptions.merge())
+            .set(
+                mapOf(
+                    "s" to mapOf(soru.id to if (dogru) 1 else 0),
+                    "r" to mapOf(soru.id to "$kutu|$tarih"),
+                ),
+                SetOptions.merge(),
+            )
         kok.collection("gunler").document(bugunKey)
             .set(
                 mapOf("sayi" to FieldValue.increment(1), "dogru" to FieldValue.increment(if (dogru) 1 else 0)),

@@ -55,6 +55,20 @@ service cloud.firestore {
       allow delete: if girisli() && resource.data.uid == request.auth.uid;
     }
 
+    // ---- Düello: kuran oynar, kodu paylaşır; rakip bir kez sonucunu yazar ----
+    match /duellolar/{kod} {
+      allow read: if girisli();
+      allow create: if girisli() && kod.size() == 6 && veri().kurucu == request.auth.uid
+        && veri().keys().hasOnly(['kurucu', 'kurucuAd', 'sorular', 'kurucuDogru', 'kurucuSure', 'rakip', 'zaman', 'lisans'])
+        && veri().rakip == null && veri().sorular.size() <= 10
+        && veri().kurucuAd is string && veri().kurucuAd.size() <= 40;
+      allow update: if girisli() && resource.data.rakip == null && resource.data.kurucu != request.auth.uid
+        && veri().diff(resource.data).affectedKeys().hasOnly(['rakip', 'rakipAd', 'rakipDogru', 'rakipSure', 'rakipZaman'])
+        && veri().rakip == request.auth.uid
+        && veri().rakipAd is string && veri().rakipAd.size() <= 40;
+      allow delete: if girisli() && resource.data.kurucu == request.auth.uid;
+    }
+
     // ---- Davet ----
     match /kodlar/{kod} {
       allow read: if girisli();

@@ -87,6 +87,10 @@ class Yonlendirici(
     val paketAdimAc: (ders: String, adimId: String) -> Unit,
     val sekmeAc: (Sekme) -> Unit,
     val basariAc: (BasariBolumu) -> Unit,
+    val shorts: () -> Unit = {},
+    val kulaklik: () -> Unit = {},
+    val duello: () -> Unit = {},
+    val gunun5: () -> Unit = {},
 )
 
 @Composable

@@ -11,6 +11,20 @@ import java.net.URL
 
 data class BilgiKarti(val on: String, val arka: String)
 
+/** Video belirli bir saniyeye gelince durup sorulan soru; yanlışta [geri] saniyesine sarılır. */
+data class VideoSorusu(val saniye: Double, val soru: String, val geri: Double)
+
+/** Kısa video: uzun bir anlatım videosunun tek kavramlık bölümü (Shorts akışı için). */
+data class Kisa(
+    val id: String,
+    val ders: String,
+    val konu: String,
+    val baslik: String,
+    val video: String,
+    val bas: Double,
+    val son: Double,
+)
+
 data class Konu(
     val id: String,
     val ad: String,
@@ -18,6 +32,7 @@ data class Konu(
     val kartlar: List<BilgiKarti> = emptyList(),
     /** Animasyonlu anlatım videosunun adresi (yoksa boş). */
     val video: String = "",
+    val videoSorular: List<VideoSorusu> = emptyList(),
 )
 
 data class Ders(
@@ -46,6 +61,8 @@ data class Soru(
     val dogru: Int,
     val aciklama: String,
     val kaynak: String,
+    /** Gerçek hayattan vaka sorusu. */
+    val senaryo: Boolean = false,
 )
 
 data class SoruBankasi(
@@ -54,6 +71,7 @@ data class SoruBankasi(
     val lisanslar: List<Lisans>,
     val dersler: List<Ders>,
     val sorular: List<Soru>,
+    val kisalar: List<Kisa> = emptyList(),
 ) {
     fun ders(kod: String): Ders? = dersler.firstOrNull { it.kod == kod }
     fun lisans(kod: String?): Lisans? = lisanslar.firstOrNull { it.kod == kod }
@@ -88,6 +106,9 @@ data class SoruBankasi(
                             kartlar = k.optJSONArray("kartlar")?.nesneler()?.map {
                                 BilgiKarti(it.getString("on"), it.getString("arka"))
                             } ?: emptyList(),
+                            videoSorular = k.optJSONArray("videoSorular")?.nesneler()?.map {
+                                VideoSorusu(it.getDouble("saniye"), it.getString("soru"), it.optDouble("geri", 0.0))
+                            } ?: emptyList(),
                         )
                     },
                 )
@@ -108,6 +129,7 @@ data class SoruBankasi(
                         dogru = dogru,
                         aciklama = s.optString("aciklama", ""),
                         kaynak = s.optString("kaynak", ""),
+                        senaryo = s.optBoolean("senaryo", false),
                     )
                 }.getOrNull()
             }
@@ -120,12 +142,26 @@ data class SoruBankasi(
                     aktif = l.optBoolean("aktif", true),
                 )
             } ?: emptyList()
+            val kisalar = kok.optJSONArray("kisalar")?.nesneler()?.mapNotNull { k ->
+                runCatching {
+                    Kisa(
+                        id = k.getString("id"),
+                        ders = k.getString("ders"),
+                        konu = k.optString("konu", ""),
+                        baslik = k.getString("baslik"),
+                        video = k.getString("video"),
+                        bas = k.optDouble("bas", 0.0),
+                        son = k.optDouble("son", 0.0),
+                    )
+                }.getOrNull()
+            } ?: emptyList()
             return SoruBankasi(
                 surum = kok.optInt("surum", 0),
                 guncelleme = kok.optString("guncelleme", ""),
                 lisanslar = lisanslar,
                 dersler = dersler,
                 sorular = sorular,
+                kisalar = kisalar,
             )
         }
 
