@@ -102,7 +102,7 @@ fun CozEkrani(
                     liste = liste.shuffled(); sira = 0; secim = null; dogruSayi = 0; bitti = false
                 },
                 geri = geri,
-                devam = if (bitti != null) ({ bitti(dogruSayi, liste.size) }) else null,
+                devam = if (bitti != null) ({ bitti?.invoke(dogruSayi, liste.size) }) else null,
             )
             return@Scaffold
         }
