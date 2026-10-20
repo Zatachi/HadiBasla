@@ -271,7 +271,7 @@ private fun HataPenceresi(kapat: () -> Unit, gonder: (String) -> Unit) {
         title = { Text("Hata Bildir") },
         text = {
             Column {
-                Text("Neyin yanlış olduğunu kısaca yaz. Örneğin: \"Doğru cevap B olmalı\" ya da \"Bu madde değişti\".")
+                Text("Neyin Yanlış Olduğunu Kısaca Yaz. Örneğin: \"Doğru Cevap B Olmalı\" ya da \"Bu Madde Değişti\".")
                 Bosluk(12)
                 OutlinedTextField(
                     value = metin,

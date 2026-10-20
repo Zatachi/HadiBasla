@@ -54,14 +54,14 @@ class Hesap {
         } catch (e: GetCredentialCancellationException) {
             throw Vazgecildi()
         } catch (e: NoCredentialException) {
-            throw HesapHatasi("Telefonunda kullanılabilir bir Google hesabı bulunamadı. Ayarlar'dan bir Google hesabı ekleyip tekrar dene.")
+            throw HesapHatasi("Telefonunda Kullanılabilir Bir Google Hesabı Bulunamadı. Ayarlar'dan Bir Google Hesabı Ekleyip Tekrar Dene.")
         }
         val kimlik = sonuc.credential
         if (kimlik is CustomCredential && kimlik.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
             val g = GoogleIdTokenCredential.createFrom(kimlik.data)
             return GoogleAuthProvider.getCredential(g.idToken, null) to g.givenName
         }
-        throw HesapHatasi("Google girişi tamamlanamadı. Tekrar dene.")
+        throw HesapHatasi("Google Girişi Tamamlanamadı. Tekrar Dene.")
     }
 
     /**

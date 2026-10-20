@@ -30,6 +30,14 @@ jobs:
         with:
           gradle-version: "8.11.1"
 
+      - name: Yazım kurallarını denetle (kurumsal başlık düzeni)
+        run: |
+          python3 araclar/yazim/denetle.py | tee yazim.txt
+          if ! grep -q "^TOPLAM 0$" yazim.txt; then
+            grep -v "^TOPLAM" yazim.txt | while read -r satir; do echo "::error title=Yazım Kuralı::$satir"; done
+            exit 1
+          fi
+
       - name: Güncel soruları ve metinleri uygulamaya ekle
         run: |
           mkdir -p app/src/main/assets

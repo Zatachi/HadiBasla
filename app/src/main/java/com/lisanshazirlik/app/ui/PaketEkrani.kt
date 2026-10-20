@@ -95,7 +95,7 @@ fun PaketEkrani(
                 }
                 Bosluk(8)
                 Text(
-                    if (siradaki == null && adimlar.isNotEmpty()) "Paketi bitirdin 🎉" else if (adimlar.isEmpty()) "Anlatımlar hazırlanıyor" else "${adimlar.size} adımdan $tamam tamamlandı",
+                    if (siradaki == null && adimlar.isNotEmpty()) "Paketi Bitirdin 🎉" else if (adimlar.isEmpty()) "Anlatımlar Hazırlanıyor" else "${adimlar.size} Adımdan $tamam Tamamlandı",
                     style = MaterialTheme.typography.bodyMedium,
                     color = KremSoluk,
                 )
@@ -126,7 +126,7 @@ fun PaketEkrani(
         AlertDialog(
             onDismissRequest = { sifirlaSor = false },
             title = { Text("Paketi Baştan Başlat") },
-            text = { Text("Paket adımlarının işaretleri sıfırlanır. Çözdüğün sorular, puanların ve rozetlerin silinmez.") },
+            text = { Text("Paket Adımlarının İşaretleri Sıfırlanır. Çözdüğün Sorular, Puanların ve Rozetlerin Silinmez.") },
             confirmButton = { TextButton(onClick = { depo.paketSifirla(dersKod); sifirlaSor = false }) { Text("Baştan Başlat") } },
             dismissButton = { TextButton(onClick = { sifirlaSor = false }) { Text("Vazgeç") } },
         )
@@ -193,7 +193,7 @@ fun PaketGecisEkrani(
             Text("✓", color = Krem, fontSize = 40.sp)
         }
         Bosluk(16)
-        Text("${biten?.tur?.ad ?: "Adım"} tamamlandı", style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
+        Text("${biten?.tur?.ad ?: "Adım"} Tamamlandı", style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center)
         biten?.konu?.let { Text(it.ad, style = MaterialTheme.typography.bodyLarge, color = MetinSoluk, textAlign = TextAlign.Center) }
         sonuc?.let { Bosluk(6); Text(it, style = MaterialTheme.typography.titleMedium, color = Yesil, textAlign = TextAlign.Center) }
         Bosluk(8)

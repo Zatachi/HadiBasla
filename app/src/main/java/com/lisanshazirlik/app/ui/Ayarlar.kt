@@ -195,7 +195,7 @@ fun HatirlatmaEkrani(kayit: YerelKayit, geri: () -> Unit) {
             }
             if (izinReddedildi) {
                 Text(
-                    "Bildirim izni verilmedi. Hatırlatma almak için telefonun Ayarlar → Uygulamalar → Lisansla → Bildirimler bölümünden izin verebilirsin.",
+                    "Bildirim İzni Verilmedi. Hatırlatma Almak İçin Telefonun Ayarlar → Uygulamalar → Lisansla → Bildirimler Bölümünden İzin Verebilirsin.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = YanlisKirmizi,
                 )

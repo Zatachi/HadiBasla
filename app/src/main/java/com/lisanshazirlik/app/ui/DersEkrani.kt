@@ -77,7 +77,7 @@ fun DersEkrani(
                 KartKutu(tikla = if (tumu.isNotEmpty()) deneme else null) {
                     Text("Bu Dersten Deneme Sınavı", style = MaterialTheme.typography.titleMedium)
                     Bosluk(4)
-                    Text(if (tumu.size >= SINAV_SORU) "Gerçek sınav gibi: $SINAV_SORU soru, $SINAV_DAKIKA dakika. Geçme notu 50." else "${tumu.size} soru, ${denemeSuresiDk(tumu.size)} dakika. Soru bankası büyüdükçe 25 soruya tamamlanacak.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                    Text(if (tumu.size >= SINAV_SORU) "Gerçek Sınav Gibi: $SINAV_SORU Soru, $SINAV_DAKIKA Dakika. Geçme Notu 50." else "${tumu.size} Soru, ${denemeSuresiDk(tumu.size)} Dakika. Soru Bankası Büyüdükçe 25 Soruya Tamamlanacak.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 }
             }
             item { Etiket("Konular", Modifier.padding(start = 4.dp, top = 8.dp)) }

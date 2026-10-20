@@ -69,8 +69,8 @@ fun ShortsEkrani(banka: SoruBankasi, depo: KullaniciDeposu, konuAc: (String) -> 
     Box(Modifier.fillMaxSize().background(KOYU_ZEMIN)) {
         if (liste.isEmpty()) {
             Text(
-                if (kayitliMod) "Henüz kaydettiğin video yok. Beğendiğin videoda 🔖'ye dokun."
-                else "Bu dersin kısa videoları hazırlanıyor. Üstten başka bir ders seçebilirsin.",
+                if (kayitliMod) "Henüz Kaydettiğin Video Yok. Beğendiğin Videoda 🔖'ye Dokun."
+                else "Bu Dersin Kısa Videoları Hazırlanıyor. Üstten Başka Bir Ders Seçebilirsin.",
                 color = Krem,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center).padding(32.dp),

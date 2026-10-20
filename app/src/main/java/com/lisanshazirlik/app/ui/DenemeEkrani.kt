@@ -320,7 +320,7 @@ private fun DenemeSonucuEkrani(
                         )
                     }
                     Text(
-                        if (dersPuanlari.size == 1) "Bu ders için geçme notu 50." else "Gerçek sınavdaki kurala göre: her dersten en az 50, ortalama en az 60.",
+                        if (dersPuanlari.size == 1) "Bu Ders İçin Geçme Notu 50." else "Gerçek Sınavdaki Kurala Göre: Her Dersten En Az 50, Ortalama En Az 60.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MetinSoluk,
                     )

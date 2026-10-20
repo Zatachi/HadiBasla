@@ -72,7 +72,7 @@ object Duello {
                 // Kod çakıştıysa kural yazmayı reddeder; yeni kodla dene.
             }
         }
-        throw Hata("Düello oluşturulamadı. İnternet bağlantını kontrol et.")
+        throw Hata("Düello Oluşturulamadı. İnternet Bağlantını Kontrol Et.")
     }
 
     suspend fun getir(kod: String): DuelloKaydi? {
@@ -97,7 +97,7 @@ object Duello {
     /** Kodu kontrol eder; oynanabilirse kaydı döner. */
     suspend fun katilKontrol(kod: String, uid: String): DuelloKaydi {
         val k = getir(kod) ?: throw Hata("Bu Kodla Bir Düello Bulunamadı.")
-        if (k.kurucu == uid) throw Hata("Bu senin düellon. Kodu bir arkadaşına gönder.")
+        if (k.kurucu == uid) throw Hata("Bu Senin Düellon. Kodu Bir Arkadaşına Gönder.")
         if (k.rakip != null) throw Hata("Bu Düello Zaten Oynanmış.")
         return k
     }

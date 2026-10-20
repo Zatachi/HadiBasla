@@ -27,7 +27,7 @@ object Topluluk {
     private val db by lazy { FirebaseFirestore.getInstance() }
 
     fun tablolar(banka: SoruBankasi, lisans: String?): List<Tablo> = listOf(
-        Tablo("lig", "Haftalık Lig", "xp_${Oyun.hafta()}", "XP", "Pazartesi sıfırlanır. İlk 3'e ${Oyun.HAFTALIK_ODUL_GUN} gün Premium."),
+        Tablo("lig", "Haftalık Lig", "xp_${Oyun.hafta()}", "XP", "Pazartesi Sıfırlanır. İlk 3'e ${Oyun.HAFTALIK_ODUL_GUN} Gün Premium."),
         Tablo("soru", "En Çok Soru", "cozulen", "soru", "Bugüne Kadar Çözülen Soru Sayısı."),
         Tablo("oran", "Doğru Oranı", "oranUygun", "%", "En Az 50 Soru Çözenler Arasında."),
         Tablo("deneme", "Deneme Şampiyonları", "enIyiDeneme", "puan", "Süreli Denemelerdeki En Yüksek Puan."),
@@ -35,7 +35,7 @@ object Topluluk {
         Tablo("gelisim", "En Çok Gelişen", "gelisim", "puan", "İlk Denemesine Göre En Çok Puan Artıranlar."),
     ) + banka.lisansDersleri(lisans).map { d ->
         Tablo("ders_${d.kod}", d.kisaAd, "dersDogru_${d.kod}", "Doğru", "${d.ad} Dersinde En Çok Doğru Yapanlar.")
-    } + Tablo("duvar", "Geçenler Duvarı", "gectiZaman", "", "Sınavı geçtiğini paylaşanlar. Tebrikler!")
+    } + Tablo("duvar", "Geçenler Duvarı", "gectiZaman", "", "Sınavı Geçtiğini Paylaşanlar. Tebrikler!")
 
     // ---------------------------------------------------------------- sıralama
 
@@ -45,7 +45,7 @@ object Topluluk {
     private val AD_DESENI = Regex("^[\\p{L}\\p{N}_.\\- ]{2,20}$")
     fun adGecerli(ad: String): Boolean = AD_DESENI.matches(ad.trim())
 
-    class AdAlinmis : Exception("Bu takma ad başka biri tarafından kullanılıyor. Başka bir ad seç.")
+    class AdAlinmis : Exception("Bu Takma Ad Başka Biri Tarafından Kullanılıyor. Başka Bir Ad Seç.")
 
     private var ayrilmis: String? = null
 
@@ -191,18 +191,18 @@ object Topluluk {
 
     /** Davet kodunu kullanır. Sadece Google hesabıyla ve bir kez kullanılabilir. */
     suspend fun koduKullan(uid: String, misafir: Boolean, depo: KullaniciDeposu, girdi: String) {
-        val k = depo.kullanici ?: throw DavetHatasi("Hesap bilgisi yüklenemedi. Tekrar dene.")
+        val k = depo.kullanici ?: throw DavetHatasi("Hesap Bilgisi Yüklenemedi. Tekrar Dene.")
         if (misafir) throw DavetHatasi("Davet Kodu Kullanmak İçin Önce Profil'den Google Hesabına Bağlan.")
         if (k.davetEden != null) throw DavetHatasi("Daha Önce Bir Davet Kodu Kullandın.")
         val kod = Oyun.koduDuzelt(girdi)
         val sahip = db.collection("kodlar").document(kod).get().await().getString("uid")
-            ?: throw DavetHatasi("Bu kod bulunamadı. Harfleri kontrol edip tekrar dene.")
-        if (sahip == uid) throw DavetHatasi("Kendi kodunu kullanamazsın.")
+            ?: throw DavetHatasi("Bu Kod Bulunamadı. Harfleri Kontrol Edip Tekrar Dene.")
+        if (sahip == uid) throw DavetHatasi("Kendi Kodunu Kullanamazsın.")
         db.collection("davetler").document(uid).set(
             mapOf("davetEden" to sahip, "kod" to kod, "gecerli" to false, "zaman" to FieldValue.serverTimestamp())
         ).await()
         depo.xpEkle(Oyun.XP_DAVET_EDILEN, mapOf("davetEden" to sahip))
-        depo.kutlama = "🎁 Hoş geldin bonusu: +${Oyun.XP_DAVET_EDILEN} XP"
+        depo.kutlama = "🎁 Hoş Geldin Bonusu: +${Oyun.XP_DAVET_EDILEN} XP"
     }
 
     /** Davet edilen kişi yeterince soru çözünce davet "Geçerli" olur ve davet edene sayılır. */

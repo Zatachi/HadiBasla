@@ -212,7 +212,7 @@ private fun AramaEkrani(dersAd: String, gecen: Int, eslesti: Boolean = false, va
         Bosluk(8)
         if (!eslesti) {
             Text("0:${gecen.toString().padStart(2, '0')}", color = KremSoluk, fontSize = 18.sp)
-            Text("${CanliDuello.BEKLEME_SN} saniyede kimse gelmezse antrenman rakibiyle oynarsın.", color = KremSoluk, fontSize = 13.sp, textAlign = TextAlign.Center)
+            Text("${CanliDuello.BEKLEME_SN} Saniyede Kimse Gelmezse Antrenman Rakibiyle Oynarsın.", color = KremSoluk, fontSize = 13.sp, textAlign = TextAlign.Center)
             Bosluk(24)
             OutlinedButton(onClick = vazgec) { Text("Vazgeç", color = Krem) }
         }
@@ -381,7 +381,7 @@ private fun CanliSonuc(a: Asama.Sonuc, tekrar: () -> Unit, geri: () -> Unit) {
             Text(
                 when {
                     a.benim.terk -> "Düellodan Çıktın, Bu Maç Kaybedildi"
-                    a.rakip?.terk == true -> "Rakip düellodan çıktı, kazandın!"
+                    a.rakip?.terk == true -> "Rakip Düellodan Çıktı, Kazandın!"
                     a.rakip?.bitti != true -> "Rakip Zamanında Bitirmedi, Kazandın!"
                     s == 1 -> "Kazandın!"
                     s == 0 -> "Berabere!"

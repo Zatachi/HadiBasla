@@ -27,12 +27,12 @@ data class HazirlikSkoru(
     /** En çok puan kazandıracak eksik. */
     val oneri: String
         get() = when {
-            kapsam < 50 -> "Konuları bitir: dersin sorularının yarısından azını gördün."
-            deneme == null -> "İlk ders denemeni çöz; skorun gerçek sınava daha çok benzesin."
-            dogruluk < 60 -> "Yanlışlarını tekrar et; doğruluk oranın %60'ın altında."
-            (deneme ?: 100) < 60 -> "Deneme puanın 60'ın altında; zayıf konularını çalışıp yeni deneme çöz."
-            (hafiza ?: 100) < 50 -> "Günün 5 dakikası ile tekrar yap; öğrendiklerin kalıcı olsun."
-            else -> "Harika gidiyorsun. Haftada bir deneme ile formunu koru."
+            kapsam < 50 -> "Konuları Bitir: Dersin Sorularının Yarısından Azını Gördün."
+            deneme == null -> "İlk Ders Denemeni Çöz; Skorun Gerçek Sınava Daha Çok Benzesin."
+            dogruluk < 60 -> "Yanlışlarını Tekrar Et; Doğruluk Oranın %60'ın Altında."
+            (deneme ?: 100) < 60 -> "Deneme Puanın 60'ın Altında; Zayıf Konularını Çalışıp Yeni Deneme Çöz."
+            (hafiza ?: 100) < 50 -> "Günün 5 Dakikası ile Tekrar Yap; Öğrendiklerin Kalıcı Olsun."
+            else -> "Harika Gidiyorsun. Haftada Bir Deneme ile Formunu Koru."
         }
 }
 

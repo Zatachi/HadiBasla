@@ -77,7 +77,7 @@ fun DenemeListesiEkrani(
                     }
                     Column(Modifier.padding(start = 12.dp)) {
                         Text(ders.kisaAd, style = MaterialTheme.typography.titleMedium)
-                        Text("$DENEME_ADEDI deneme · her biri 25 soru, 45 dk", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                        Text("$DENEME_ADEDI Deneme · Her Biri 25 Soru, 45 dk", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                     }
                 }
             }
@@ -95,7 +95,7 @@ fun DenemeListesiEkrani(
                         Text("🔓", fontSize = 22.sp)
                         Column(Modifier.weight(1f).padding(start = 10.dp)) {
                             Text("Deneme 1 Ücretsiz", style = MaterialTheme.typography.titleMedium)
-                            Text("Diğerleri Premium ile açılır. Premium'u davetle ya da haftalık ligde kazanabilirsin.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                            Text("Diğerleri Premium ile Açılır. Premium'u Davetle ya da Haftalık Ligde Kazanabilirsin.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                         }
                     }
                 }
@@ -134,7 +134,7 @@ fun DenemeListesiEkrani(
                         )
                         Text(
                             when {
-                                !hazir -> "${DENEME_ADLARI[no - 1]} · hazırlanıyor"
+                                !hazir -> "${DENEME_ADLARI[no - 1]} · Hazırlanıyor"
                                 son != null -> "${DENEME_ADLARI[no - 1]} · Son Puan ${son.ortalama} ${if (son.gecti) "✓" else ""}"
                                 else -> DENEME_ADLARI[no - 1]
                             },

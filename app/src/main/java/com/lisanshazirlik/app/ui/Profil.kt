@@ -78,7 +78,7 @@ fun ProfilSekme(
             } catch (e: Hesap.HesapHatasi) {
                 hata = e.message
             } catch (e: Exception) {
-                hata = "İşlem tamamlanamadı. İnternet bağlantını kontrol edip tekrar dene."
+                hata = "İşlem Tamamlanamadı. İnternet Bağlantını Kontrol Edip Tekrar Dene."
             } finally {
                 bekliyor = null
             }
@@ -225,7 +225,7 @@ fun ProfilSekme(
         AlertDialog(
             onDismissRequest = { cikisSor = false },
             title = { Text("Çıkış Yap") },
-            text = { Text("Verilerin Google hesabında saklanmaya devam eder. Tekrar girdiğinde kaldığın yerden devam edersin.") },
+            text = { Text("Verilerin Google Hesabında Saklanmaya Devam Eder. Tekrar Girdiğinde Kaldığın Yerden Devam Edersin.") },
             confirmButton = {
                 TextButton(onClick = { cikisSor = false; calistir("Çıkış Yapılıyor…") { hesap.cikis(baglam) } }) { Text("Çıkış Yap") }
             },
@@ -238,8 +238,8 @@ fun ProfilSekme(
             title = { Text(if (hesap.misafir) "Misafir Hesabını Sil" else "Hesabını Sil") },
             text = {
                 Text(
-                    "Adın, çalışma ilerlemen, hedeflerin, deneme sonuçların, puanların, rozetlerin, sıralama ve davet kayıtların, oyların, hata bildirimlerin ve görüşlerin kalıcı olarak silinir. Bu işlem geri alınamaz." +
-                        if (hesap.misafir) "" else "\n\nGüvenlik için Google hesabını bir kez daha seçmen istenecek."
+                    "Adın, Çalışma İlerlemen, Hedeflerin, Deneme Sonuçların, Puanların, Rozetlerin, Sıralama ve Davet Kayıtların, Oyların, Hata Bildirimlerin ve Görüşlerin Kalıcı Olarak Silinir. Bu İşlem Geri Alınamaz." +
+                        if (hesap.misafir) "" else "\n\nGüvenlik İçin Google Hesabını Bir Kez Daha Seçmen İstenecek."
                 )
             },
             confirmButton = {
@@ -331,7 +331,7 @@ fun VerilerimEkrani(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap, ger
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(
-                "Lisansla'da senin hakkında tutulan bilgilerin tamamı aşağıda. Bunların dışında bir bilgi saklanmaz.",
+                "Lisansla'da Senin Hakkında Tutulan Bilgilerin Tamamı Aşağıda. Bunların Dışında Bir Bilgi Saklanmaz.",
                 style = MaterialTheme.typography.bodyLarge,
             )
             KartKutu {
@@ -367,7 +367,7 @@ fun VerilerimEkrani(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap, ger
                 Etiket("Geri Bildirimlerin")
                 Bosluk(8)
                 Text(
-                    "Sorulara verdiğin oylar, hata bildirimlerin, görüşlerin ve hangi soruda hangi şıkkı seçtiğin, soruları iyileştirmek için kullanıcı kimliğinle birlikte saklanır. Hesabını silersen bunlar da silinir.",
+                    "Sorulara Verdiğin Oylar, Hata Bildirimlerin, Görüşlerin ve Hangi Soruda Hangi Şıkkı Seçtiğin, Soruları İyileştirmek İçin Kullanıcı Kimliğinle Birlikte Saklanır. Hesabını Silersen Bunlar da Silinir.",
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }

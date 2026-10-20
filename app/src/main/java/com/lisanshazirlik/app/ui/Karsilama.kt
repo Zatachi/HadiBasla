@@ -87,7 +87,7 @@ fun KarsilamaEkrani(devam: () -> Unit) {
                     Text("Kişisel Verilerin", style = MaterialTheme.typography.titleMedium)
                     Bosluk(6)
                     Text(
-                        "Sadece adını ve çalışma ilerlemeni saklarız. E-posta adresin kaydedilmez, reklam yoktur, verilerin satılmaz. Hesabını istediğin an silebilirsin.",
+                        "Sadece Adını ve Çalışma İlerlemeni Saklarız. E-posta Adresin Kaydedilmez, Reklam Yoktur, Verilerin Satılmaz. Hesabını İstediğin An Silebilirsin.",
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     TextButton(onClick = { metinAcik = true }, modifier = Modifier.padding(start = 0.dp)) {
@@ -136,7 +136,7 @@ fun GirisEkrani(hesap: Hesap, girildi: (googleAdi: String?) -> Unit) {
             } catch (e: Hesap.HesapHatasi) {
                 hata = e.message
             } catch (e: Exception) {
-                hata = "Giriş yapılamadı. İnternet bağlantını kontrol edip tekrar dene."
+                hata = "Giriş Yapılamadı. İnternet Bağlantını Kontrol Edip Tekrar Dene."
             } finally {
                 bekliyor = false
             }
@@ -158,7 +158,7 @@ fun GirisEkrani(hesap: Hesap, girildi: (googleAdi: String?) -> Unit) {
                     modifier = Modifier.fillMaxWidth().height(54.dp),
                 ) { Text("Misafir Olarak Dene") }
                 Text(
-                    "Misafir olarak başlarsan ilerlemen bu telefondaki misafir hesabında tutulur. İstediğin zaman Profil'den Google hesabına bağlayıp kalıcı hale getirebilirsin.",
+                    "Misafir Olarak Başlarsan İlerlemen Bu Telefondaki Misafir Hesabında Tutulur. İstediğin Zaman Profil'den Google Hesabına Bağlayıp Kalıcı Hale Getirebilirsin.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MetinSoluk,
                 )
@@ -269,7 +269,7 @@ fun HesapCakismasiPenceresi(kimlik: AuthCredential, hesap: Hesap, kapat: () -> U
         onDismissRequest = { if (!bekliyor) kapat() },
         title = { Text("Bu Google Hesabı Zaten Kayıtlı") },
         text = {
-            Text("Bu Google hesabıyla daha önce Lisansla'ya giriş yapılmış. O hesaba geçersen bu misafir hesaptaki ilerleme silinir ve Google hesabındaki ilerlemen yüklenir.")
+            Text("Bu Google Hesabıyla Daha Önce Lisansla'ya Giriş Yapılmış. O Hesaba Geçersen Bu Misafir Hesaptaki İlerleme Silinir ve Google Hesabındaki İlerlemen Yüklenir.")
         },
         confirmButton = {
             TextButton(

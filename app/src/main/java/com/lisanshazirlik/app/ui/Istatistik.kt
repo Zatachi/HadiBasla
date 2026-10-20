@@ -96,7 +96,7 @@ fun IstatistikSekme(
                 Bosluk(4)
                 val girilen = dersler.count { it.kod in depo.sonuclar }
                 Text(
-                    if (girilen == 0) "Girdiğin sınavların puanlarını kaydet, lisans durumunu takip et."
+                    if (girilen == 0) "Girdiğin Sınavların Puanlarını Kaydet, Lisans Durumunu Takip Et."
                     else "${dersler.size} Dersten $girilen Sonuç Girildi · ${dersler.count { (depo.sonuclar[it.kod]?.puan ?: 0) >= 50 }} Ders Geçildi",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MetinSoluk,
@@ -300,7 +300,7 @@ fun SonuclarEkrani(banka: SoruBankasi, depo: KullaniciDeposu, lisans: String?, g
                 Text("$alinan", fontFamily = Baslik, fontSize = 34.sp, color = Altin)
             }
             Text(
-                "Lisansına dokun, sınav puanlarını gir. Ortak dersler bütün lisanslarda otomatik sayılır.",
+                "Lisansına Dokun, Sınav Puanlarını Gir. Ortak Dersler Bütün Lisanslarda Otomatik Sayılır.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MetinSoluk,
                 modifier = Modifier.padding(horizontal = 4.dp),

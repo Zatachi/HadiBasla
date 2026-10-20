@@ -60,8 +60,8 @@ fun GununBesEkrani(banka: SoruBankasi, depo: KullaniciDeposu, basla: (baslik: St
             }
             Text(
                 when {
-                    oturum.isEmpty() -> "Bu dersin soruları henüz hazır değil. Başka bir ders seçebilirsin."
-                    bekleyen.isNotEmpty() -> "Unutmaya başladığın ${bekleyen.size} soru tam zamanında geri geldi. Doğru bildiklerin daha seyrek gelir."
+                    oturum.isEmpty() -> "Bu Dersin Soruları Henüz Hazır Değil. Başka Bir Ders Seçebilirsin."
+                    bekleyen.isNotEmpty() -> "Unutmaya Başladığın ${bekleyen.size} Soru Tam Zamanında Geri Geldi. Doğru Bildiklerin Daha Seyrek Gelir."
                     else -> "Bugün Tekrar Zamanı Gelen Soru Yok; Yeni Sorularla Devam Ediyoruz."
                 },
                 color = MetinSoluk,

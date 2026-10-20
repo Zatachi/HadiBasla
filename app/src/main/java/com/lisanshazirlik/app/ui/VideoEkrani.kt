@@ -122,13 +122,13 @@ fun VideoEkrani(
                     val sec = secim
                     if (sec != null) {
                         if (sec == soru.dogru) {
-                            Text("✓ Doğru! Devam edelim.", color = DogruYesil, style = MaterialTheme.typography.titleMedium)
+                            Text("✓ Doğru! Devam Edelim.", color = DogruYesil, style = MaterialTheme.typography.titleMedium)
                             androidx.compose.material3.Button(
                                 onClick = { cevaplanan += soru.id; soruAni = null; oynatici?.start() },
                                 modifier = Modifier.fillMaxWidth().height(50.dp),
                             ) { Text("▶ Videoya Devam") }
                         } else {
-                            Text("✗ Olmadı. O kısmı bir daha izleyelim.", color = YanlisKirmizi, style = MaterialTheme.typography.titleMedium)
+                            Text("✗ Olmadı. O Kısmı Bir Daha İzleyelim.", color = YanlisKirmizi, style = MaterialTheme.typography.titleMedium)
                             androidx.compose.material3.Button(
                                 onClick = { soruAni = null; oynatici?.seekTo((vs.geri * 1000).toInt()); oynatici?.start() },
                                 modifier = Modifier.fillMaxWidth().height(50.dp),
@@ -143,7 +143,7 @@ fun VideoEkrani(
             }
             if (hata) {
                 Text(
-                    "Video açılamadı. İnternet bağlantını kontrol edip tekrar dene.",
+                    "Video Açılamadı. İnternet Bağlantını Kontrol Edip Tekrar Dene.",
                     color = Krem,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(32.dp),

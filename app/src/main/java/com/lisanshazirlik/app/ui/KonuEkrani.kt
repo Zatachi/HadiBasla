@@ -115,7 +115,7 @@ fun KonuEkrani(
                 Bolum(Modifier.weight(1f), "⏱", "Konu Testi", if (testAdet > 0) "$testAdet Soru, ${denemeSuresiDk(testAdet)} dk" else null, test)
             }
             Text(
-                "Önerilen sıra: videoyu izle ya da özeti oku, kartlarla tekrar et, soruları çöz, son olarak konu testiyle kendini ölç.",
+                "Önerilen Sıra: Videoyu İzle ya da Özeti Oku, Kartlarla Tekrar Et, Soruları Çöz, Son Olarak Konu Testiyle Kendini Ölç.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MetinSoluk,
             )
@@ -316,7 +316,7 @@ private fun AkildaKalsin(s: OzetSayfasi) {
         }
     }
     Text(
-        "Bu özet, ilgili mevzuat esas alınarak Lisansla tarafından hazırlanmıştır. Sınavdan önce güncel resmi kaynakları da kontrol et.",
+        "Bu Özet, İlgili Mevzuat Esas Alınarak Lisansla Tarafından Hazırlanmıştır. Sınavdan Önce Güncel Resmi Kaynakları da Kontrol Et.",
         style = MaterialTheme.typography.bodyMedium,
         fontSize = 12.sp,
         color = MetinSoluk,

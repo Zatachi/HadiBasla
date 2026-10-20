@@ -118,7 +118,7 @@ fun SeviyeKarti(depo: KullaniciDeposu) {
         Text("SEVİYEN", style = MaterialTheme.typography.labelMedium, color = Altin)
         Row(verticalAlignment = Alignment.Bottom) {
             Text(seviye.ad, fontFamily = Baslik, fontSize = 30.sp, color = Krem, modifier = Modifier.weight(1f))
-            Text("%,d XP".format(xp).replace(',', '.'), style = MaterialTheme.typography.titleMedium, color = Krem)
+            Text("%,D XP".format(xp).replace(',', '.'), style = MaterialTheme.typography.titleMedium, color = Krem)
         }
         Bosluk(12)
         Box(Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp)).background(YesilKoyu)) {
@@ -126,14 +126,14 @@ fun SeviyeKarti(depo: KullaniciDeposu) {
         }
         Bosluk(8)
         Text(
-            if (sonraki == null) "En üst seviyedesin. Tebrikler!"
-            else "${sonraki.ad} için ${"%,d".format(sonraki.altSinir - xp).replace(',', '.')} XP kaldı",
+            if (sonraki == null) "En Üst Seviyedesin. Tebrikler!"
+            else "${sonraki.ad} İçin ${"%,d".format(sonraki.altSinir - xp).replace(',', '.')} XP Kaldı",
             style = MaterialTheme.typography.bodyMedium,
             color = KremSoluk,
         )
         Bosluk(6)
         Text(
-            "Bu hafta: ${depo.kullanici?.buHaftaXp() ?: 0} XP · Doğru +${Oyun.XP_DOGRU}, deneme +${Oyun.XP_DENEME}, günlük hedef +${Oyun.XP_GUNLUK_HEDEF}",
+            "Bu Hafta: ${depo.kullanici?.buHaftaXp() ?: 0} XP · Doğru +${Oyun.XP_DOGRU}, Deneme +${Oyun.XP_DENEME}, Günlük Hedef +${Oyun.XP_GUNLUK_HEDEF}",
             style = MaterialTheme.typography.bodyMedium,
             fontSize = 12.sp,
             color = KremSoluk,
@@ -237,11 +237,11 @@ private fun SiralamaBolumu(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hes
 
         Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             when {
-                hata -> Text("Sıralama yüklenemedi. İnternet bağlantını kontrol et.", color = YanlisKirmizi)
+                hata -> Text("Sıralama Yüklenemedi. İnternet Bağlantını Kontrol Et.", color = YanlisKirmizi)
                 satirlar == null -> Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = Yesil)
                 }
-                satirlar!!.isEmpty() -> Text("Bu sıralamada henüz kimse yok. İlk sen ol!", style = MaterialTheme.typography.bodyLarge)
+                satirlar!!.isEmpty() -> Text("Bu Sıralamada Henüz Kimse Yok. İlk Sen Ol!", style = MaterialTheme.typography.bodyLarge)
                 else -> satirlar!!.forEachIndexed { i, s -> SiralamaSatirGorunumu(i + 1L, s, tablo, s.uid == uid) }
             }
             val listede = satirlar?.any { it.uid == uid } == true
@@ -263,7 +263,7 @@ private fun SiralamaBolumu(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hes
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { ayrilSor = false },
             title = { Text("Sıralamadan Ayrıl") },
-            text = { Text("Takma adın ve puanların sıralamalardan kaldırılır. Puanların ve rozetlerin hesabında kalmaya devam eder.") },
+            text = { Text("Takma Adın ve Puanların Sıralamalardan Kaldırılır. Puanların ve Rozetlerin Hesabında Kalmaya Devam Eder.") },
             confirmButton = { TextButton(onClick = { Topluluk.ayril(uid, depo); ayrilSor = false }) { Text("Ayrıl", color = YanlisKirmizi) } },
             dismissButton = { TextButton(onClick = { ayrilSor = false }) { Text("Vazgeç") } },
         )
@@ -315,12 +315,12 @@ private fun KatilEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String, 
         Text("🏆", fontSize = 40.sp)
         Text("Sıralamalara Katıl", style = MaterialTheme.typography.headlineSmall)
         Text(
-            "Haftalık ligde yarış, ilk 3'e girersen ${Oyun.HAFTALIK_ODUL_GUN} gün Premium kazan. Sıralamalarda gerçek adın değil, seçtiğin takma ad görünür.",
+            "Haftalık Ligde Yarış, İlk 3'e Girersen ${Oyun.HAFTALIK_ODUL_GUN} Gün Premium Kazan. Sıralamalarda Gerçek Adın Değil, Seçtiğin Takma Ad Görünür.",
             style = MaterialTheme.typography.bodyLarge,
         )
         if (depo.kullanici?.adCakisma == true) {
             Text(
-                "\"${depo.kullanici?.takmaAd}\" adı başka bir kullanıcıya ait. Sıralamada görünmek için kendine yeni bir takma ad seç.",
+                "\"${depo.kullanici?.takmaAd}\" Adı Başka Bir Kullanıcıya Ait. Sıralamada Görünmek İçin Kendine Yeni Bir Takma Ad Seç.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = YanlisKirmizi,
             )
@@ -330,7 +330,7 @@ private fun KatilEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String, 
             onValueChange = { ad = it.take(20); hata = null },
             supportingText = {
                 Text(
-                    hata ?: "2-20 karakter; harf, rakam, boşluk, nokta, tire ve alt çizgi. Her ad tek kişiye ait olur.",
+                    hata ?: "2-20 Karakter; Harf, Rakam, Boşluk, Nokta, Tire ve Alt Çizgi. Her Ad Tek Kişiye Ait Olur.",
                     color = if (hata != null) YanlisKirmizi else MetinSoluk,
                 )
             },
@@ -346,7 +346,7 @@ private fun KatilEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String, 
         }
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickableIf(true) { duvar = !duvar }) {
             Checkbox(checked = duvar, onCheckedChange = { duvar = it })
-            Text("Sınavı Geçtiğimde \"Geçenler Duvarı\"nda da Görüneyim (İsteğe Bağlı).", style = MaterialTheme.typography.bodyMedium)
+            Text("Sınavı Geçtiğimde \"Geçenler Duvarı\"Nda da Görüneyim (İsteğe Bağlı).", style = MaterialTheme.typography.bodyMedium)
         }
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickableIf(true) { akis = !akis }) {
             Checkbox(checked = akis, onCheckedChange = { akis = it })
@@ -361,7 +361,7 @@ private fun KatilEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String, 
                     } catch (e: Topluluk.AdAlinmis) {
                         hata = e.message
                     } catch (e: Exception) {
-                        hata = "Bağlantı kurulamadı. İnternetini kontrol edip tekrar dene."
+                        hata = "Bağlantı Kurulamadı. İnternetini Kontrol Edip Tekrar Dene."
                     }
                     bekle = false
                 }
@@ -370,7 +370,7 @@ private fun KatilEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String, 
             modifier = Modifier.fillMaxWidth().height(52.dp),
         ) { Text("Katıl") }
         Text(
-            "İstediğin an ayrılabilirsin; ayrılınca sıralama kaydın silinir. Ayrıntılar aydınlatma metninde.",
+            "İstediğin An Ayrılabilirsin; Ayrılınca Sıralama Kaydın Silinir. Ayrıntılar Aydınlatma Metninde.",
             style = MaterialTheme.typography.bodyMedium,
             color = MetinSoluk,
         )
@@ -422,17 +422,17 @@ private fun DavetBolumu(depo: KullaniciDeposu, hesap: Hesap, durum: Topluluk.Dav
                 colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = Altin, contentColor = YesilKoyu),
             ) { Text("Arkadaşlarınla Paylaş") }
             Bosluk(6)
-            Text("Paylaşım başına +${Oyun.XP_PAYLASIM} XP (günde ${Oyun.PAYLASIM_GUNLUK_SINIR} kez)", style = MaterialTheme.typography.bodyMedium, fontSize = 12.sp, color = KremSoluk)
+            Text("Paylaşım Başına +${Oyun.XP_PAYLASIM} XP (Günde ${Oyun.PAYLASIM_GUNLUK_SINIR} Kez)", style = MaterialTheme.typography.bodyMedium, fontSize = 12.sp, color = KremSoluk)
         }
 
         KartKutu {
             Text("Davetlerin", style = MaterialTheme.typography.titleMedium)
             Bosluk(6)
             BilgiSatiri("Kodunla Katılan", "${durum?.toplam ?: 0}")
-            BilgiSatiri("Sayılan (en az ${Oyun.DAVET_GECERLI_SORU} soru çözen)", "$gecerli")
+            BilgiSatiri("Sayılan (En Az ${Oyun.DAVET_GECERLI_SORU} Soru Çözen)", "$gecerli")
             Bosluk(6)
             Text(
-                "Arkadaşın Google hesabıyla kayıt olup kodunu girer ve ${Oyun.DAVET_GECERLI_SORU} soru çözerse davetin sayılır. Her sayılan davet +${Oyun.XP_DAVET_EDEN} XP.",
+                "Arkadaşın Google Hesabıyla Kayıt Olup Kodunu Girer ve ${Oyun.DAVET_GECERLI_SORU} Soru Çözerse Davetin Sayılır. Her Sayılan Davet +${Oyun.XP_DAVET_EDEN} XP.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MetinSoluk,
             )
@@ -456,7 +456,7 @@ private fun DavetBolumu(depo: KullaniciDeposu, hesap: Hesap, durum: Topluluk.Dav
             KartKutu {
                 Text("Davet Kodun Var Mı?", style = MaterialTheme.typography.titleMedium)
                 Bosluk(4)
-                Text("Seni davet edenin kodunu gir, sen de +${Oyun.XP_DAVET_EDILEN} XP hoş geldin bonusu kazan.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                Text("Seni Davet Edenin Kodunu Gir, Sen de +${Oyun.XP_DAVET_EDILEN} XP Hoş Geldin Bonusu Kazan.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 Bosluk(8)
                 OutlinedTextField(
                     value = girilen,
@@ -475,7 +475,7 @@ private fun DavetBolumu(depo: KullaniciDeposu, hesap: Hesap, durum: Topluluk.Dav
                             } catch (e: Topluluk.DavetHatasi) {
                                 e.message
                             } catch (e: Exception) {
-                                "Kod kullanılamadı. İnternet bağlantını kontrol edip tekrar dene."
+                                "Kod Kullanılamadı. İnternet Bağlantını Kontrol Edip Tekrar Dene."
                             }
                             bekliyor = false
                         }
@@ -487,7 +487,7 @@ private fun DavetBolumu(depo: KullaniciDeposu, hesap: Hesap, durum: Topluluk.Dav
             }
         }
         Text(
-            "Puanlar ve ödüller uygulama içi kullanım içindir; paraya çevrilemez ve devredilemez. Hileli kullanım tespit edilirse ödüller geri alınabilir.",
+            "Puanlar ve Ödüller Uygulama İçi Kullanım İçindir; Paraya Çevrilemez ve Devredilemez. Hileli Kullanım Tespit Edilirse Ödüller Geri Alınabilir.",
             style = MaterialTheme.typography.bodyMedium,
             fontSize = 12.sp,
             color = MetinSoluk,

@@ -46,7 +46,7 @@ fun GorusEkrani(geri: () -> Unit) {
             if (gonderildi) {
                 Text("Teşekkürler!", style = MaterialTheme.typography.headlineSmall)
                 Text(
-                    "Görüşün bize ulaştı. Her yorumu okuyup uygulamayı ve soruları buna göre geliştiriyoruz.",
+                    "Görüşün Bize Ulaştı. Her Yorumu Okuyup Uygulamayı ve Soruları Buna Göre Geliştiriyoruz.",
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Bosluk(12)
@@ -54,7 +54,7 @@ fun GorusEkrani(geri: () -> Unit) {
                 return@Column
             }
             Text(
-                "Uygulamayı nasıl buldun? Eksik gördüğün bir konu, beğenmediğin bir soru tarzı ya da istediğin bir özellik varsa yaz.",
+                "Uygulamayı Nasıl Buldun? Eksik Gördüğün Bir Konu, Beğenmediğin Bir Soru Tarzı ya da İstediğin Bir Özellik Varsa Yaz.",
                 style = MaterialTheme.typography.bodyLarge,
             )
             Etiket("Puanın")

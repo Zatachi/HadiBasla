@@ -49,7 +49,7 @@ object Hatirlatma {
 
     fun kanalOlustur(baglam: Context) {
         val kanal = NotificationChannel(KANAL, "Günlük hatırlatma", NotificationManager.IMPORTANCE_DEFAULT).apply {
-            description = "Her gün seçtiğin saatte çalışma hatırlatması"
+            description = "Her Gün Seçtiğin Saatte Çalışma Hatırlatması"
         }
         baglam.getSystemService(NotificationManager::class.java).createNotificationChannel(kanal)
     }
@@ -66,13 +66,13 @@ class HatirlatmaIsi(baglam: Context, parametreler: WorkerParameters) : Worker(ba
             PendingIntent.FLAG_IMMUTABLE,
         )
         val mesajlar = listOf(
-            "Bugünkü hedefin seni bekliyor. Birkaç soruyla seriyi koru.",
-            "Sınava bir gün daha yaklaştın. 10 dakikalık bir tekrar yapalım mı?",
-            "Yanlışlarını tekrar çözmek için iyi bir zaman.",
+            "Bugünkü Hedefin Seni Bekliyor. Birkaç Soruyla Seriyi Koru.",
+            "Sınava Bir Gün Daha Yaklaştın. 10 Dakikalık Bir Tekrar Yapalım mı?",
+            "Yanlışlarını Tekrar Çözmek İçin İyi Bir Zaman.",
         )
         val bildirim = NotificationCompat.Builder(b, Hatirlatma.KANAL)
             .setSmallIcon(R.drawable.ic_bildirim)
-            .setContentTitle("Çalışma zamanı")
+            .setContentTitle("Çalışma Zamanı")
             .setContentText(mesajlar[(System.currentTimeMillis() / 86_400_000L % mesajlar.size).toInt()])
             .setContentIntent(ac)
             .setAutoCancel(true)

@@ -299,7 +299,7 @@ fun HedefEkrani(
         AlertDialog(
             onDismissRequest = { silSor = false },
             title = { Text("Hedefi Kaldır") },
-            text = { Text("Bu dersin sınav tarihi ve geri sayımı kaldırılır. Çözdüğün sorular silinmez.") },
+            text = { Text("Bu Dersin Sınav Tarihi ve Geri Sayımı Kaldırılır. Çözdüğün Sorular Silinmez.") },
             confirmButton = { TextButton(onClick = { depo.hedefSil(mevcut.ders); silSor = false; geri() }) { Text("Kaldır", color = YanlisKirmizi) } },
             dismissButton = { TextButton(onClick = { silSor = false }) { Text("Vazgeç") } },
         )
@@ -313,7 +313,7 @@ fun TarihsizPenceresi(kapat: () -> Unit, devam: () -> Unit) {
         onDismissRequest = kapat,
         title = { Text("Sınav Tarihi Seçmedin") },
         text = {
-            Text("Tarih seçersen kaç gün kaldığını görür, günlük hedefini sınavına göre ayarlarız. Tarihi daha sonra da ekleyebilirsin. Yine de devam etmek istiyor musun?")
+            Text("Tarih Seçersen Kaç Gün Kaldığını Görür, Günlük Hedefini Sınavına Göre Ayarlarız. Tarihi Daha Sonra da Ekleyebilirsin. Yine de Devam Etmek İstiyor musun?")
         },
         confirmButton = { TextButton(onClick = devam) { Text("Devam Et") } },
         dismissButton = { TextButton(onClick = kapat) { Text("Tarih Seç") } },

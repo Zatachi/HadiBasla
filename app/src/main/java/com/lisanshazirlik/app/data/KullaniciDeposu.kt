@@ -290,7 +290,7 @@ class KullaniciDeposu(val uid: String) {
         if (bugunCozulen + 1 >= gunlukHedef && k?.hedefOdulGunu != bugunKey) {
             ek["hedefOdulGunu"] = bugunKey
             xp += Oyun.XP_GUNLUK_HEDEF
-            kutlama = "Bugünkü hedefini tamamladın! +${Oyun.XP_GUNLUK_HEDEF} XP"
+            kutlama = "Bugünkü Hedefini Tamamladın! +${Oyun.XP_GUNLUK_HEDEF} XP"
         }
         xpEkle(xp, ek)
     }
@@ -326,7 +326,7 @@ class KullaniciDeposu(val uid: String) {
         }
         if (yeniSayi == GUNLUK_SHORT) {
             xp += 30
-            kutlama = "Bugün $GUNLUK_SHORT kısa video izledin! +30 XP"
+            kutlama = "Bugün $GUNLUK_SHORT Kısa Video İzledin! +30 XP"
         }
         xpEkle(xp, ek)
     }
@@ -369,7 +369,7 @@ class KullaniciDeposu(val uid: String) {
         val tum = Paket.adimlar(banka, ders).map { it.id }.toSet()
         if (tum.isNotEmpty() && tum.all { it in once || it == adimId }) {
             xpEkle(Paket.XP_PAKET, mapOf("rozetler" to mapOf("paket_tamam" to bugunKey)))
-            kutlama = "🎓 ${banka.ders(ders)?.kisaAd ?: ders} paketini bitirdin! +${Paket.XP_PAKET} XP"
+            kutlama = "🎓 ${banka.ders(ders)?.kisaAd ?: ders} Paketini Bitirdin! +${Paket.XP_PAKET} XP"
         }
     }
 
@@ -391,7 +391,7 @@ class KullaniciDeposu(val uid: String) {
         // Gerçek sınav sonucunu ilk kez paylaşana teşekkür puanı: bu veriler uygulamanın başarısını ölçer.
         if (ders !in sonuclar) {
             xpEkle(Oyun.XP_SONUC)
-            kutlama = "Sonucunu paylaştığın için teşekkürler! +${Oyun.XP_SONUC} XP"
+            kutlama = "Sonucunu Paylaştığın İçin Teşekkürler! +${Oyun.XP_SONUC} XP"
         }
         kok.collection("sonuclar").document(ders).set(
             mapOf("puan" to puan.coerceIn(0, 100), "tarih" to tarih?.toString(), "zaman" to FieldValue.serverTimestamp())

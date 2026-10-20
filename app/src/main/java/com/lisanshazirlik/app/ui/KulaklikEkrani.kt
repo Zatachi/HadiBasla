@@ -139,7 +139,7 @@ fun KulaklikEkrani(banka: SoruBankasi, depo: KullaniciDeposu, cevapla: (Soru, Bo
     LaunchedEffect(secim) {
         val p = parca as? Parca.Sesli ?: return@LaunchedEffect
         val s = secim ?: return@LaunchedEffect
-        oku(if (s == p.soru.dogru) "Doğru!" else "Yanlış. Doğru cevap ${HARFLER[p.soru.dogru]}: ${p.soru.secenekler[p.soru.dogru]}")
+        oku(if (s == p.soru.dogru) "Doğru!" else "Yanlış. Doğru Cevap ${HARFLER[p.soru.dogru]}: ${p.soru.secenekler[p.soru.dogru]}")
         delay(1200)
         while (tts?.isSpeaking == true) delay(250)
         delay(600)

@@ -354,7 +354,7 @@ private fun HedefKarti(h: Hedef, banka: SoruBankasi, cozulen: Set<String>, y: Yo
         }
         if (gun < 0) {
             Bosluk(6)
-            Text("Sınav tarihi geçti. Geçtiysen \"Düzenle\"den işaretle, yeni tarihin varsa güncelle.", style = MaterialTheme.typography.bodyMedium, color = YanlisKirmizi)
+            Text("Sınav Tarihi Geçti. Geçtiysen \"Düzenle\"Den İşaretle, Yeni Tarihin Varsa Güncelle.", style = MaterialTheme.typography.bodyMedium, color = YanlisKirmizi)
         }
     }
 }
@@ -501,7 +501,7 @@ private fun SeviyeSecimi(banka: SoruBankasi, depo: KullaniciDeposu, ic: PaddingV
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { yakinda = null },
             title = { Text(ad) },
-            text = { Text("Bu lisansın içerikleri hazırlanıyor. Hazır olunca burada açılacak.") },
+            text = { Text("Bu Lisansın İçerikleri Hazırlanıyor. Hazır Olunca Burada Açılacak.") },
             confirmButton = { androidx.compose.material3.TextButton(onClick = { yakinda = null }) { Text("Tamam") } },
         )
     }
@@ -574,7 +574,7 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
         LisansliBaslik("Deneme", banka.lisans(depo.kullanici?.lisans)?.kisaAd) { y.lisans() }
         if (dersler.none { banka.dersSorulari(it.kod).isNotEmpty() }) {
             Text(
-                "🔜 Bu lisansın denemeleri hazırlanıyor. Dersleri aşağıda görebilirsin.",
+                "🔜 Bu Lisansın Denemeleri Hazırlanıyor. Dersleri Aşağıda Görebilirsin.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MetinSoluk,
                 modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp),
@@ -597,7 +597,7 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
                     }
                     Bosluk(8)
                     Text(
-                        "📌  Her ders ayrı bir sınav. Denemeler de öyle.",
+                        "📌  Her Ders Ayrı Bir Sınav. Denemeler de Öyle.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MetinSoluk,
                         modifier = Modifier.padding(start = 4.dp),
@@ -628,7 +628,7 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
                         Text(d.kisaAd, style = MaterialTheme.typography.titleMedium, maxLines = 2)
                         Bosluk(2)
                         Text(
-                            "📋 $DENEME_ADEDI deneme · her biri 25 soru, 45 dk",
+                            "📋 $DENEME_ADEDI Deneme · Her Biri 25 Soru, 45 dk",
                             style = MaterialTheme.typography.bodyMedium,
                             fontSize = 12.sp,
                             color = MetinSoluk,
@@ -650,7 +650,7 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
             }
             item { Etiket("Geçmiş Denemelerin", Modifier.padding(start = 4.dp, top = 8.dp)) }
             if (denemeler.isEmpty()) {
-                item { Text("Henüz deneme çözmedin. İlk denemenden sonra sonuçların burada listelenir.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk, modifier = Modifier.padding(horizontal = 4.dp)) }
+                item { Text("Henüz Deneme Çözmedin. İlk Denemenden Sonra Sonuçların Burada Listelenir.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk, modifier = Modifier.padding(horizontal = 4.dp)) }
             }
             items(denemeler, key = { it.id }) { dk ->
                 val tarih = java.time.Instant.ofEpochMilli(dk.zaman).atZone(java.time.ZoneId.systemDefault()).toLocalDate()
@@ -698,7 +698,7 @@ fun LisansliBaslik(baslik: String, lisansAd: String?, tikla: () -> Unit) {
     ) {
         Text(baslik, fontFamily = Baslik, fontSize = 26.sp, color = Krem, modifier = Modifier.weight(1f))
         Text(
-            "${lisansAd ?: "Lisans seç"}  ▾",
+            "${lisansAd ?: "Lisans Seç"}  ▾",
             style = MaterialTheme.typography.labelLarge,
             color = Krem,
             maxLines = 1,

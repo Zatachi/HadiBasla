@@ -133,7 +133,7 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
                 OutlinedButton(
                     onClick = {
                         val s = Duello.sorulariSec(banka, dersler)
-                        if (s.isEmpty()) hata = "Bu dersin soruları henüz hazır değil. Eğitim'den başka bir ders seçebilirsin." else durum = DuelloDurumu.Oyun(s, null)
+                        if (s.isEmpty()) hata = "Bu Dersin Soruları Henüz Hazır Değil. Eğitim'den Başka Bir Ders Seçebilirsin." else durum = DuelloDurumu.Oyun(s, null)
                     },
                     modifier = Modifier.fillMaxWidth().height(48.dp),
                 ) { Text("📤 Kodlu Düello Başlat") }
@@ -158,7 +158,7 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
                                 try {
                                     val k = Duello.katilKontrol(kod, uid)
                                     val s = k.sorular.mapNotNull { banka.bul(it) }
-                                    if (s.isEmpty()) throw Duello.Hata("Bu düellonun soruları bulunamadı. Uygulamayı güncelle.")
+                                    if (s.isEmpty()) throw Duello.Hata("Bu Düellonun Soruları Bulunamadı. Uygulamayı Güncelle.")
                                     durum = DuelloDurumu.Oyun(s, k)
                                 } catch (e: Duello.Hata) {
                                     hata = e.message
@@ -179,7 +179,7 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
             val l = liste
             when {
                 l == null -> CircularProgressIndicator(color = Yesil, modifier = Modifier.align(Alignment.CenterHorizontally))
-                l.isEmpty() -> Text("Henüz düellon yok. İlkini başlat!", color = MetinSoluk)
+                l.isEmpty() -> Text("Henüz Düellon Yok. İlkini Başlat!", color = MetinSoluk)
                 else -> l.forEach { k -> DuelloSatiri(k, uid.orEmpty()) { durum = DuelloDurumu.Sonuc(k) } }
             }
         }
