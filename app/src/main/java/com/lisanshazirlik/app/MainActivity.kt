@@ -75,6 +75,7 @@ private sealed interface Ekran {
     data object Shorts : Ekran
     data object Kulaklik : Ekran
     data object Duello : Ekran
+    data object GununBes : Ekran
     data class Hedef(val ders: String?) : Ekran
     data object Gorus : Ekran
     data object Aydinlatma : Ekran
@@ -208,17 +209,14 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
         sonuclar = { git(Ekran.Sonuclar) },
         lisans = { git(Ekran.Lisans) },
         hatirlatma = { git(Ekran.Hatirlatma) },
-        paketAc = { git(Ekran.Paket(it)) },
+        paketAc = { com.lisanshazirlik.app.data.Odak.sec(depo, it); git(Ekran.Paket(it)) },
         paketAdimAc = { d, a -> git(Ekran.PaketAdim(d, a)) },
         sekmeAc = { yigin = emptyList(); basariIlk = com.lisanshazirlik.app.ui.BasariBolumu.BEN; sekme = it },
         basariAc = { yigin = emptyList(); basariIlk = it; sekme = Sekme.BASARI },
         shorts = { git(Ekran.Shorts) },
         kulaklik = { git(Ekran.Kulaklik) },
         duello = { git(Ekran.Duello) },
-        gunun5 = {
-            val dersler = banka.lisansDersleri(depo.kullanici?.lisans).map { it.kod }
-            git(Ekran.Coz("Günün 5 dakikası", com.lisanshazirlik.app.data.Tekrar.oturum(banka, depo, dersler), "tekrar"))
-        },
+        gunun5 = { git(Ekran.GununBes) },
     )
 
     BackHandler(enabled = yigin.isNotEmpty() || sekme != Sekme.ANA) {
@@ -288,6 +286,7 @@ private fun AltEkran(
                 geri = geri,
             )
             Ekran.Shorts -> com.lisanshazirlik.app.ui.ShortsEkrani(banka, depo, cevapla, konuAc = { git(Ekran.Konu(it)) }, geri = geri)
+            Ekran.GununBes -> com.lisanshazirlik.app.ui.GununBesEkrani(banka, depo, basla = { b, s -> git(Ekran.Coz(b, s, "tekrar")) }, geri = geri)
             Ekran.Kulaklik -> com.lisanshazirlik.app.ui.KulaklikEkrani(banka, depo, cevapla, geri = geri)
             Ekran.Duello -> com.lisanshazirlik.app.ui.DuelloEkrani(banka, depo, hesap.uid, cevapla, geri = geri)
             is Ekran.DenemeListesi -> com.lisanshazirlik.app.ui.DenemeListesiEkrani(

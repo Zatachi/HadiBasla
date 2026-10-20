@@ -105,15 +105,16 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
 
         // Öne çıkan iki büyük kutu: Shorts ve Günün 5 dakikası
         item {
-            val bekleyen = com.lisanshazirlik.app.data.Tekrar.bekleyenler(banka, depo, dersler.map { it.kod }).size
+            val odak = com.lisanshazirlik.app.data.Odak.ders(banka, depo)
+            val bekleyen = com.lisanshazirlik.app.data.Tekrar.bekleyenler(banka, depo, listOfNotNull(odak?.kod)).size
             Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 OneCikan(
-                    Modifier.weight(1f), "▶", "Shorts", "Kısa videolar ve hızlı sorular",
+                    Modifier.weight(1f), "▶", "Shorts", odak?.let { "${it.kod} · kısa videolar ve sorular" } ?: "Kısa videolar ve hızlı sorular",
                     androidx.compose.ui.graphics.Color(0xFF7A2E3A), y.shorts,
                 )
                 OneCikan(
                     Modifier.weight(1f), "🔁", "Günün 5 dakikası",
-                    if (bekleyen > 0) "$bekleyen soru tekrar zamanında" else "Akıllı tekrar turu",
+                    if (bekleyen > 0) "${odak?.kod.orEmpty()} · $bekleyen soru tekrar zamanında" else "${odak?.kod.orEmpty()} · akıllı tekrar turu",
                     YesilKoyu, y.gunun5,
                 )
             }

@@ -29,7 +29,11 @@ object Tekrar {
         val secilen = LinkedHashSet<Soru>()
         secilen += bekleyenler(banka, depo, dersler)
         if (secilen.size < OTURUM) secilen += depo.yanlislar().mapNotNull { banka.bul(it) }.filter { it.ders in dersler && it.id !in depo.tekrar }
-        if (secilen.size < OTURUM) secilen += banka.sorular.filter { it.ders in dersler && it.id !in depo.ilerleme }.shuffled()
+        if (secilen.size < OTURUM) {
+            // Yeni sorularda önce üzerinde çalıştığın konular (en az bir soru çözdüğün ya da son açtığın konu).
+            val calisilan = depo.ilerleme.keys.mapNotNull { banka.bul(it)?.konu }.toSet() + listOfNotNull(depo.kullanici?.sonKonu)
+            secilen += banka.sorular.filter { it.ders in dersler && it.id !in depo.ilerleme }.shuffled().sortedByDescending { it.konu in calisilan }
+        }
         return secilen.take(OTURUM)
     }
 }

@@ -49,7 +49,7 @@ object Duello {
 
     fun sorulariSec(banka: SoruBankasi, dersler: Collection<String>): List<Soru> {
         val havuz = banka.sorular.filter { it.ders in dersler }
-        return (havuz.ifEmpty { banka.sorular }).shuffled().take(SORU_SAYISI)
+        return havuz.shuffled().take(SORU_SAYISI)
     }
 
     /** Görünen ad: takma ad varsa o, yoksa adın ilk kelimesi. */

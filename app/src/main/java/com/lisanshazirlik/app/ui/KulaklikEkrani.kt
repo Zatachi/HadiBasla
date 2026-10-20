@@ -70,7 +70,8 @@ private val KOYU = Color(0xFF0F1F18)
 @Composable
 fun KulaklikEkrani(banka: SoruBankasi, depo: KullaniciDeposu, cevapla: (Soru, Boolean) -> Unit, geri: () -> Unit) {
     val ctx = LocalContext.current
-    val dersler = banka.lisansDersleri(depo.kullanici?.lisans).map { it.kod }
+    val odak = com.lisanshazirlik.app.data.Odak.ders(banka, depo)
+    val dersler = listOfNotNull(odak?.kod)
     var liste by remember { mutableStateOf(kulaklikListesi(banka, dersler)) }
     var sira by remember { mutableIntStateOf(0) }
     var dogruSayi by remember { mutableIntStateOf(0) }
@@ -150,7 +151,10 @@ fun KulaklikEkrani(banka: SoruBankasi, depo: KullaniciDeposu, cevapla: (Soru, Bo
     ) {
         Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             Text("✕", color = Krem, fontSize = 22.sp, modifier = Modifier.clip(CircleShape).clickable(onClick = geri).padding(10.dp))
-            Text("🎧 Kulaklık modu", color = Krem, fontFamily = Baslik, fontSize = 22.sp, modifier = Modifier.weight(1f).padding(start = 4.dp))
+            Column(Modifier.weight(1f).padding(start = 4.dp)) {
+                Text("🎧 Kulaklık modu", color = Krem, fontFamily = Baslik, fontSize = 22.sp)
+                Text(odak?.kisaAd.orEmpty(), color = KremSoluk, fontSize = 12.sp)
+            }
             if (liste.isNotEmpty()) Text("${minOf(sira + 1, liste.size)}/${liste.size}", color = KremSoluk, fontSize = 13.sp)
         }
 

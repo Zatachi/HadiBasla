@@ -60,11 +60,13 @@ sealed interface AkisOgesi {
  * Akış: her kısa videonun ardından aynı konudan bir bilgi kartı ve bir soru; sonra lisansın
  * diğer soruları ve kartları karışık. Video yoksa sadece soru ve kartlarla çalışır.
  */
-fun akisOlustur(banka: SoruBankasi, dersler: Collection<String>): List<AkisOgesi> {
+fun akisOlustur(banka: SoruBankasi, depo: KullaniciDeposu, dersler: Collection<String>): List<AkisOgesi> {
     val liste = mutableListOf<AkisOgesi>()
+    // Kaldığın konunun videoları önce gelsin.
+    val siradakiKonu = dersler.firstNotNullOfOrNull { com.lisanshazirlik.app.data.Paket.siradaki(banka, depo, it)?.konu?.id }
     val kullanilanSoru = mutableSetOf<String>()
     val kullanilanKart = mutableSetOf<String>()
-    banka.kisalar.filter { it.ders in dersler }.forEachIndexed { i, k ->
+    banka.kisalar.filter { it.ders in dersler }.sortedByDescending { it.konu == siradakiKonu }.forEachIndexed { i, k ->
         liste += AkisOgesi.Video(k)
         val konu = banka.konu(k.konu)?.second
         konu?.kartlar?.getOrNull(i % maxOf(1, konu.kartlar.size))?.let { kart ->
@@ -97,8 +99,8 @@ fun ShortsEkrani(
     konuAc: (String) -> Unit,
     geri: () -> Unit,
 ) {
-    val dersler = banka.lisansDersleri(depo.kullanici?.lisans).map { it.kod }
-    val akis = remember(dersler) { akisOlustur(banka, dersler) }
+    val odak = com.lisanshazirlik.app.data.Odak.ders(banka, depo)?.kod
+    val akis = remember(odak) { akisOlustur(banka, depo, listOfNotNull(odak)) }
     val pager = rememberPagerState { akis.size }
 
     Box(Modifier.fillMaxSize().background(Color(0xFF0F1F18))) {
@@ -120,8 +122,9 @@ fun ShortsEkrani(
             }
         }
         // Üst çubuk
+        Column(Modifier.fillMaxWidth().background(Color(0x66000000)).windowInsetsPadding(WindowInsets.statusBars)) {
         Row(
-            Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.statusBars).padding(horizontal = 12.dp, vertical = 8.dp),
+            Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
@@ -132,6 +135,9 @@ fun ShortsEkrani(
             )
             Text("Shorts", color = Krem, fontFamily = Baslik, fontSize = 22.sp, modifier = Modifier.weight(1f).padding(start = 4.dp))
             if (akis.isNotEmpty()) Text("${pager.currentPage + 1}/${akis.size}", color = KremSoluk, fontSize = 13.sp)
+        }
+        OdakSecici(banka, depo, odak, koyu = true)
+        Bosluk(8)
         }
     }
 }
@@ -212,7 +218,7 @@ private fun AkisSorusu(soru: Soru, dersAd: String, cevapla: (Soru, Boolean) -> U
             .fillMaxSize()
             .background(Zemin)
             .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(top = 56.dp)
+            .padding(top = 104.dp)
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),

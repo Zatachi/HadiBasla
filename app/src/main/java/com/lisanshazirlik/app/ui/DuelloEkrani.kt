@@ -62,7 +62,8 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
     var liste by remember { mutableStateOf<List<DuelloKaydi>?>(null) }
     val kapsam = rememberCoroutineScope()
     val ad = Duello.gorunenAd(depo.kullanici)
-    val dersler = banka.lisansDersleri(depo.kullanici?.lisans).map { it.kod }
+    val odak = com.lisanshazirlik.app.data.Odak.ders(banka, depo)
+    val dersler = listOfNotNull(odak?.kod)
 
     LaunchedEffect(durum) {
         if (durum == DuelloDurumu.Ana && uid != null) liste = runCatching { Duello.benimkiler(uid) }.getOrNull()
@@ -113,11 +114,13 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                Bosluk(14)
+                Bosluk(10)
+                Text("Ders: ${odak?.kisaAd ?: "-"}", color = Altin, style = MaterialTheme.typography.labelLarge)
+                Bosluk(8)
                 Button(
                     onClick = {
                         val s = Duello.sorulariSec(banka, dersler)
-                        if (s.isEmpty()) hata = "Bu lisans için henüz soru yok." else durum = DuelloDurumu.Oyun(s, null)
+                        if (s.isEmpty()) hata = "Bu dersin soruları henüz hazır değil. Eğitim'den başka bir ders seçebilirsin." else durum = DuelloDurumu.Oyun(s, null)
                     },
                     modifier = Modifier.fillMaxWidth().height(52.dp),
                 ) { Text("⚔️ Yeni düello başlat") }
