@@ -206,7 +206,7 @@ fun DenemeEkrani(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(Modifier.weight(1f)) { SoruMetni(soru, "Soru ${sira + 1} · ${banka.ders(soru.ders)?.kisaAd ?: soru.ders}") }
+                        Box(Modifier.weight(1f)) { SoruMetni(soru, "Soru ${sira + 1} · ${banka.ders(soru.ders)?.kisaAd ?: soru.ders}", dersRengi(soru.ders)) }
                     }
                     val isaretMi = sira in isaretli
                     Text(

@@ -392,13 +392,9 @@ private fun AltEkran(
                     val konu = a.konu
                     when (a.tur) {
                         com.lisanshazirlik.app.data.Paket.Tur.VIDEO, com.lisanshazirlik.app.data.Paket.Tur.OZET -> {
-                            // Önce soru, sonra anlatım: adım ilk kez açılıyorsa 3 ısınma sorusu.
-                            var isinma by remember(a.id) { mutableStateOf(a.id !in com.lisanshazirlik.app.data.Paket.tamamlananlar(depo, ust.ders)) }
-                            val isinmaSorulari = remember(a.id) { banka.konuSorulari(konu!!.id).shuffled().take(3) }
-                            if (isinma && isinmaSorulari.isNotEmpty()) {
-                                com.lisanshazirlik.app.ui.IsinmaEkrani(konu!!.ad, isinmaSorulari, geri = geri) { isinma = false }
-                            } else if (a.tur == com.lisanshazirlik.app.data.Paket.Tur.VIDEO) {
-                                VideoEkrani(konu!!.ad, konu.video, geri = geri, bitti = { tamamla(null) }, sorular = konu.videoSorular.mapNotNull { vs -> banka.bul(vs.soru)?.let { vs to it } }, cevapla = cevapla)
+                            // Anlatım kesintisiz: önce video, araya soru girmez.
+                            if (a.tur == com.lisanshazirlik.app.data.Paket.Tur.VIDEO) {
+                                VideoEkrani(konu!!.ad, konu.video, geri = geri, bitti = { tamamla(null) })
                             } else {
                                 OzetEkrani(dersBilgi, konu!!, coz = null, kartlar = null, geri = geri, bitti = { tamamla(null) })
                             }

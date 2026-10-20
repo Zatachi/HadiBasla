@@ -27,77 +27,182 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.width
 import com.lisanshazirlik.app.data.GeriBildirim
 import com.lisanshazirlik.app.data.Soru
 
 enum class SikDurumu { NORMAL, SECILI, DOGRU, YANLIS, SOLUK }
 
+/** Soru kartı: üstte ders/konu etiketi, ortada büyük ve okunaklı soru metni. */
 @Composable
-fun SoruMetni(soru: Soru, ust: String) {
-    Etiket(ust)
-    Bosluk(8)
-    Text(soru.metin, style = MaterialTheme.typography.bodyLarge)
+fun SoruMetni(soru: Soru, ust: String, renk: Color = Yesil) {
+    val sekil = RoundedCornerShape(20.dp)
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .shadow(3.dp, sekil, ambientColor = renk.copy(alpha = 0.2f), spotColor = renk.copy(alpha = 0.25f))
+            .clip(sekil)
+            .background(Kart),
+    ) {
+        Box(Modifier.fillMaxWidth().height(5.dp).background(renk))
+        Column(Modifier.padding(start = 18.dp, end = 18.dp, top = 14.dp, bottom = 18.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    ust.uppercase(java.util.Locale.forLanguageTag("tr")),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = renk,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.clip(RoundedCornerShape(50)).background(renk.copy(alpha = 0.1f)).padding(horizontal = 10.dp, vertical = 4.dp),
+                )
+                if (soru.senaryo) {
+                    Box(Modifier.width(6.dp))
+                    Text(
+                        "📋 VAKA",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color(0xFF7A5A12),
+                        modifier = Modifier.clip(RoundedCornerShape(50)).background(Color(0xFFFBEFD7)).padding(horizontal = 10.dp, vertical = 4.dp),
+                    )
+                }
+            }
+            Bosluk(12)
+            Text(soru.metin, style = MaterialTheme.typography.bodyLarge, fontSize = 17.sp, lineHeight = 26.sp, color = Metin)
+        }
+    }
 }
 
+/** Şık: harf rozeti, metin ve cevaptan sonra sağda ✓ / ✕ işareti. Renk değişimleri yumuşak geçişli. */
 @Composable
 fun Sik(harf: String, metin: String, durum: SikDurumu, tikla: (() -> Unit)?) {
     val (zemin, kenar, rozet, rozetYazi) = when (durum) {
-        SikDurumu.NORMAL -> Dortlu(Kart, Cizgi, Zemin, Metin)
+        SikDurumu.NORMAL -> Dortlu(Kart, Cizgi, YesilAcik, Yesil)
         SikDurumu.SECILI -> Dortlu(YesilAcik, Yesil, Yesil, Krem)
         SikDurumu.DOGRU -> Dortlu(DogruZemin, DogruYesil, DogruYesil, Color.White)
         SikDurumu.YANLIS -> Dortlu(YanlisZemin, YanlisKirmizi, YanlisKirmizi, Color.White)
-        SikDurumu.SOLUK -> Dortlu(Kart, Cizgi, Zemin, MetinSoluk)
+        SikDurumu.SOLUK -> Dortlu(Kart.copy(alpha = 0.6f), Cizgi, Zemin, MetinSoluk)
     }
-    val sekil = RoundedCornerShape(12.dp)
+    val zeminA by animateColorAsState(zemin, tween(250), label = "zemin")
+    val kenarA by animateColorAsState(kenar, tween(250), label = "kenar")
+    val rozetA by animateColorAsState(rozet, tween(250), label = "rozet")
+    val olcek by animateFloatAsState(if (durum == SikDurumu.DOGRU || durum == SikDurumu.SECILI) 1.02f else 1f, tween(200), label = "olcek")
+    val sekil = RoundedCornerShape(16.dp)
     Row(
         Modifier
             .fillMaxWidth()
+            .graphicsLayer { scaleX = olcek; scaleY = olcek }
+            .then(if (durum == SikDurumu.NORMAL) Modifier.shadow(1.5.dp, sekil) else Modifier)
             .clip(sekil)
-            .background(zemin)
-            .border(if (durum == SikDurumu.NORMAL || durum == SikDurumu.SOLUK) 1.dp else 2.dp, kenar, sekil)
+            .background(zeminA)
+            .border(if (durum == SikDurumu.NORMAL || durum == SikDurumu.SOLUK) 1.dp else 2.dp, kenarA, sekil)
             .then(if (tikla != null) Modifier.clickable(onClick = tikla) else Modifier)
+            .heightIn(min = 60.dp)
             .padding(horizontal = 12.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(30.dp).clip(CircleShape).background(rozet), contentAlignment = Alignment.Center) {
-            Text(harf, style = MaterialTheme.typography.labelLarge, color = rozetYazi)
+        Box(Modifier.size(38.dp).clip(RoundedCornerShape(11.dp)).background(rozetA), contentAlignment = Alignment.Center) {
+            Text(harf, fontFamily = Baslik, fontSize = 17.sp, color = rozetYazi)
         }
         Text(
             metin,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 15.sp,
+            lineHeight = 21.sp,
+            fontWeight = if (durum == SikDurumu.DOGRU || durum == SikDurumu.SECILI) FontWeight.SemiBold else FontWeight.Normal,
             color = if (durum == SikDurumu.SOLUK) MetinSoluk else Metin,
-            modifier = Modifier.padding(start = 12.dp),
+            modifier = Modifier.weight(1f).padding(horizontal = 12.dp),
         )
+        when (durum) {
+            SikDurumu.DOGRU -> IsaretRozeti("✓", DogruYesil)
+            SikDurumu.YANLIS -> IsaretRozeti("✕", YanlisKirmizi)
+            SikDurumu.SECILI -> IsaretRozeti("●", Yesil)
+            else -> {}
+        }
+    }
+}
+
+@Composable
+private fun IsaretRozeti(simge: String, renk: Color) {
+    Box(Modifier.size(26.dp).clip(CircleShape).background(renk), contentAlignment = Alignment.Center) {
+        Text(simge, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
     }
 }
 
 private data class Dortlu(val a: Color, val b: Color, val c: Color, val d: Color)
 
+/** Cevap sonrası açıklama: renkli başlık şeridi, doğru şık, açıklama ve dayanak. */
 @Composable
 fun Aciklama(soru: Soru, verilen: Int?) {
     val dogruMu = verilen == soru.dogru
-    KartKutu {
-        Text(
-            when {
-                verilen == null -> "Boş Bıraktın"
-                dogruMu -> "Doğru Cevap"
-                else -> "Yanlış Cevap"
-            },
-            style = MaterialTheme.typography.titleMedium,
-            color = if (dogruMu) DogruYesil else YanlisKirmizi,
-        )
-        Bosluk(4)
-        Text(
-            "Doğru Şık: ${HARFLER[soru.dogru]}) ${soru.secenekler[soru.dogru]}",
-            style = MaterialTheme.typography.bodyMedium,
-        )
-        if (soru.aciklama.isNotBlank()) {
-            Bosluk(10)
-            Text(soru.aciklama, style = MaterialTheme.typography.bodyMedium)
+    val renk = when {
+        verilen == null -> Color(0xFF7A5A12)
+        dogruMu -> DogruYesil
+        else -> YanlisKirmizi
+    }
+    val sekil = RoundedCornerShape(18.dp)
+    Column(Modifier.fillMaxWidth().clip(sekil).background(Kart).border(1.dp, renk.copy(alpha = 0.35f), sekil)) {
+        Row(
+            Modifier.fillMaxWidth().background(renk).padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                when {
+                    verilen == null -> "○  Boş Bıraktın"
+                    dogruMu -> "✓  Doğru Cevap"
+                    else -> "✕  Yanlış Cevap"
+                },
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White,
+                modifier = Modifier.weight(1f),
+            )
+            if (!dogruMu) {
+                Text(
+                    "Doğrusu ${HARFLER[soru.dogru]}",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = renk,
+                    modifier = Modifier.clip(RoundedCornerShape(50)).background(Color.White).padding(horizontal = 10.dp, vertical = 4.dp),
+                )
+            }
         }
-        if (soru.kaynak.isNotBlank()) {
-            Bosluk(10)
-            Text("Dayanak: ${soru.kaynak}", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+        Column(Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.Top) {
+                Box(Modifier.size(26.dp).clip(RoundedCornerShape(8.dp)).background(DogruYesil), contentAlignment = Alignment.Center) {
+                    Text(HARFLER[soru.dogru], color = Color.White, style = MaterialTheme.typography.labelLarge)
+                }
+                Text(
+                    soru.secenekler[soru.dogru],
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(start = 10.dp),
+                )
+            }
+            if (soru.aciklama.isNotBlank()) {
+                Bosluk(14)
+                Row(
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(Zemin).padding(12.dp),
+                ) {
+                    Text("💡", fontSize = 16.sp)
+                    Text(soru.aciklama, style = MaterialTheme.typography.bodyMedium, lineHeight = 21.sp, modifier = Modifier.padding(start = 8.dp))
+                }
+            }
+            if (soru.kaynak.isNotBlank()) {
+                Bosluk(10)
+                Text(
+                    "📘 Dayanak: ${soru.kaynak}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MetinSoluk,
+                    modifier = Modifier.clip(RoundedCornerShape(50)).background(YesilAcik.copy(alpha = 0.6f)).padding(horizontal = 10.dp, vertical = 5.dp),
+                )
+            }
         }
     }
 }
