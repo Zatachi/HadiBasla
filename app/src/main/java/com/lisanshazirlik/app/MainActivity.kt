@@ -329,7 +329,7 @@ private fun AltEkran(
             Ekran.Lisans -> LisansEkrani(banka.lisanslar, depo.kullanici?.lisans, sec = { depo.lisansSec(it) }, geri = geri)
             Ekran.Hatirlatma -> HatirlatmaEkrani(kayit, geri = geri)
             is Ekran.Video -> VideoEkrani(ust.baslik, ust.adres, geri = geri)
-            is Ekran.Paket -> PaketEkrani(ust.ders, banka, depo, adimAc = { git(Ekran.PaketAdim(ust.ders, it.id)) }, geri = geri)
+            is Ekran.Paket -> PaketEkrani(ust.ders, banka, depo, adimAc = { git(Ekran.PaketAdim(ust.ders, it.id)) }, geri = geri, denemelerAc = { git(Ekran.DenemeListesi(ust.ders)) })
             is Ekran.PaketGecis -> PaketGecisEkrani(
                 ust.ders, ust.bitenId, banka, depo, ust.sonuc,
                 adimAc = { geri(); git(Ekran.PaketAdim(ust.ders, it.id)) },

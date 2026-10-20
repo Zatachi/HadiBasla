@@ -47,6 +47,7 @@ fun PaketEkrani(
     depo: KullaniciDeposu,
     adimAc: (Paket.Adim) -> Unit,
     geri: () -> Unit,
+    denemelerAc: (() -> Unit)? = null,
 ) {
     val ders = banka.ders(dersKod) ?: return
     val adimlar = Paket.adimlar(banka, dersKod)
@@ -57,17 +58,17 @@ fun PaketEkrani(
     var sifirlaSor by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = { UstCubuk("Eğitim paketi", geri) },
+        topBar = { UstCubuk(ders.kisaAd, geri) },
         bottomBar = {
             Column(Modifier.background(Kart).navigationBarsPadding()) {
                 HorizontalDivider(color = Cizgi)
                 if (siradaki != null) {
                     Button(onClick = { adimAc(siradaki) }, modifier = Modifier.fillMaxWidth().padding(16.dp).height(54.dp)) {
-                        Text(if (tamam == 0) "Pakete başla" else "Devam et: ${siradaki.tur.ad}")
+                        Text(if (tamam == 0) "▶  Başla: ${siradaki.tur.ad}" else "▶  Devam et: ${siradaki.tur.ad}")
                     }
                 } else {
                     OutlinedButton(onClick = { sifirlaSor = true }, modifier = Modifier.fillMaxWidth().padding(16.dp).height(54.dp)) {
-                        Text("Paketi baştan başlat")
+                        Text("Dersi baştan başlat")
                     }
                 }
             }
@@ -79,7 +80,7 @@ fun PaketEkrani(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Yesil).padding(18.dp)) {
-                Text("📦 EĞİTİM PAKETİ", style = MaterialTheme.typography.labelMedium, color = Altin)
+                Text("DERS ${ders.kod}", style = MaterialTheme.typography.labelMedium, color = Altin)
                 Bosluk(4)
                 Text(ders.ad, fontFamily = Baslik, fontSize = 22.sp, lineHeight = 28.sp, color = Krem)
                 Bosluk(12)
@@ -94,33 +95,30 @@ fun PaketEkrani(
                 }
                 Bosluk(8)
                 Text(
-                    if (siradaki == null && adimlar.isNotEmpty()) "Paketi bitirdin 🎉" else "${adimlar.size} adımdan $tamam tamamlandı",
+                    if (siradaki == null && adimlar.isNotEmpty()) "Paketi bitirdin 🎉" else if (adimlar.isEmpty()) "Anlatımlar hazırlanıyor" else "${adimlar.size} adımdan $tamam tamamlandı",
                     style = MaterialTheme.typography.bodyMedium,
                     color = KremSoluk,
                 )
             }
-            Text(
-                "Her konu için önce video ya da özetle öğren, bilgi kartlarıyla tekrar et, sonra soruları çöz. Paket ders denemesiyle biter.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MetinSoluk,
-            )
-
-            var sonKonu: String? = null
-            adimlar.forEach { a ->
-                val konuAdi = a.konu?.ad ?: "Final"
-                if (konuAdi != sonKonu) {
-                    sonKonu = konuAdi
-                    Etiket(konuAdi, Modifier.padding(start = 4.dp, top = 8.dp))
-                }
-                AdimSatiri(a, a.id in bitti, a == siradaki) { adimAc(a) }
+            ders.konular.forEachIndexed { i, kn ->
+                val konuAdimlari = adimlar.filter { it.konu?.id == kn.id }
+                BolumKarti(i + 1, kn.ad, konuAdimlari, bitti, siradaki, adimAc)
             }
-            if (hazirlaniyor.isNotEmpty()) {
-                Etiket("Hazırlanıyor", Modifier.padding(start = 4.dp, top = 8.dp))
-                Text(
-                    hazirlaniyor.joinToString(" · ") { it.ad } + ". İçerikleri eklendikçe pakete otomatik olarak katılır.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MetinSoluk,
-                )
+            adimlar.firstOrNull { it.tur == Paket.Tur.DENEME }?.let { d ->
+                BolumKarti(0, "Final · Ders denemesi", listOf(d), bitti, siradaki, adimAc)
+            }
+            if (denemelerAc != null) {
+                Row(
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(YesilAcik).clickableIf(true, denemelerAc).padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text("⏱", fontSize = 22.sp)
+                    Column(Modifier.weight(1f).padding(start = 12.dp)) {
+                        Text("Bu dersin denemeleri", style = MaterialTheme.typography.titleMedium)
+                        Text("10 deneme · gerçek sınav gibi 25 soru, 45 dk", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                    }
+                    Text("›", fontSize = 24.sp, color = Yesil)
+                }
             }
         }
     }
@@ -216,6 +214,92 @@ fun PaketGecisEkrani(
             Text("Paketi bitirdin 🎉", style = MaterialTheme.typography.titleLarge, color = DogruYesil)
             Bosluk(16)
             Button(onClick = pakete, modifier = Modifier.fillMaxWidth().height(54.dp)) { Text("Pakete dön") }
+        }
+    }
+}
+
+private fun Paket.Tur.kisa(): String = when (this) {
+    Paket.Tur.VIDEO -> "Video"
+    Paket.Tur.OZET -> "Özet"
+    Paket.Tur.KARTLAR -> "Kartlar"
+    Paket.Tur.SORU -> "Sorular"
+    Paket.Tur.DENEME -> "Deneme"
+}
+
+/** Bir konu = bir bölüm. Adımlar küçük kutucuklar halinde; sıradaki adım vurgulanır. */
+@Composable
+private fun BolumKarti(
+    no: Int,
+    ad: String,
+    adimlar: List<Paket.Adim>,
+    bitti: Set<String>,
+    siradaki: Paket.Adim?,
+    adimAc: (Paket.Adim) -> Unit,
+) {
+    val tamam = adimlar.isNotEmpty() && adimlar.all { it.id in bitti }
+    val aktif = siradaki != null && adimlar.any { it.id == siradaki.id }
+    val sekil = RoundedCornerShape(16.dp)
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(sekil)
+            .background(Kart)
+            .border(if (aktif) 2.dp else 1.dp, if (aktif) Yesil else Cizgi, sekil)
+            .padding(14.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                Modifier.size(36.dp).clip(CircleShape).background(
+                    when {
+                        tamam -> DogruYesil
+                        aktif -> Yesil
+                        else -> Zemin
+                    }
+                ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    if (tamam) "✓" else if (no == 0) "🏁" else "$no",
+                    color = if (tamam || aktif) Krem else MetinSoluk,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+            Column(Modifier.weight(1f).padding(start = 12.dp)) {
+                if (no > 0) Text("BÖLÜM $no", style = MaterialTheme.typography.labelMedium, color = MetinSoluk)
+                Text(ad, style = MaterialTheme.typography.titleMedium, color = if (adimlar.isEmpty()) MetinSoluk else Metin)
+            }
+            when {
+                tamam -> Text("Tamam", style = MaterialTheme.typography.labelMedium, color = DogruYesil)
+                aktif -> Text("Şimdi", style = MaterialTheme.typography.labelMedium, color = Yesil)
+                adimlar.isEmpty() -> Text("🔜 Yakında", style = MaterialTheme.typography.labelMedium, color = MetinSoluk)
+            }
+        }
+        if (adimlar.isNotEmpty() && !(adimlar.size == 1 && adimlar[0].tur == Paket.Tur.DENEME && !aktif && !tamam)) {
+            Bosluk(12)
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                adimlar.forEach { a ->
+                    val b = a.id in bitti
+                    val s = a.id == siradaki?.id
+                    Column(
+                        Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(
+                                when {
+                                    s -> Yesil
+                                    b -> YesilAcik
+                                    else -> Zemin
+                                }
+                            )
+                            .clickableIf(true) { adimAc(a) }
+                            .padding(vertical = 8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(if (b) "✓" else a.tur.simge, fontSize = 18.sp, color = if (s) Krem else DogruYesil)
+                        Text(a.tur.kisa(), style = MaterialTheme.typography.labelMedium, fontSize = 11.sp, color = if (s) Krem else Metin, maxLines = 1)
+                    }
+                }
+            }
         }
     }
 }
