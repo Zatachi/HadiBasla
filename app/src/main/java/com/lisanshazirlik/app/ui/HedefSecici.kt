@@ -1,6 +1,10 @@
 package com.lisanshazirlik.app.ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -54,48 +58,101 @@ fun HedefSecici(
     tarihSec: (LocalDate) -> Unit,
 ) {
     var takvim by remember { mutableStateOf(false) }
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Etiket("Hangi derse çalışıyorsun?")
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        // 1. adım: ders
+        AdimBasligi("1", "Ders Seç")
         dersler.forEach { d ->
             val s = d.kod == secili
-            val sekil = RoundedCornerShape(12.dp)
+            val sekil = RoundedCornerShape(16.dp)
             Row(
                 Modifier
                     .fillMaxWidth()
                     .clip(sekil)
-                    .background(if (s) YesilAcik else Kart)
-                    .border(if (s) 2.dp else 1.dp, if (s) Yesil else Cizgi, sekil)
+                    .background(Kart)
+                    .border(if (s) 2.dp else 1.dp, if (s) dersRengi(d.kod) else Cizgi, sekil)
                     .clickable { dersSec(d.kod) }
-                    .padding(horizontal = 8.dp, vertical = 6.dp),
+                    .padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                RadioButton(selected = s, onClick = { dersSec(d.kod) })
-                Column {
-                    Text(d.kisaAd, style = MaterialTheme.typography.titleMedium)
-                    Text("Ders Kodu ${d.kod}", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                Box(Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(dersRengi(d.kod)), contentAlignment = Alignment.Center) {
+                    Text(d.kod, style = MaterialTheme.typography.labelLarge, color = Krem)
                 }
+                Text(d.kisaAd, style = MaterialTheme.typography.titleMedium, maxLines = 2, lineHeight = 20.sp, modifier = Modifier.weight(1f).padding(horizontal = 12.dp))
+                Box(
+                    Modifier.size(26.dp).clip(CircleShape).background(if (s) dersRengi(d.kod) else Zemin).border(1.dp, if (s) dersRengi(d.kod) else Cizgi, CircleShape),
+                    contentAlignment = Alignment.Center,
+                ) { if (s) Text("✓", color = Krem, fontSize = 13.sp) }
             }
         }
-        Bosluk(8)
-        Etiket("Sınav Tarihin")
-        OutlinedButton(
-            onClick = { takvim = true },
-            modifier = Modifier.fillMaxWidth().height(52.dp),
-            border = BorderStroke(1.dp, if (tarih == null) Cizgi else Yesil),
+
+        // 2. adım: tarih
+        Bosluk(6)
+        AdimBasligi("2", "Sınav Tarihi", "İsteğe Bağlı")
+        val bugun = LocalDate.now()
+        val gun = tarih?.let { java.time.temporal.ChronoUnit.DAYS.between(bugun, it) }
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .background(if (tarih != null) Yesil else Kart)
+                .border(1.dp, if (tarih != null) Yesil else Cizgi, RoundedCornerShape(16.dp))
+                .clickable { takvim = true }
+                .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                if (tarih == null) "Tarih Seç" else "${uzunTarih(tarih)} · ${kalanGunYazisi(java.time.temporal.ChronoUnit.DAYS.between(LocalDate.now(), tarih))}",
-                color = if (tarih == null) MetinSoluk else Yesil,
-            )
+            Column(
+                Modifier.size(width = 56.dp, height = 60.dp).clip(RoundedCornerShape(12.dp)).background(if (tarih != null) Krem else YesilAcik),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                if (tarih != null) {
+                    Text("${tarih.dayOfMonth}", fontFamily = Baslik, fontSize = 22.sp, color = Yesil)
+                    Text(tarih.month.getDisplayName(java.time.format.TextStyle.SHORT, java.util.Locale.forLanguageTag("tr")).uppercase(java.util.Locale.forLanguageTag("tr")), fontSize = 11.sp, color = Yesil)
+                } else Text("📅", fontSize = 24.sp)
+            }
+            Column(Modifier.weight(1f).padding(start = 14.dp)) {
+                Text(
+                    if (tarih == null) "Tarih Seç" else uzunTarih(tarih),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = if (tarih != null) Krem else Metin,
+                )
+                Text(
+                    if (gun == null) "Kalan günü ve günlük hedefini hesaplarız" else if (gun == 0L) "Sınav bugün" else "$gun gün kaldı",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (tarih != null) Altin else MetinSoluk,
+                )
+            }
+            Text("›", fontSize = 24.sp, color = if (tarih != null) Krem else MetinSoluk)
         }
-        Text(
-            "İsteğe bağlı. Tarih seçersen kalan günleri ve günlük hedefini sınavına göre hesaplarız; sonra da ekleyebilirsin.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MetinSoluk,
-        )
+        // Hızlı seçim
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf(1L to "1 Ay Sonra", 2L to "2 Ay Sonra", 3L to "3 Ay Sonra").forEach { (ay, yazi) ->
+                val t = bugun.plusMonths(ay)
+                val s = tarih == t
+                Text(
+                    yazi,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = if (s) Krem else Yesil,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    modifier = Modifier.weight(1f).clip(RoundedCornerShape(50)).background(if (s) Yesil else YesilAcik)
+                        .clickable { tarihSec(t) }.padding(vertical = 10.dp),
+                )
+            }
+        }
     }
     if (takvim) {
         TarihPenceresi(tarih, kapat = { takvim = false }) { tarihSec(it); takvim = false }
+    }
+}
+
+@Composable
+private fun AdimBasligi(no: String, baslik: String, not: String? = null) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.size(26.dp).clip(CircleShape).background(Yesil), contentAlignment = Alignment.Center) {
+            Text(no, color = Krem, style = MaterialTheme.typography.labelLarge)
+        }
+        Text(baslik, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(start = 10.dp))
+        if (not != null) Text("  · $not", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
     }
 }
 
@@ -180,14 +237,14 @@ fun HedefEkrani(
                 },
                 enabled = ders != null,
                 modifier = Modifier.fillMaxWidth().height(52.dp),
-            ) { Text("Kaydet") }
+            ) { Text("🎯 Hedefi Kaydet") }
             if (mevcut != null) {
                 OutlinedButton(
                     onClick = { depo.hedefKaydet(mevcut.ders, mevcut.sinavTarihi, gecti = true); geri() },
                     modifier = Modifier.fillMaxWidth().height(52.dp),
                 ) { Text("Bu Dersten Geçtim") }
                 TextButton(onClick = { silSor = true }, modifier = Modifier.fillMaxWidth()) {
-                    Text("Hedefi kaldır", color = YanlisKirmizi)
+                    Text("Hedefi Kaldır", color = YanlisKirmizi)
                 }
             }
         }
