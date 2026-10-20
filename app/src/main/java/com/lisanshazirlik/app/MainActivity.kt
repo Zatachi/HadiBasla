@@ -326,7 +326,7 @@ private fun AltEkran(
                 if (dk == null) Yukleniyor() else KartlarEkrani(dk.second, geri = geri)
             }
             Ekran.Sonuclar -> SonuclarEkrani(banka, depo, depo.kullanici?.lisans, geri = geri)
-            Ekran.Lisans -> LisansEkrani(banka.lisanslar, depo.kullanici?.lisans, sec = { depo.lisansSec(it) }, geri = geri)
+            Ekran.Lisans -> LisansEkrani(banka.lisanslar, depo.kullanici?.lisans, sec = { depo.lisansSec(it) }, geri = geri, icerikVar = { banka.icerikVar(it) })
             Ekran.Hatirlatma -> HatirlatmaEkrani(kayit, geri = geri)
             is Ekran.Video -> VideoEkrani(ust.baslik, ust.adres, geri = geri)
             is Ekran.Paket -> PaketEkrani(ust.ders, banka, depo, adimAc = { git(Ekran.PaketAdim(ust.ders, it.id)) }, geri = geri, denemelerAc = { git(Ekran.DenemeListesi(ust.ders)) })

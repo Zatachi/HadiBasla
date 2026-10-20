@@ -72,7 +72,7 @@ fun DenemeListesiEkrani(
         ) {
             item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(Modifier.size(52.dp).clip(RoundedCornerShape(12.dp)).background(Yesil), contentAlignment = Alignment.Center) {
+                    Box(Modifier.size(52.dp).clip(RoundedCornerShape(12.dp)).background(dersRengi(ders.kod)), contentAlignment = Alignment.Center) {
                         Text(ders.kod, style = MaterialTheme.typography.labelLarge, color = Krem)
                     }
                     Column(Modifier.padding(start = 12.dp)) {

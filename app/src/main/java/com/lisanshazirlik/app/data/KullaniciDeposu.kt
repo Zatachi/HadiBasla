@@ -324,6 +324,8 @@ class KullaniciDeposu(val uid: String) {
         val h = hedef(ders)
         if (puan >= 50) hedefKaydet(ders, h?.sinavTarihi ?: tarih, gecti = true)
         else if (h?.gecti == true) hedefKaydet(ders, h.sinavTarihi, gecti = false)
+        // Geniş kapsamlı mevzuatı geçen, dar kapsamlıyı da geçmiş sayılır.
+        if (ders == "1002" && puan >= 50) hedef("1001")?.let { if (!it.gecti) hedefKaydet("1001", it.sinavTarihi, gecti = true) }
     }
 
     fun sonucSil(ders: String) {

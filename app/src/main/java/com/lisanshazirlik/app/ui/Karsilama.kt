@@ -207,7 +207,7 @@ fun KurulumEkrani(
             } else if (adim == 1) {
                 YesilUst("Hangi sınava hazırlanıyorsun?", "Dersler ve denemeler buna göre hazırlanır.")
                 Column(Modifier.padding(20.dp)) {
-                    LisansSecici(banka.lisanslar, lisans) { lisans = it }
+                    LisansSecici(banka.lisanslar, lisans, { l -> banka.icerikVar(l) }) { lisans = it }
                 }
             } else {
                 YesilUst("İlk hedefin", "Bir derse odaklan; diğerlerini sonra eklersin.")

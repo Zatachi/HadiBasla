@@ -72,7 +72,7 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
     val kisayollar = listOf(
         Kisayol("", "Eğitim", com.lisanshazirlik.app.R.drawable.ic_egitim) { y.sekmeAc(Sekme.DERSLER) },
         Kisayol("", "Deneme", com.lisanshazirlik.app.R.drawable.ic_deneme) { y.sekmeAc(Sekme.DENEME) },
-        Kisayol("❌", "Yanlışlarım") {
+        Kisayol("", "Yanlışlarım", com.lisanshazirlik.app.R.drawable.ic_yanlislar) {
             if (yanlislar.isNotEmpty()) y.coz("Yanlışlarım", yanlislar.shuffled(), null, "yanlislar") else y.sekmeAc(Sekme.DERSLER)
         },
         Kisayol("🏆", "Sıralama") { y.basariAc(BasariBolumu.SIRALAMA) },
@@ -210,6 +210,17 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
         item { Liderler(banka, depo, uid, y) }
 
         // Videolar
+        if (videolar.isEmpty()) {
+            item { BolumBasligi("Video anlatımlar") }
+            item {
+                Text(
+                    "🎬 ${banka.lisans(k?.lisans)?.kisaAd ?: "Bu lisans"} videoları hazırlanıyor.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MetinSoluk,
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                )
+            }
+        }
         if (videolar.isNotEmpty()) {
             item { BolumBasligi("Video anlatımlar", "Tümü") { y.sekmeAc(Sekme.DERSLER) } }
             item {

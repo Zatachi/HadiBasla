@@ -44,7 +44,7 @@ import com.lisanshazirlik.app.data.YerelKayit
 
 /** Lisans listesi; aktif olmayanlar "Yakında" olarak gösterilir. */
 @Composable
-fun LisansSecici(lisanslar: List<Lisans>, secili: String?, sec: (String) -> Unit) {
+fun LisansSecici(lisanslar: List<Lisans>, secili: String?, icerikVar: (Lisans) -> Boolean = { true }, sec: (String) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         lisanslar.forEach { l ->
             val s = l.kod == secili
@@ -63,9 +63,13 @@ fun LisansSecici(lisanslar: List<Lisans>, secili: String?, sec: (String) -> Unit
                 Column(Modifier.weight(1f)) {
                     Text(l.ad, style = MaterialTheme.typography.titleMedium, color = if (l.aktif) Metin else MetinSoluk)
                     Text(
-                        if (l.aktif) "${l.dersler.size} ders" else "Yakında",
+                        when {
+                            !l.aktif -> "Yakında"
+                            icerikVar(l) -> "${l.dersler.size} ders"
+                            else -> "${l.dersler.size} ders · içerik yakında"
+                        },
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MetinSoluk,
+                        color = if (l.aktif && !icerikVar(l)) Sari2 else MetinSoluk,
                     )
                 }
             }
@@ -74,7 +78,7 @@ fun LisansSecici(lisanslar: List<Lisans>, secili: String?, sec: (String) -> Unit
 }
 
 @Composable
-fun LisansEkrani(lisanslar: List<Lisans>, secili: String?, sec: (String) -> Unit, geri: () -> Unit) {
+fun LisansEkrani(lisanslar: List<Lisans>, secili: String?, sec: (String) -> Unit, geri: () -> Unit, icerikVar: (Lisans) -> Boolean = { true }) {
     Scaffold(topBar = { UstCubuk("Sınavım", geri) }, containerColor = Zemin) { ic ->
         Column(
             Modifier.fillMaxSize().padding(ic).verticalScroll(rememberScrollState()).padding(16.dp),
@@ -82,7 +86,7 @@ fun LisansEkrani(lisanslar: List<Lisans>, secili: String?, sec: (String) -> Unit
         ) {
             Text("Hangi lisans sınavına hazırlanıyorsun?", style = MaterialTheme.typography.titleLarge)
             Text("Dersler, denemeler ve istatistikler seçtiğin lisansa göre gösterilir.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
-            LisansSecici(lisanslar, secili) { sec(it); geri() }
+            LisansSecici(lisanslar, secili, icerikVar) { sec(it); geri() }
         }
     }
 }
@@ -162,4 +166,21 @@ fun HatirlatmaEkrani(kayit: YerelKayit, geri: () -> Unit) {
             dismissButton = { TextButton(onClick = { saatSec = false }) { Text("Vazgeç") } },
         )
     }
+}
+
+private val Sari2 = androidx.compose.ui.graphics.Color(0xFFB07A10)
+
+/** Lisans seçimi için açılır pencere (Deneme sekmesi başlığından). */
+@Composable
+fun LisansPenceresi(banka: com.lisanshazirlik.app.data.SoruBankasi, secili: String?, kapat: () -> Unit, sec: (String) -> Unit) {
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = kapat,
+        title = { Text("Hangi lisans?") },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                LisansSecici(banka.lisanslar, secili, { l -> banka.icerikVar(l) }) { sec(it); kapat() }
+            }
+        },
+        confirmButton = { androidx.compose.material3.TextButton(onClick = kapat) { Text("Kapat") } },
+    )
 }

@@ -417,7 +417,7 @@ private fun LisansSonucDetay(banka: SoruBankasi, depo: KullaniciDeposu, lisans: 
             Text("Sınav puanların", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(start = 4.dp, top = 4.dp))
             dersler.forEachIndexed { i, d ->
                 val s2 = etkinSonuc(sonuclar, d.kod)
-                val renk = SEVIYE_RENKLERI[i % SEVIYE_RENKLERI.size]
+                val renk = dersRengi(d.kod)
                 Row(
                     Modifier
                         .fillMaxWidth()

@@ -108,7 +108,7 @@ object Topluluk {
             "gectiZaman" to if (k.duvar && gecilen.isNotEmpty()) (gecilen.mapNotNull { it.tarih }.maxOrNull()?.toEpochDay() ?: 1L) else sil,
             "zaman" to FieldValue.serverTimestamp(),
         )
-        banka.lisansDersleri(k.lisans).forEach { d ->
+        banka.dersler.forEach { d ->
             val n = banka.dersSorulari(d.kod).count { il[it.id] == 1 }
             veri["dersDogru_${d.kod}"] = if (n > 0) n else sil
         }

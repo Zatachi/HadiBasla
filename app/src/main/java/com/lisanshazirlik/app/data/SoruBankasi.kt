@@ -65,6 +65,8 @@ data class SoruBankasi(
     fun dersSorulari(kod: String): List<Soru> = sorular.filter { it.ders == kod }
     fun konuSorulari(konuId: String): List<Soru> = sorular.filter { it.konu == konuId }
     fun bul(id: String): Soru? = sorular.firstOrNull { it.id == id }
+    /** Lisansın derslerinden en az birinde soru varsa içerik hazır sayılır. */
+    fun icerikVar(l: Lisans): Boolean = l.dersler.any { k -> sorular.any { it.ders == k } }
 
     companion object {
         val BOS = SoruBankasi(0, "", emptyList(), emptyList(), emptyList())

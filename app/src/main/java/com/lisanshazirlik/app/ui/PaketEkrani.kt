@@ -79,7 +79,7 @@ fun PaketEkrani(
             Modifier.fillMaxSize().padding(ic).verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Yesil).padding(18.dp)) {
+            Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(dersRengi(ders.kod)).padding(18.dp)) {
                 Text("DERS ${ders.kod}", style = MaterialTheme.typography.labelMedium, color = Altin)
                 Bosluk(4)
                 Text(ders.ad, fontFamily = Baslik, fontSize = 22.sp, lineHeight = 28.sp, color = Krem)

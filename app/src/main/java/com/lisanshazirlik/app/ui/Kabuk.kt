@@ -371,22 +371,7 @@ fun DerslerSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic:
         return
     }
     Column(Modifier.fillMaxSize()) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .background(Yesil)
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(start = 20.dp, end = 14.dp, top = 14.dp, bottom = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text("Eğitim", fontFamily = Baslik, fontSize = 26.sp, color = Krem, modifier = Modifier.weight(1f))
-            Text(
-                "${lisans?.kisaAd ?: "Seviye"}  ▾",
-                style = MaterialTheme.typography.labelLarge,
-                color = Krem,
-                modifier = Modifier.clip(RoundedCornerShape(50)).background(YesilKoyu).clickable { seviyeler = true }.padding(horizontal = 14.dp, vertical = 8.dp),
-            )
-        }
+        LisansliBaslik("Eğitim", lisans?.kisaAd) { seviyeler = true }
         LazyColumn(
             Modifier.fillMaxSize().padding(bottom = ic.calculateBottomPadding()),
             contentPadding = PaddingValues(16.dp),
@@ -396,11 +381,30 @@ fun DerslerSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic:
                 Text("Hangi derse çalışacaksın?", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 4.dp, bottom = 2.dp))
             }
             items(dersler.withIndex().toList(), key = { "k" + it.value.kod }) { (i, d) ->
-                KursKarti(banka, depo, d, renkler[i % renkler.size]) { y.paketAc(d.kod) }
+                KursKarti(banka, depo, d, dersRengi(d.kod)) { y.paketAc(d.kod) }
             }
         }
     }
 }
+
+private val DERS_RENKLERI = listOf(
+    androidx.compose.ui.graphics.Color(0xFF2C4F3E),
+    androidx.compose.ui.graphics.Color(0xFF3E6B5C),
+    androidx.compose.ui.graphics.Color(0xFF7A2E3A),
+    androidx.compose.ui.graphics.Color(0xFF6B4A2E),
+    androidx.compose.ui.graphics.Color(0xFF24476B),
+    androidx.compose.ui.graphics.Color(0xFF4A4A6A),
+    androidx.compose.ui.graphics.Color(0xFF2E5B6B),
+    androidx.compose.ui.graphics.Color(0xFF5B3E6B),
+    androidx.compose.ui.graphics.Color(0xFF8A5A1A),
+    androidx.compose.ui.graphics.Color(0xFF3A5A2A),
+    androidx.compose.ui.graphics.Color(0xFF6B2E4F),
+    androidx.compose.ui.graphics.Color(0xFF7A5A12),
+)
+
+/** Her dersin rengi koduna bağlıdır; hangi lisansta görünürse görünsün aynı kalır. */
+fun dersRengi(kod: String): androidx.compose.ui.graphics.Color =
+    DERS_RENKLERI[((kod.toIntOrNull() ?: 1001) - 1001).mod(DERS_RENKLERI.size)]
 
 val SEVIYE_RENKLERI = listOf(
     androidx.compose.ui.graphics.Color(0xFF2C4F3E),
@@ -556,8 +560,18 @@ private fun KursKarti(banka: SoruBankasi, depo: KullaniciDeposu, d: com.lisansha
 fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: PaddingValues) {
     val dersler = banka.lisansDersleri(depo.kullanici?.lisans)
     val denemeler = depo.denemeler.filter { !it.kapsam.startsWith("konu:") }
+    var lisansSec by remember { mutableStateOf(false) }
+    if (lisansSec) LisansPenceresi(banka, depo.kullanici?.lisans, kapat = { lisansSec = false }) { depo.lisansSec(it) }
     Column(Modifier.fillMaxSize()) {
-        SekmeBasligi("Deneme")
+        LisansliBaslik("Deneme", banka.lisans(depo.kullanici?.lisans)?.kisaAd) { lisansSec = true }
+        if (dersler.none { banka.dersSorulari(it.kod).isNotEmpty() }) {
+            Text(
+                "🔜 Bu lisansın denemeleri hazırlanıyor. Dersleri aşağıda görebilirsin.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MetinSoluk,
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp),
+            )
+        }
         LazyColumn(
             Modifier.fillMaxSize().padding(bottom = ic.calculateBottomPadding()),
             contentPadding = PaddingValues(16.dp),
@@ -597,10 +611,10 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Box(
-                        Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(YesilAcik),
+                        Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(dersRengi(d.kod)),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Text(d.kod, style = MaterialTheme.typography.labelLarge, color = Yesil)
+                        Text(d.kod, style = MaterialTheme.typography.labelLarge, color = Krem)
                     }
                     Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
                         Text(d.kisaAd, style = MaterialTheme.typography.titleMedium, maxLines = 2)
@@ -660,6 +674,28 @@ private fun OlcuKutusu(modifier: Modifier, sayi: String, etiket: String, renk: a
     ) {
         Text(sayi, fontFamily = Baslik, fontSize = 26.sp, color = renk)
         Text(etiket, style = MaterialTheme.typography.bodyMedium, fontSize = 11.sp, color = MetinSoluk, maxLines = 1)
+    }
+}
+
+/** Sekme başlığı + sağda seçili lisans düğmesi (Eğitim ve Deneme'de ortak). */
+@Composable
+fun LisansliBaslik(baslik: String, lisansAd: String?, tikla: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .background(Yesil)
+            .windowInsetsPadding(WindowInsets.statusBars)
+            .padding(start = 20.dp, end = 14.dp, top = 14.dp, bottom = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(baslik, fontFamily = Baslik, fontSize = 26.sp, color = Krem, modifier = Modifier.weight(1f))
+        Text(
+            "${lisansAd ?: "Lisans seç"}  ▾",
+            style = MaterialTheme.typography.labelLarge,
+            color = Krem,
+            maxLines = 1,
+            modifier = Modifier.clip(RoundedCornerShape(50)).background(YesilKoyu).clickable(onClick = tikla).padding(horizontal = 14.dp, vertical = 8.dp),
+        )
     }
 }
 
