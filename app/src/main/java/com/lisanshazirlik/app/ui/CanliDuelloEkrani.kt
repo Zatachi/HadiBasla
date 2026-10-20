@@ -139,19 +139,18 @@ fun CanliDuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, cevapla: (Soru,
                     bitti = { ben ->
                         asama = Asama.Sonuc(ben, mac?.ilerleme?.get(rakipId), m.adlar[rakipId] ?: "Rakip", false)
                     },
-                    rakipBekle = true,
                     canliRakip = { mac?.ilerleme?.get(rakipId) },
-                    vazgec = geri,
                 )
             }
         }
         is Asama.Bot -> {
             var bot by remember { mutableStateOf(OyuncuDurumu()) }
+            var benBitti by remember { mutableStateOf(false) }
             LaunchedEffect(Unit) {
                 var t = 0
                 for (i in a.sorular.indices) {
-                    val bekleme = Random.nextInt(6, 15)
-                    repeat(bekleme) { delay(1000); t++; bot = bot.copy(sure = t) }
+                    var bekleme = Random.nextInt(6, 15)
+                    while (bekleme > 0) { delay(if (benBitti) 250 else 1000); t++; bekleme--; bot = bot.copy(sure = t) }
                     val dg = Random.nextFloat() < 0.65f
                     bot = bot.copy(cevaplanan = i + 1, dogru = bot.dogru + if (dg) 1 else 0, sure = t, bitti = i == a.sorular.lastIndex)
                 }
@@ -161,17 +160,15 @@ fun CanliDuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, cevapla: (Soru,
                 rakipAd = BOT_AD,
                 rakip = bot,
                 cevapla = cevapla,
-                ilerle = {},
+                ilerle = { if (it.bitti) benBitti = true },
                 bitti = { ben -> asama = Asama.Sonuc(ben, bot, BOT_AD, true) },
-                rakipBekle = true,
                 canliRakip = { bot },
-                vazgec = geri,
             )
         }
         is Asama.Sonuc -> {
             LaunchedEffect(Unit) {
                 val s = sonucHesapla(a.benim, a.rakip)
-                val xp = when (s) { 1 -> if (a.bot) 15 else 40; 0 -> if (a.bot) 8 else 20; else -> 5 }
+                val xp = if (a.benim.terk) 0 else when (s) { 1 -> if (a.bot) 15 else 40; 0 -> if (a.bot) 8 else 20; else -> 5 }
                 depo.xpEkle(xp)
             }
             CanliSonuc(a, tekrar = { gecen = 0; asama = Asama.Araniyor }, geri = geri)
@@ -186,7 +183,8 @@ private fun birakArkaPlanda(uid: String) {
 }
 
 private fun sonucHesapla(ben: OyuncuDurumu, o: OyuncuDurumu?): Int {
-    if (o == null || !o.bitti) return 1
+    if (ben.terk) return -1
+    if (o == null || o.terk || !o.bitti) return 1
     return when {
         ben.dogru != o.dogru -> if (ben.dogru > o.dogru) 1 else -1
         ben.sure != o.sure -> if (ben.sure < o.sure) 1 else -1
@@ -219,6 +217,10 @@ private fun AramaEkrani(dersAd: String, gecen: Int, eslesti: Boolean = false, va
     }
 }
 
+const val SORU_SURESI = 30
+const val BEKLEME_SINIRI = 45
+private const val DURGUN_SN = 35
+
 @Composable
 private fun CanliOyun(
     sorular: List<Soru>,
@@ -227,58 +229,109 @@ private fun CanliOyun(
     cevapla: (Soru, Boolean) -> Unit,
     ilerle: (OyuncuDurumu) -> Unit,
     bitti: (OyuncuDurumu) -> Unit,
-    rakipBekle: Boolean,
     canliRakip: () -> OyuncuDurumu?,
-    vazgec: () -> Unit,
 ) {
     var sira by remember { mutableIntStateOf(0) }
     var secim by remember { mutableStateOf<Int?>(null) }
     var ben by remember { mutableStateOf(OyuncuDurumu()) }
     var saniye by remember { mutableIntStateOf(0) }
+    var kalan by remember { mutableIntStateOf(SORU_SURESI) }
     var bekliyor by remember { mutableStateOf(false) }
+    var beklemeKalan by remember { mutableIntStateOf(BEKLEME_SINIRI) }
+    var cikSor by remember { mutableStateOf(false) }
+    var sonlandi by remember { mutableStateOf(false) }
+
+    fun sonuclandir(d: OyuncuDurumu) { if (!sonlandi) { sonlandi = true; bitti(d) } }
+    fun terkEt() {
+        val d = ben.copy(bitti = true, terk = true, sure = saniye)
+        ben = d; ilerle(d); sonuclandir(d)
+    }
+
+    // Geri tuşu: oyun sürerken çıkış onayı, beklerken doğrudan sonuç.
+    androidx.activity.compose.BackHandler { if (bekliyor) sonuclandir(ben) else cikSor = true }
 
     LaunchedEffect(Unit) { while (!ben.bitti) { delay(1000); saniye++ } }
+    // Soru başına süre: dolarsa boş geçilir.
+    LaunchedEffect(sira) {
+        kalan = SORU_SURESI
+        while (kalan > 0 && secim == null) { delay(1000); kalan-- }
+        if (secim == null && !ben.bitti) secim = -1
+    }
     LaunchedEffect(secim) {
         val s = secim ?: return@LaunchedEffect
-        delay(800)
+        delay(if (s == -1) 1200 else 800)
         val dg = s == sorular[sira].dogru
         ben = ben.copy(cevaplanan = sira + 1, dogru = ben.dogru + if (dg) 1 else 0, sure = saniye, bitti = sira == sorular.lastIndex)
         ilerle(ben)
         if (ben.bitti) {
             bekliyor = true
-            if (rakipBekle) {
-                // Rakip bitirene kadar en çok 60 sn bekle.
-                withTimeoutOrNull(60_000) { while (canliRakip()?.bitti != true) delay(500) }
+            // Rakibi en çok BEKLEME_SINIRI sn bekle; rakip DURGUN_SN boyunca ilerlemezse beklemeyi bitir.
+            var sonDegisim = 0
+            var onceki = canliRakip()?.cevaplanan ?: 0
+            var gecen = 0
+            while (canliRakip()?.bitti != true && gecen < BEKLEME_SINIRI && !sonlandi) {
+                delay(1000); gecen++; beklemeKalan = BEKLEME_SINIRI - gecen
+                val c = canliRakip()?.cevaplanan ?: 0
+                if (c != onceki) { onceki = c; sonDegisim = gecen }
+                if (gecen - sonDegisim >= DURGUN_SN) break
             }
-            bitti(ben)
+            sonuclandir(ben)
         } else {
             sira++; secim = null
         }
     }
 
     Scaffold(
-        topBar = { UstCubuk("⚔️ ${minOf(sira + 1, sorular.size)}/${sorular.size}", vazgec) { Text("⏱ $saniye", color = Krem, modifier = Modifier.padding(end = 16.dp)) } },
+        topBar = {
+            UstCubuk("⚔️ ${minOf(sira + 1, sorular.size)}/${sorular.size}", { if (bekliyor) sonuclandir(ben) else cikSor = true }) {
+                if (!bekliyor) Text("⏱ $kalan", color = if (kalan <= 10) Altin else Krem, modifier = Modifier.padding(end = 16.dp))
+            }
+        },
         containerColor = Zemin,
     ) { ic ->
         Column(
             Modifier.fillMaxSize().padding(ic).verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            // Canlı skor tabelası
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 SkorKutusu(Modifier.weight(1f), "Sen", ben, sorular.size, vurgu = true)
                 SkorKutusu(Modifier.weight(1f), rakipAd, rakip, sorular.size, vurgu = false)
             }
+            if (cikSor) {
+                Column(
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(YanlisZemin).padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Text("Düellodan çıkmak istiyor musun?", style = MaterialTheme.typography.titleMedium)
+                    Text("Bitirmeden çıkarsan bu düelloyu kaybetmiş sayılırsın.", color = MetinSoluk)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(onClick = { cikSor = false }, modifier = Modifier.weight(1f)) { Text("Devam et") }
+                        OutlinedButton(onClick = { cikSor = false; terkEt() }, modifier = Modifier.weight(1f)) { Text("Çık", color = YanlisKirmizi) }
+                    }
+                }
+            }
             if (bekliyor) {
-                Bosluk(24)
+                Bosluk(16)
                 Text(
-                    if (rakip.bitti) "Sonuçlar hesaplanıyor…" else "Bitirdin! $rakipAd'in bitirmesi bekleniyor…",
+                    if (rakip.bitti) "Sonuçlar hesaplanıyor…" else "Bitirdin! $rakipAd bekleniyor",
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                 )
+                if (!rakip.bitti) {
+                    Text(
+                        "$beklemeKalan sn içinde bitirmezse kazanmış sayılırsın.",
+                        color = MetinSoluk, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(),
+                    )
+                    Ilerleme(beklemeKalan / BEKLEME_SINIRI.toFloat())
+                    OutlinedButton(onClick = { sonuclandir(ben) }, modifier = Modifier.fillMaxWidth().height(50.dp)) {
+                        Text("Beklemeden sonucu gör")
+                    }
+                    Text("Erken çıkman kaybettirmez; rakip bitirmediyse kazanırsın.", color = MetinSoluk, fontSize = 12.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+                }
             } else {
                 val soru = sorular[sira]
+                Ilerleme(kalan / SORU_SURESI.toFloat())
                 Text(soru.metin, style = MaterialTheme.typography.titleMedium)
                 soru.secenekler.forEachIndexed { i, m ->
                     val d = when {
@@ -289,6 +342,7 @@ private fun CanliOyun(
                     }
                     Sik(HARFLER[i], m, d, if (secim == null) ({ secim = i; cevapla(soru, i == soru.dogru) }) else null)
                 }
+                if (secim == -1) Text("⏰ Süre doldu", color = YanlisKirmizi, style = MaterialTheme.typography.titleMedium)
             }
         }
     }
@@ -324,7 +378,9 @@ private fun CanliSonuc(a: Asama.Sonuc, tekrar: () -> Unit, geri: () -> Unit) {
             Text(when (s) { 1 -> "🏆"; 0 -> "🤝"; else -> "😤" }, fontSize = 64.sp)
             Text(
                 when {
-                    a.rakip?.bitti != true && !a.bot -> "Rakip yarıda bıraktı, kazandın!"
+                    a.benim.terk -> "Düellodan çıktın, bu maç kaybedildi"
+                    a.rakip?.terk == true -> "Rakip düellodan çıktı, kazandın!"
+                    a.rakip?.bitti != true -> "Rakip zamanında bitirmedi, kazandın!"
                     s == 1 -> "Kazandın!"
                     s == 0 -> "Berabere!"
                     else -> "Bu sefer kaybettin"
@@ -336,7 +392,7 @@ private fun CanliSonuc(a: Asama.Sonuc, tekrar: () -> Unit, geri: () -> Unit) {
                 SkorKutusu(Modifier.weight(1f), a.rakipAd, a.rakip ?: OyuncuDurumu(), 5, vurgu = false)
             }
             Text(
-                "+" + when (s) { 1 -> if (a.bot) 15 else 40; 0 -> if (a.bot) 8 else 20; else -> 5 } + " XP",
+                if (a.benim.terk) "XP kazanılmadı" else "+" + when (s) { 1 -> if (a.bot) 15 else 40; 0 -> if (a.bot) 8 else 20; else -> 5 } + " XP",
                 color = Yesil, style = MaterialTheme.typography.titleMedium,
             )
             Button(onClick = tekrar, modifier = Modifier.fillMaxWidth().height(54.dp)) { Text("⚔️ Yeni rakip bul") }

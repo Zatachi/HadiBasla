@@ -115,7 +115,9 @@ fun DuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, cevapl
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Bosluk(10)
-                Text("Ders: ${odak?.kisaAd ?: "-"}", color = Altin, style = MaterialTheme.typography.labelLarge)
+                Text("Hangi dersten?", color = Altin, style = MaterialTheme.typography.labelLarge)
+                Bosluk(6)
+                OdakSecici(banka, depo, odak?.kod, koyu = true)
                 Bosluk(8)
                 Button(
                     onClick = canliBasla,

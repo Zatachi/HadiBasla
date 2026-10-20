@@ -6,7 +6,8 @@ import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.tasks.await
 
 /** Canlı maçta bir oyuncunun durumu. */
-data class OyuncuDurumu(val cevaplanan: Int = 0, val dogru: Int = 0, val sure: Int = 0, val bitti: Boolean = false)
+/** terk: oyunu yarıda bırakıp çıktı (kaybetmiş sayılır). */
+data class OyuncuDurumu(val cevaplanan: Int = 0, val dogru: Int = 0, val sure: Int = 0, val bitti: Boolean = false, val terk: Boolean = false)
 
 data class CanliMac(
     val id: String,
@@ -102,6 +103,7 @@ object CanliDuello {
                     (v["d"] as? Number)?.toInt() ?: 0,
                     (v["t"] as? Number)?.toInt() ?: 0,
                     v["b"] as? Boolean ?: false,
+                    v["x"] as? Boolean ?: false,
                 )
             }
             @Suppress("UNCHECKED_CAST")
@@ -119,7 +121,7 @@ object CanliDuello {
 
     fun ilerlemeYaz(id: String, uid: String, o: OyuncuDurumu) {
         db.collection("maclar").document(id).update(
-            "ilerleme.$uid", mapOf("c" to o.cevaplanan, "d" to o.dogru, "t" to o.sure, "b" to o.bitti)
+            "ilerleme.$uid", mapOf("c" to o.cevaplanan, "d" to o.dogru, "t" to o.sure, "b" to o.bitti, "x" to o.terk)
         )
     }
 }
