@@ -77,6 +77,7 @@ private sealed interface Ekran {
     data object Duello : Ekran
     data object GununBes : Ekran
     data object CanliDuello : Ekran
+    data object Hazirlik : Ekran
     data class Hedef(val ders: String?) : Ekran
     data object Gorus : Ekran
     data object Aydinlatma : Ekran
@@ -99,6 +100,7 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        com.lisanshazirlik.app.data.Olcum.baslat(applicationContext)
         val depo = SoruDeposu(applicationContext)
         val kayit = YerelKayit(applicationContext)
         val hesap = Hesap()
@@ -162,7 +164,10 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
 
     fun git(e: Ekran) { yigin = yigin + e }
     fun geri() { if (yigin.isNotEmpty()) yigin = yigin.dropLast(1) }
-    val cevapla: (Soru, Boolean) -> Unit = { s, d -> depo.cevapKaydet(s, d, gunlukHedef(banka, depo)) }
+    val cevapla: (Soru, Boolean) -> Unit = { s, d ->
+        depo.cevapKaydet(s, d, gunlukHedef(banka, depo))
+        com.lisanshazirlik.app.data.Olcum.olay("soru_cevap", "ders" to s.ders, "dogru" to d)
+    }
 
     // ---- puan, rozet, sıralama ve davet işleri ----
     var davetDurumu by remember { mutableStateOf<Topluluk.DavetDurumu?>(null) }
@@ -218,6 +223,7 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
         kulaklik = { git(Ekran.Kulaklik) },
         duello = { git(Ekran.Duello) },
         gunun5 = { git(Ekran.GununBes) },
+        hazirlik = { git(Ekran.Hazirlik) },
     )
 
     BackHandler(enabled = yigin.isNotEmpty() || sekme != Sekme.ANA) {
@@ -225,6 +231,13 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
     }
 
     val ust = yigin.lastOrNull()
+    LaunchedEffect(ust?.javaClass?.simpleName, sekme) {
+        com.lisanshazirlik.app.data.Olcum.ekran(ust?.javaClass?.simpleName ?: "Sekme_${sekme.name}")
+    }
+    LaunchedEffect(depo.uid, depo.kullanici?.lisans) {
+        com.lisanshazirlik.app.data.Olcum.kullanici(depo.uid)
+        com.lisanshazirlik.app.data.Olcum.ozellik("lisans", depo.kullanici?.lisans)
+    }
     // Alt menü her ekranda görünür; sadece deneme/konu testi sırasında gizlenir.
     // Bir sekmeye dokunmak o sekmenin başına döner.
     Kabuk(
@@ -287,6 +300,7 @@ private fun AltEkran(
                 geri = geri,
             )
             Ekran.Shorts -> com.lisanshazirlik.app.ui.ShortsEkrani(banka, depo, konuAc = { git(Ekran.Konu(it)) }, geri = geri)
+            Ekran.Hazirlik -> com.lisanshazirlik.app.ui.HazirlikEkrani(banka, depo, dersAc = { y.paketAc(it) }, geri = geri)
             Ekran.GununBes -> com.lisanshazirlik.app.ui.GununBesEkrani(banka, depo, basla = { b, s -> git(Ekran.Coz(b, s, "tekrar")) }, geri = geri)
             Ekran.Kulaklik -> com.lisanshazirlik.app.ui.KulaklikEkrani(banka, depo, cevapla, geri = geri)
             Ekran.Duello -> com.lisanshazirlik.app.ui.DuelloEkrani(banka, depo, hesap.uid, cevapla, geri = geri, canliBasla = { git(Ekran.CanliDuello) })

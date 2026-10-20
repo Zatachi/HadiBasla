@@ -6,6 +6,7 @@ import java.time.temporal.IsoFields
 /** Puan (XP), seviye, rozet ve davet ödülü kuralları tek yerde. */
 object Oyun {
     // ---- XP kuralları ----
+    const val XP_SONUC = 100
     const val XP_DOGRU = 10
     const val XP_YANLIS = 2
     const val XP_YENI_GUN = 20

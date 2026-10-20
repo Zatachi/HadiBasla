@@ -103,6 +103,30 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, uid: String?, y: Yonlend
             }
         }
 
+        // Bugünkü plan ve hazırlık skoru
+        item { BugunkuPlanKarti(banka, depo, y, Modifier.padding(horizontal = 16.dp)) }
+
+        // Sınav tarihi geçmiş ama sonucu girilmemiş ders varsa: sonucu iste
+        val sonucBekleyen = depo.hedefler.firstOrNull { h ->
+            !h.gecti && h.sinavTarihi != null && h.sinavTarihi.isBefore(java.time.LocalDate.now()) && h.ders !in depo.sonuclar
+        }
+        if (sonucBekleyen != null) {
+            item {
+                Row(
+                    Modifier.padding(horizontal = 16.dp).fillMaxWidth().clip(RoundedCornerShape(16.dp))
+                        .background(Color(0xFFFBEFD7)).clickable(onClick = y.sonuclar).padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text("📝", fontSize = 26.sp)
+                    Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+                        Text("${banka.ders(sonucBekleyen.ders)?.kisaAd ?: sonucBekleyen.ders} Sınavın Nasıl Geçti?", style = MaterialTheme.typography.titleMedium, color = Color(0xFF7A5A12))
+                        Text("Sonucunu Gir · +${com.lisanshazirlik.app.data.Oyun.XP_SONUC} XP", style = MaterialTheme.typography.bodyMedium, color = Color(0xFF7A5A12))
+                    }
+                    Text("›", fontSize = 22.sp, color = Color(0xFF7A5A12))
+                }
+            }
+        }
+
         // Öne çıkan iki büyük kutu: Shorts ve Günün 5 dakikası
         item {
             val odak = com.lisanshazirlik.app.data.Odak.ders(banka, depo)

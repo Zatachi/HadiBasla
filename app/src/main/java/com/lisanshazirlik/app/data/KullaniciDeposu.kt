@@ -50,6 +50,9 @@ data class Kullanici(
     val izlenenShort: List<String> = emptyList(),
     val shortGun: String = "",
     val shortSayi: Int = 0,
+    val planGun: String = "",
+    val planAdim: String? = null,
+    val planTekrar: Int = 0,
 ) {
     /** Bu haftanın XP'si (hafta değiştiyse 0). */
     fun buHaftaXp(): Int = if (hafta == Oyun.hafta()) xpHafta else 0
@@ -302,6 +305,7 @@ class KullaniciDeposu(val uid: String) {
 
     /** Bir kısa video izlendi: günlük sayaç, seri ve 10'a ulaşınca ödül. İzlemek de çalışmak sayılır. */
     fun shortIzlendi(id: String) {
+        Olcum.olay("short_izlendi", "id" to id)
         val k = kullanici ?: return
         val yeniSayi = bugunShort() + 1
         val ek = mutableMapOf<String, Any?>(
@@ -353,6 +357,7 @@ class KullaniciDeposu(val uid: String) {
 
     /** Paket adımını tamamlar; paketin son adımıysa ödül verir. */
     fun paketAdimTamam(banka: SoruBankasi, ders: String, adimId: String) {
+        Olcum.olay("adim_tamam", "ders" to ders, "adim" to adimId)
         val once = Paket.tamamlananlar(this, ders)
         if (adimId in once) return
         kok.set(mapOf("paketler" to mapOf(ders to FieldValue.arrayUnion(adimId)), "sonPaket" to ders), SetOptions.merge())
@@ -377,6 +382,12 @@ class KullaniciDeposu(val uid: String) {
 
     /** Gerçek sınav puanı. 50 ve üzeri girilirse o dersin hedefi "Geçildi" olur. */
     fun sonucKaydet(ders: String, puan: Int, tarih: LocalDate?) {
+        Olcum.olay("sinav_sonucu", "ders" to ders, "gecti" to (puan >= 50))
+        // Gerçek sınav sonucunu ilk kez paylaşana teşekkür puanı: bu veriler uygulamanın başarısını ölçer.
+        if (ders !in sonuclar) {
+            xpEkle(Oyun.XP_SONUC)
+            kutlama = "Sonucunu paylaştığın için teşekkürler! +${Oyun.XP_SONUC} XP"
+        }
         kok.collection("sonuclar").document(ders).set(
             mapOf("puan" to puan.coerceIn(0, 100), "tarih" to tarih?.toString(), "zaman" to FieldValue.serverTimestamp())
         )
@@ -396,6 +407,7 @@ class KullaniciDeposu(val uid: String) {
     }
 
     fun denemeKaydet(kapsam: String, ortalama: Int, gecti: Boolean, dersPuanlari: Map<String, Int>, soruSayisi: Int, no: Int = 0) {
+        Olcum.olay("deneme_bitti", "kapsam" to kapsam, "ortalama" to ortalama, "no" to no)
         xpEkle(Oyun.XP_DENEME + ortalama)
         kok.collection("denemeler").add(
             mapOf(
@@ -447,6 +459,9 @@ class KullaniciDeposu(val uid: String) {
         izlenenShort = (get("izlenenShort") as? List<*>)?.map { it.toString() } ?: emptyList(),
         shortGun = getString("shortGun").orEmpty(),
         shortSayi = getLong("shortSayi")?.toInt() ?: 0,
+        planGun = (get("plan") as? Map<*, *>)?.get("gun")?.toString().orEmpty(),
+        planAdim = (get("plan") as? Map<*, *>)?.get("adim")?.toString(),
+        planTekrar = ((get("plan") as? Map<*, *>)?.get("tekrar") as? Number)?.toInt() ?: 0,
     )
 
     private fun DocumentSnapshot.deneme(): DenemeKaydi? = runCatching {

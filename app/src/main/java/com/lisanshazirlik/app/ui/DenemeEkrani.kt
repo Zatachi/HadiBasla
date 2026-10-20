@@ -96,6 +96,7 @@ fun DenemeEkrani(
     geri: () -> Unit,
 ) {
     val cevaplar = remember { mutableStateMapOf<Int, Int>() }
+    val isaretli = remember { androidx.compose.runtime.mutableStateListOf<Int>() }
     var sira by remember { mutableIntStateOf(0) }
     var kalan by remember { mutableIntStateOf(denemeSuresiDk(sorular.size) * 60) }
     var bitti by remember { mutableStateOf(false) }
@@ -191,6 +192,7 @@ fun DenemeEkrani(
                         contentAlignment = Alignment.Center,
                     ) {
                         Text("${i + 1}", style = MaterialTheme.typography.labelLarge, color = if (cevapli) Krem else Metin)
+                        if (i in isaretli) Box(Modifier.align(Alignment.TopEnd).padding(2.dp).size(8.dp).clip(androidx.compose.foundation.shape.CircleShape).background(Altin))
                     }
                 }
             }
@@ -203,7 +205,18 @@ fun DenemeEkrani(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
-                    SoruMetni(soru, "Soru ${sira + 1} · ${banka.ders(soru.ders)?.kisaAd ?: soru.ders}")
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(Modifier.weight(1f)) { SoruMetni(soru, "Soru ${sira + 1} · ${banka.ders(soru.ders)?.kisaAd ?: soru.ders}") }
+                    }
+                    val isaretMi = sira in isaretli
+                    Text(
+                        if (isaretMi) "🚩 İşareti Kaldır" else "🚩 Sonra Bakmak İçin İşaretle",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = if (isaretMi) YesilKoyu else Yesil,
+                        modifier = Modifier.clip(RoundedCornerShape(50)).background(if (isaretMi) Altin else YesilAcik)
+                            .clickable { if (isaretMi) isaretli.remove(sira) else isaretli.add(sira) }
+                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                    )
                     Bosluk(6)
                     soru.secenekler.forEachIndexed { i, metin ->
                         Sik(
@@ -224,7 +237,26 @@ fun DenemeEkrani(
         AlertDialog(
             onDismissRequest = { bitirSor = false },
             title = { Text("Sınavı Bitir") },
-            text = { Text(if (bos > 0) "$bos soruyu boş bıraktın. Yine de bitirmek istiyor musun?" else "Cevaplarını Göndermek Üzeresin.") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Cevap Kağıdın", style = MaterialTheme.typography.titleMedium)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        listOf(Triple("${cevaplar.size}", "Cevaplı", Yesil), Triple("$bos", "Boş", YanlisKirmizi), Triple("${isaretli.size}", "İşaretli", Altin)).forEach { (n, ad, renk) ->
+                            Column(Modifier.weight(1f).clip(RoundedCornerShape(10.dp)).background(Zemin).padding(vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(n, fontFamily = Baslik, fontSize = 22.sp, color = renk)
+                                Text(ad, fontSize = 12.sp, color = MetinSoluk)
+                            }
+                        }
+                    }
+                    if (bos > 0 || isaretli.isNotEmpty()) {
+                        Text("Bitirmeden Önce Boş ve İşaretli Sorulara Bakabilirsin.", color = MetinSoluk)
+                        TextButton(onClick = {
+                            bitirSor = false
+                            sira = (sorular.indices.firstOrNull { it !in cevaplar } ?: isaretli.minOrNull() ?: sira)
+                        }) { Text("İlk Boş ya da İşaretli Soruya Git") }
+                    }
+                }
+            },
             confirmButton = { TextButton(onClick = { bitirSor = false; bitir() }) { Text("Bitir") } },
             dismissButton = { TextButton(onClick = { bitirSor = false }) { Text("Devam Et") } },
         )

@@ -168,6 +168,7 @@ fun CanliDuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, cevapla: (Soru,
         is Asama.Sonuc -> {
             LaunchedEffect(Unit) {
                 val s = sonucHesapla(a.benim, a.rakip)
+                com.lisanshazirlik.app.data.Olcum.olay("duello_bitti", "bot" to a.bot, "sonuc" to s, "terk" to a.benim.terk)
                 val xp = if (a.benim.terk) 0 else when (s) { 1 -> if (a.bot) 15 else 40; 0 -> if (a.bot) 8 else 20; else -> 5 }
                 depo.xpEkle(xp)
             }

@@ -91,6 +91,7 @@ class Yonlendirici(
     val kulaklik: () -> Unit = {},
     val duello: () -> Unit = {},
     val gunun5: () -> Unit = {},
+    val hazirlik: () -> Unit = {},
 )
 
 @Composable
@@ -537,7 +538,11 @@ private fun KursKarti(banka: SoruBankasi, depo: KullaniciDeposu, d: com.lisansha
             } else {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        listOfNotNull("${d.konular.size} Konu", if (videolar > 0) "$videolar Video" else null).joinToString(" · "),
+                        listOfNotNull(
+                            "${d.konular.size} Konu",
+                            if (videolar > 0) "$videolar Video" else null,
+                            com.lisanshazirlik.app.data.Hazirlik.ders(banka, depo, d.kod)?.let { "Hazırlık ${it.toplam}" },
+                        ).joinToString(" · "),
                         style = MaterialTheme.typography.bodyMedium,
                         fontSize = 12.sp,
                         color = MetinSoluk,
