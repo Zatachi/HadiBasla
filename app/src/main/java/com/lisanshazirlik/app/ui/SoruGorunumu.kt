@@ -43,38 +43,54 @@ import com.lisanshazirlik.app.data.Soru
 
 enum class SikDurumu { NORMAL, SECILI, DOGRU, YANLIS, SOLUK }
 
-/** Soru kartı: koyu yeşil zemin, altın etiket, krem metin (Profil kimlik kartıyla aynı dil). */
+/**
+ * Soru kartı: koyu yeşil zemin, altın etiket, krem metin (Profil kimlik kartıyla aynı dil).
+ * Üst yazı " · " ile bölünür: ilk parça altın (ders), kalanı altında soluk krem (konu); kesilmez.
+ */
 @Composable
 fun SoruMetni(soru: Soru, ust: String, @Suppress("UNUSED_PARAMETER") renk: Color = Yesil) {
+    val parcalar = ust.split(" · ")
     val sekil = RoundedCornerShape(18.dp)
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .clip(sekil)
-            .background(YesilKoyu)
-            .padding(start = 18.dp, end = 18.dp, top = 14.dp, bottom = 18.dp),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                ust.uppercase(java.util.Locale.forLanguageTag("tr")),
-                style = MaterialTheme.typography.labelMedium,
-                color = Altin,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f, fill = false),
-            )
-            if (soru.senaryo) {
-                Text(
-                    "  ·  VAKA",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = KremSoluk,
-                )
+    Box(Modifier.fillMaxWidth().clip(sekil).background(YesilKoyu)) {
+        // Köşede silik büyük soru işareti: kartı süsler, okumayı engellemez.
+        Text(
+            "?",
+            fontFamily = Baslik,
+            fontSize = 120.sp,
+            color = Krem.copy(alpha = 0.06f),
+            modifier = Modifier.align(Alignment.TopEnd).padding(end = 14.dp),
+        )
+        Column(Modifier.fillMaxWidth().padding(start = 18.dp, end = 18.dp, top = 16.dp, bottom = 20.dp)) {
+            Row(verticalAlignment = Alignment.Top) {
+                Box(Modifier.padding(top = 3.dp).width(3.dp).height(if (parcalar.size > 1) 34.dp else 16.dp).clip(RoundedCornerShape(2.dp)).background(Altin))
+                Column(Modifier.padding(start = 10.dp).weight(1f)) {
+                    Text(
+                        parcalar.first().uppercase(java.util.Locale.forLanguageTag("tr")),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Altin,
+                        maxLines = 2,
+                    )
+                    if (parcalar.size > 1) {
+                        Text(
+                            parcalar.drop(1).joinToString(" · "),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = KremSoluk,
+                            maxLines = 2,
+                        )
+                    }
+                }
+                if (soru.senaryo) {
+                    Text(
+                        "VAKA",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = YesilKoyu,
+                        modifier = Modifier.padding(start = 8.dp).clip(RoundedCornerShape(50)).background(Altin).padding(horizontal = 8.dp, vertical = 2.dp),
+                    )
+                }
             }
+            Bosluk(14)
+            Text(soru.metin, style = MaterialTheme.typography.bodyLarge, fontSize = 17.sp, lineHeight = 25.sp, color = Krem)
         }
-        Bosluk(8)
-        Box(Modifier.width(28.dp).height(2.dp).background(Altin))
-        Bosluk(12)
-        Text(soru.metin, style = MaterialTheme.typography.bodyLarge, fontSize = 17.sp, lineHeight = 25.sp, color = Krem)
     }
 }
 
@@ -82,7 +98,7 @@ fun SoruMetni(soru: Soru, ust: String, @Suppress("UNUSED_PARAMETER") renk: Color
 @Composable
 fun Sik(harf: String, metin: String, durum: SikDurumu, tikla: (() -> Unit)?) {
     val (zemin, kenar, rozet, rozetYazi) = when (durum) {
-        SikDurumu.NORMAL -> Dortlu(Kart, Cizgi, Zemin, Yesil)
+        SikDurumu.NORMAL -> Dortlu(Kart, Cizgi, YesilAcik, Yesil)
         SikDurumu.SECILI -> Dortlu(YesilAcik, Yesil, Yesil, Krem)
         SikDurumu.DOGRU -> Dortlu(DogruZemin, DogruYesil, DogruYesil, Color.White)
         SikDurumu.YANLIS -> Dortlu(YanlisZemin, YanlisKirmizi, YanlisKirmizi, Color.White)
@@ -105,7 +121,7 @@ fun Sik(harf: String, metin: String, durum: SikDurumu, tikla: (() -> Unit)?) {
     ) {
         Box(
             Modifier.size(30.dp).clip(CircleShape).background(rozetA)
-                .then(if (durum == SikDurumu.NORMAL || durum == SikDurumu.SOLUK) Modifier.border(1.dp, Cizgi, CircleShape) else Modifier),
+                .then(if (durum == SikDurumu.SOLUK) Modifier.border(1.dp, Cizgi, CircleShape) else Modifier),
             contentAlignment = Alignment.Center,
         ) {
             Text(harf, fontFamily = Baslik, fontSize = 15.sp, color = rozetYazi)
