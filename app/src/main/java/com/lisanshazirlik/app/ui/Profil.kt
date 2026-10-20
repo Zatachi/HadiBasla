@@ -1,6 +1,10 @@
 package com.lisanshazirlik.app.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -81,78 +85,96 @@ fun ProfilSekme(
         }
     }
 
-    Column(Modifier.fillMaxSize()) {
-        SekmeBasligi("Profil")
+    val seviye = com.lisanshazirlik.app.data.Oyun.seviye(k?.xp ?: 0)
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(bottom = ic.calculateBottomPadding())
+            .verticalScroll(rememberScrollState()),
+    ) {
+        // Kimlik kartı: yeşil bant içinde ad, seviye ve üç sayı
         Column(
             Modifier
-                .fillMaxSize()
-                .padding(bottom = ic.calculateBottomPadding())
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+                .fillMaxWidth()
+                .background(Yesil)
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 20.dp),
         ) {
-            KartKutu {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(Modifier.size(52.dp).clip(CircleShape).background(Yesil), contentAlignment = Alignment.Center) {
-                        Text(basHarf(k?.ad.orEmpty()), color = Krem, fontSize = 22.sp)
-                    }
-                    Column(Modifier.padding(start = 14.dp).weight(1f)) {
-                        Text(k?.ad.orEmpty(), style = MaterialTheme.typography.titleLarge)
-                        Text(
-                            if (hesap.misafir) "Misafir hesap" else (hesap.eposta ?: "Google hesabı"),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MetinSoluk,
-                        )
-                    }
-                    TextButton(onClick = { adDuzenle = true }) { Text("Adı düzenle") }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(64.dp).clip(CircleShape).background(Krem), contentAlignment = Alignment.Center) {
+                    Text(basHarf(k?.ad.orEmpty()), color = Yesil, fontFamily = Baslik, fontSize = 28.sp)
                 }
-                if (hesap.misafir) {
+                Column(Modifier.padding(start = 14.dp).weight(1f)) {
+                    Text(k?.ad.orEmpty(), fontFamily = Baslik, fontSize = 24.sp, color = Krem, maxLines = 1)
+                    Bosluk(4)
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Rozetcik("${seviye.ad} · ${k?.xp ?: 0} XP", Altin, YesilKoyu)
+                        Rozetcik(if (hesap.misafir) "Misafir" else "Google", YesilKoyu, KremSoluk)
+                    }
+                }
+                Text(
+                    "✎", color = Krem, fontSize = 20.sp,
+                    modifier = Modifier.clip(CircleShape).background(YesilKoyu).clickableIf(true) { adDuzenle = true }.padding(horizontal = 12.dp, vertical = 8.dp),
+                )
+            }
+            Bosluk(16)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                ProfilSayi(Modifier.weight(1f), "🔥", "${depo.seri()}", "gün seri")
+                ProfilSayi(Modifier.weight(1f), "✏️", "${depo.cozulenler().size}", "soru")
+                ProfilSayi(Modifier.weight(1f), "🏅", "${k?.rozetler?.size ?: 0}", "rozet")
+            }
+        }
+
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            if (hesap.misafir) {
+                Column(
+                    Modifier.fillMaxWidth().clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp))
+                        .background(Color(0xFFFBEFD7)).padding(16.dp),
+                ) {
+                    Text("⚠️ Hesabın sadece bu telefonda", style = MaterialTheme.typography.titleMedium, color = Color(0xFF7A5A12))
+                    Bosluk(2)
+                    Text("Telefon değişirse ilerlemen kaybolur.", style = MaterialTheme.typography.bodyMedium, color = Color(0xFF7A5A12))
                     Bosluk(10)
-                    Text(
-                        "Misafir hesabın sadece bu telefonda. Google hesabına bağlarsan ilerlemen kalıcı olur ve başka telefonda da açılır.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MetinSoluk,
-                    )
-                    Bosluk(8)
                     Button(
                         onClick = { calistir("Google hesabına bağlanıyor…") { hesap.googleIleGiris(baglam) } },
                         enabled = bekliyor == null,
-                        modifier = Modifier.fillMaxWidth().height(50.dp),
-                    ) { Text("Google hesabına bağla") }
+                        modifier = Modifier.fillMaxWidth().height(48.dp),
+                    ) { Text("Google ile kalıcı yap") }
                 }
             }
+            k?.odulPremiumBitis?.takeIf { k.premiumAktif() }?.let {
+                Text("🎁 Ödül Premium · ${uzunTarih(it)} tarihine kadar", style = MaterialTheme.typography.labelLarge, color = DogruYesil)
+            }
 
-            KartKutu {
-                k?.odulPremiumBitis?.takeIf { k.premiumAktif() }?.let {
-                    Text("🎁 Ödül Premium: ${uzunTarih(it)} tarihine kadar", style = MaterialTheme.typography.bodyMedium, color = DogruYesil, modifier = Modifier.padding(vertical = 8.dp))
-                    HorizontalDivider(color = Cizgi)
-                }
-                Satir("Sınavım", banka.lisans(k?.lisans)?.ad ?: "Seçilmedi") { y.lisans() }
-                HorizontalDivider(color = Cizgi)
-                Satir("Hedeflerim", "${depo.aktifHedefler().size} aktif · ${depo.hedefler.count { it.gecti }} geçildi") { y.hedefAc(null) }
-                HorizontalDivider(color = Cizgi)
-                Satir("Sertifikalarım", "Gerçek sınav puanların ve lisans durumun") { y.sonuclar() }
-                HorizontalDivider(color = Cizgi)
-                Satir("Günlük hatırlatma", if (kayit.hatirlatmaAcik) "Açık · %02d:%02d".format(kayit.hatirlatmaSaati / 60, kayit.hatirlatmaSaati % 60) else "Kapalı") { y.hatirlatma() }
-                HorizontalDivider(color = Cizgi)
-                Satir("Verilerim", "Hakkında tutulan bilgiler") { y.verilerim() }
-                HorizontalDivider(color = Cizgi)
-                Satir("Aydınlatma metni", "Kişisel verilerin nasıl işlenir") { y.aydinlatma() }
-                HorizontalDivider(color = Cizgi)
-                Satir("Görüşünü yaz", "Uygulamayı birlikte geliştirelim") { y.gorus() }
+            Etiket("Çalışmam", Modifier.padding(start = 4.dp, top = 4.dp))
+            Grup {
+                MenuSatiri("🎓", "Sınavım", banka.lisans(k?.lisans)?.kisaAd ?: "Seç") { y.lisans() }
+                MenuSatiri("🎯", "Hedeflerim", "${depo.aktifHedefler().size} aktif") { y.hedefAc(null) }
+                MenuSatiri("📜", "Sertifikalarım", null) { y.sonuclar() }
+                MenuSatiri(
+                    "🔔", "Günlük hatırlatma",
+                    if (kayit.hatirlatmaAcik) "%02d:%02d".format(kayit.hatirlatmaSaati / 60, kayit.hatirlatmaSaati % 60) else "Kapalı",
+                    son = !BuildConfig.PREMIUM_AKTIF,
+                ) { y.hatirlatma() }
                 if (BuildConfig.PREMIUM_AKTIF) {
-                    HorizontalDivider(color = Cizgi)
-                    Satir("Premium", if (k?.premium == true) "Aktif" else "Tüm sorular ve denemeler") { y.premium() }
+                    MenuSatiri("⭐", "Premium", if (k?.premium == true) "Aktif" else null, son = true) { y.premium() }
                 }
             }
 
-            KartKutu {
+            Etiket("Gizlilik ve destek", Modifier.padding(start = 4.dp, top = 4.dp))
+            Grup {
+                MenuSatiri("🗂", "Verilerim", null) { y.verilerim() }
+                MenuSatiri("🔒", "Aydınlatma metni", null) { y.aydinlatma() }
+                MenuSatiri("💬", "Görüşünü yaz", null, son = true) { y.gorus() }
+            }
+
+            Etiket("Hesap", Modifier.padding(start = 4.dp, top = 4.dp))
+            Grup {
                 if (hesap.misafir) {
-                    Satir("Misafir hesabını sil", "İlerlemen ve tüm kayıtların silinir", YanlisKirmizi) { silSor = true }
+                    MenuSatiri("🗑", "Misafir hesabını sil", null, tehlike = true, son = true) { silSor = true }
                 } else {
-                    Satir("Çıkış yap", "Verilerin hesabında kalır") { cikisSor = true }
-                    HorizontalDivider(color = Cizgi)
-                    Satir("Hesabımı sil", "Hesabın ve tüm kayıtların kalıcı olarak silinir", YanlisKirmizi) { silSor = true }
+                    MenuSatiri("↩️", "Çıkış yap", null) { cikisSor = true }
+                    MenuSatiri("🗑", "Hesabımı sil", null, tehlike = true, son = true) { silSor = true }
                 }
             }
 
@@ -164,13 +186,10 @@ fun ProfilSekme(
             }
             hata?.let { Text(it, color = YanlisKirmizi, style = MaterialTheme.typography.bodyMedium) }
 
-            Text(
-                "Lisansla ${BuildConfig.VERSION_NAME}\nBağımsız bir çalışma aracıdır; SPL veya SPK ile bağlantılı değildir.",
-                style = MaterialTheme.typography.bodyMedium,
-                fontSize = 12.sp,
-                color = MetinSoluk,
-                modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp),
-            )
+            Column(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("Lisansla ${BuildConfig.VERSION_NAME}", fontSize = 12.sp, color = MetinSoluk)
+                Text("Bağımsız bir çalışma aracıdır.", fontSize = 12.sp, color = MetinSoluk)
+            }
         }
     }
 
@@ -219,6 +238,56 @@ fun ProfilSekme(
         )
     }
     cakisma?.let { HesapCakismasiPenceresi(it, hesap) { cakisma = null } }
+}
+
+@Composable
+private fun Rozetcik(yazi: String, zemin: Color, renk: Color) {
+    Text(
+        yazi, color = renk, style = MaterialTheme.typography.labelMedium, maxLines = 1,
+        modifier = Modifier.clip(androidx.compose.foundation.shape.RoundedCornerShape(50)).background(zemin).padding(horizontal = 10.dp, vertical = 4.dp),
+    )
+}
+
+@Composable
+private fun ProfilSayi(modifier: Modifier, simge: String, deger: String, etiket: String) {
+    Column(
+        modifier.clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp)).background(YesilKoyu).padding(vertical = 10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text("$simge $deger", fontFamily = Baslik, fontSize = 20.sp, color = Krem)
+        Text(etiket, fontSize = 12.sp, color = KremSoluk)
+    }
+}
+
+@Composable
+private fun Grup(icerik: @Composable () -> Unit) {
+    Column(
+        Modifier.fillMaxWidth().clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp)).background(Kart)
+            .border(1.dp, Cizgi, androidx.compose.foundation.shape.RoundedCornerShape(16.dp)),
+    ) { icerik() }
+}
+
+/** Menü satırı: simge, başlık, sağda kısa değer ve ok. */
+@Composable
+private fun MenuSatiri(simge: String, baslik: String, deger: String?, tehlike: Boolean = false, son: Boolean = false, tikla: () -> Unit) {
+    Column {
+        Row(
+            Modifier.fillMaxWidth().clickableIf(true, tikla).padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                Modifier.size(38.dp).clip(CircleShape).background(if (tehlike) YanlisZemin else YesilAcik),
+                contentAlignment = Alignment.Center,
+            ) { Text(simge, fontSize = 17.sp) }
+            Text(
+                baslik, style = MaterialTheme.typography.titleMedium, color = if (tehlike) YanlisKirmizi else Metin,
+                modifier = Modifier.weight(1f).padding(start = 12.dp),
+            )
+            if (deger != null) Text(deger, style = MaterialTheme.typography.bodyMedium, color = MetinSoluk, maxLines = 1)
+            if (!tehlike) Text("  ›", fontSize = 20.sp, color = MetinSoluk)
+        }
+        if (!son) HorizontalDivider(color = Cizgi, modifier = Modifier.padding(start = 64.dp))
+    }
 }
 
 @Composable
