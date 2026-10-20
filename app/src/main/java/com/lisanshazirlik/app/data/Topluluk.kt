@@ -27,15 +27,15 @@ object Topluluk {
     private val db by lazy { FirebaseFirestore.getInstance() }
 
     fun tablolar(banka: SoruBankasi, lisans: String?): List<Tablo> = listOf(
-        Tablo("lig", "Haftalık lig", "xp_${Oyun.hafta()}", "XP", "Pazartesi sıfırlanır. İlk 3'e ${Oyun.HAFTALIK_ODUL_GUN} gün Premium."),
-        Tablo("soru", "En çok soru", "cozulen", "soru", "Bugüne kadar çözülen soru sayısı."),
-        Tablo("oran", "Doğru oranı", "oranUygun", "%", "En az 50 soru çözenler arasında."),
-        Tablo("deneme", "Deneme şampiyonları", "enIyiDeneme", "puan", "Süreli denemelerdeki en yüksek puan."),
-        Tablo("seri", "En uzun seri", "enUzunSeri", "gün", "Üst üste en çok gün çalışanlar."),
-        Tablo("gelisim", "En çok gelişen", "gelisim", "puan", "İlk denemesine göre en çok puan artıranlar."),
+        Tablo("lig", "Haftalık Lig", "xp_${Oyun.hafta()}", "XP", "Pazartesi sıfırlanır. İlk 3'e ${Oyun.HAFTALIK_ODUL_GUN} gün Premium."),
+        Tablo("soru", "En Çok Soru", "cozulen", "soru", "Bugüne kadar çözülen soru sayısı."),
+        Tablo("oran", "Doğru Oranı", "oranUygun", "%", "En az 50 soru çözenler arasında."),
+        Tablo("deneme", "Deneme Şampiyonları", "enIyiDeneme", "puan", "Süreli denemelerdeki en yüksek puan."),
+        Tablo("seri", "En Uzun Seri", "enUzunSeri", "gün", "Üst üste en çok gün çalışanlar."),
+        Tablo("gelisim", "En Çok Gelişen", "gelisim", "puan", "İlk denemesine göre en çok puan artıranlar."),
     ) + banka.lisansDersleri(lisans).map { d ->
         Tablo("ders_${d.kod}", d.kisaAd, "dersDogru_${d.kod}", "doğru", "${d.ad} dersinde en çok doğru yapanlar.")
-    } + Tablo("duvar", "Geçenler duvarı", "gectiZaman", "", "Sınavı geçtiğini paylaşanlar. Tebrikler!")
+    } + Tablo("duvar", "Geçenler Duvarı", "gectiZaman", "", "Sınavı geçtiğini paylaşanlar. Tebrikler!")
 
     // ---------------------------------------------------------------- sıralama
 
