@@ -44,7 +44,7 @@ fun CozEkrani(
     cevapla: (Soru, Boolean) -> Unit,
     geri: () -> Unit,
     /** Eğitim paketinde: sonuç ekranında "Devam et" gösterilir. */
-    bitti: ((dogru: Int, toplam: Int) -> Unit)? = null,
+    adimBitti: ((dogru: Int, toplam: Int) -> Unit)? = null,
 ) {
     var liste by remember { mutableStateOf(sorular) }
     var sira by remember { mutableIntStateOf(0) }
@@ -102,7 +102,7 @@ fun CozEkrani(
                     liste = liste.shuffled(); sira = 0; secim = null; dogruSayi = 0; bitti = false
                 },
                 geri = geri,
-                devam = if (bitti != null) ({ bitti?.invoke(dogruSayi, liste.size) }) else null,
+                devam = adimBitti?.let { f -> { f(dogruSayi, liste.size) } },
             )
             return@Scaffold
         }

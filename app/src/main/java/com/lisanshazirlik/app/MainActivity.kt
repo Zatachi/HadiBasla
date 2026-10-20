@@ -344,7 +344,7 @@ private fun AltEkran(
                         com.lisanshazirlik.app.data.Paket.Tur.SORU -> {
                             val sorular = remember(a.id) { calismaSirasi(banka.konuSorulari(konu!!.id), depo) }
                             CozEkrani(konu!!.ad, sorular, "paket", banka, kayit, cevapla, geri = geri,
-                                bitti = { d, t -> tamamla("$t sorudan $d doğru") })
+                                adimBitti = { d, t -> tamamla("$t sorudan $d doğru") })
                         }
                         com.lisanshazirlik.app.data.Paket.Tur.DENEME -> {
                             val sorular = remember(a.id) { dersDenemesiSorulari(banka, ust.ders) }
