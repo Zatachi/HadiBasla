@@ -1,5 +1,5 @@
 {
-  "surum": 3,
+  "surum": 4,
   "guncelleme": "20 Ekim 2026",
   "lisanslar": [
     {
@@ -40,7 +40,7 @@
     {
       "kod": "1001",
       "ad": "Dar Kapsamlı Sermaye Piyasası Mevzuatı ve Meslek Kuralları",
-      "kisaAd": "Mevzuat ve Meslek Kuralları",
+      "kisaAd": "Dar Kapsamlı Mevzuat ve Meslek Kuralları",
       "konular": [
         {
           "id": "1001-01",

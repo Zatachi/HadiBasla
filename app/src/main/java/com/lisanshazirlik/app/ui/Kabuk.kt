@@ -476,7 +476,6 @@ fun DerslerSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic:
 @Composable
 fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: PaddingValues) {
     val dersler = banka.lisansDersleri(depo.kullanici?.lisans)
-    val genelAdet = denemeSoruSayisi(banka, dersler)
     val denemeler = depo.denemeler.filter { !it.kapsam.startsWith("konu:") }
     Column(Modifier.fillMaxSize()) {
         SekmeBasligi("Deneme")
@@ -486,10 +485,16 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item {
-                KartKutu(tikla = if (genelAdet > 0) y.genelDeneme else null) {
-                    Text("Genel deneme", style = MaterialTheme.typography.titleMedium)
+                Column(
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(YesilAcik).padding(16.dp),
+                ) {
+                    Text("Sınav nasıl?", style = MaterialTheme.typography.titleMedium)
                     Bosluk(4)
-                    Text("${dersler.size} dersten $genelAdet soru, ${denemeSuresiDk(genelAdet)} dakika. Gerçek sınavda her ders 25 soru ve 45 dakika. Her dersten en az 50, ortalama en az 60.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                    Text(
+                        "Her ders ayrı bir sınavdır: 25 soru, 45 dakika. Geçmek için her dersten en az 50, ortalama en az 60 alman gerekir. Denemeler de gerçek sınav gibi ders ders yapılır.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Metin,
+                    )
                 }
             }
             item { Etiket("Ders denemeleri", Modifier.padding(start = 4.dp, top = 8.dp)) }
