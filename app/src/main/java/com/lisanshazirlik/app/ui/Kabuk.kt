@@ -371,24 +371,29 @@ fun DerslerSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic:
         return
     }
     Column(Modifier.fillMaxSize()) {
-        SekmeBasligi("Eğitim")
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .background(Yesil)
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .padding(start = 20.dp, end = 14.dp, top = 14.dp, bottom = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text("Eğitim", fontFamily = Baslik, fontSize = 26.sp, color = Krem, modifier = Modifier.weight(1f))
+            Text(
+                "${lisans?.kisaAd ?: "Seviye"}  ▾",
+                style = MaterialTheme.typography.labelLarge,
+                color = Krem,
+                modifier = Modifier.clip(RoundedCornerShape(50)).background(YesilKoyu).clickable { seviyeler = true }.padding(horizontal = 14.dp, vertical = 8.dp),
+            )
+        }
         LazyColumn(
             Modifier.fillMaxSize().padding(bottom = ic.calculateBottomPadding()),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             item {
-                Column(Modifier.padding(horizontal = 4.dp)) {
-                    Text(
-                        "‹ Seviyeler",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = Yesil,
-                        modifier = Modifier.clip(RoundedCornerShape(50)).background(YesilAcik).clickable { seviyeler = true }.padding(horizontal = 12.dp, vertical = 6.dp),
-                    )
-                    Bosluk(10)
-                    Text(lisans?.kisaAd ?: "", style = MaterialTheme.typography.labelLarge, color = MetinSoluk)
-                    Text("Hangi derse çalışacaksın?", style = MaterialTheme.typography.titleLarge)
-                }
+                Text("Hangi derse çalışacaksın?", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 4.dp, bottom = 2.dp))
             }
             items(dersler.withIndex().toList(), key = { "k" + it.value.kod }) { (i, d) ->
                 KursKarti(banka, depo, d, renkler[i % renkler.size]) { y.paketAc(d.kod) }
@@ -493,58 +498,48 @@ private fun KursKarti(banka: SoruBankasi, depo: KullaniciDeposu, d: com.lisansha
     val tamam = adimlar.count { it.id in bitti }
     val oran = if (adimlar.isEmpty()) 0f else tamam / adimlar.size.toFloat()
     val videolar = d.konular.count { it.video.isNotBlank() }
-    val sekil = RoundedCornerShape(18.dp)
-    Column(
-        Modifier.fillMaxWidth().clip(sekil).background(Kart).border(1.dp, Cizgi, sekil).clickable(onClick = ac),
+    val sekil = RoundedCornerShape(16.dp)
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(sekil)
+            .background(Kart)
+            .border(1.dp, Cizgi, sekil)
+            .clickable(onClick = ac)
+            .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
-            Modifier.fillMaxWidth().background(renk).padding(horizontal = 16.dp, vertical = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
+        Box(
+            Modifier.size(width = 58.dp, height = 64.dp).clip(RoundedCornerShape(12.dp)).background(renk),
+            contentAlignment = Alignment.Center,
         ) {
-            Text(
-                d.kod,
-                style = MaterialTheme.typography.labelLarge,
-                color = renk,
-                modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(Krem).padding(horizontal = 10.dp, vertical = 4.dp),
-            )
-            Text(
-                d.kisaAd,
-                style = MaterialTheme.typography.titleMedium,
-                color = Krem,
-                maxLines = 2,
-                modifier = Modifier.weight(1f).padding(start = 12.dp),
-            )
+            Text(d.kod, style = MaterialTheme.typography.labelLarge, color = Krem)
         }
-        Column(Modifier.padding(16.dp)) {
-            Text(
-                listOfNotNull("${d.konular.size} konu", if (videolar > 0) "$videolar video" else null).joinToString(" · "),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MetinSoluk,
-            )
-            Bosluk(10)
+        Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+            Text(d.kisaAd, style = MaterialTheme.typography.titleMedium, maxLines = 2, lineHeight = 20.sp)
+            Bosluk(4)
             if (adimlar.isEmpty()) {
-                Text("🔜 Anlatımlar hazırlanıyor", style = MaterialTheme.typography.labelLarge, color = MetinSoluk)
+                Text("${d.konular.size} konu · 🔜 hazırlanıyor", style = MaterialTheme.typography.bodyMedium, fontSize = 12.sp, color = MetinSoluk)
             } else {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Ilerleme(oran, Modifier.weight(1f))
-                    Text("  %${(oran * 100).toInt()}", style = MaterialTheme.typography.labelLarge, color = Yesil)
-                }
-                Bosluk(12)
-                Row(
-                    Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(if (tamam == adimlar.size) DogruYesil else Yesil).padding(vertical = 12.dp),
-                    horizontalArrangement = Arrangement.Center,
-                ) {
                     Text(
-                        when {
-                            tamam == adimlar.size -> "🏅 Tamamlandı · Tekrar et"
-                            tamam == 0 -> "▶  Başla"
-                            else -> "▶  Devam et"
-                        },
-                        style = MaterialTheme.typography.labelLarge,
-                        color = Krem,
+                        listOfNotNull("${d.konular.size} konu", if (videolar > 0) "$videolar video" else null).joinToString(" · "),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = 12.sp,
+                        color = MetinSoluk,
+                        modifier = Modifier.weight(1f),
                     )
+                    Text("%${(oran * 100).toInt()}", style = MaterialTheme.typography.labelMedium, color = renk)
                 }
+                Bosluk(4)
+                Ilerleme(oran)
             }
+        }
+        Box(
+            Modifier.size(40.dp).clip(CircleShape).background(if (adimlar.isEmpty()) Zemin else if (tamam == adimlar.size) DogruYesil else renk),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(if (adimlar.isNotEmpty() && tamam == adimlar.size) "✓" else "▶", color = if (adimlar.isEmpty()) MetinSoluk else Krem, fontSize = 15.sp)
         }
     }
 }
