@@ -19,10 +19,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -47,7 +47,7 @@ import kotlin.math.ceil
 
 enum class Sekme(val ad: String, val ikon: ImageVector) {
     ANA("Ana sayfa", Icons.Filled.Home),
-    DERSLER("Dersler", Icons.AutoMirrored.Filled.List),
+    DERSLER("Eğitim", Icons.Filled.PlayArrow),
     DENEME("Deneme", Icons.Filled.CheckCircle),
     BASARI("Başarı", Icons.Filled.Star),
     PROFIL("Profil", Icons.Filled.Person),
@@ -432,12 +432,21 @@ fun DerslerSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic:
     val dogru = depo.dogrular()
     val yanlislar = depo.yanlislar().mapNotNull { banka.bul(it) }
     Column(Modifier.fillMaxSize()) {
-        SekmeBasligi("Dersler")
+        SekmeBasligi("Eğitim")
         LazyColumn(
             Modifier.fillMaxSize().padding(bottom = ic.calculateBottomPadding()),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            item {
+                Column(Modifier.padding(start = 4.dp)) {
+                    Etiket("Eğitim paketlerin")
+                    Bosluk(2)
+                    Text("Video → özet → kartlar → sorular, sırayla. Sonunda ders denemesi.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                }
+            }
+            items(dersler, key = { "p" + it.kod }) { d -> PaketSatiri(banka, depo, d.kod, d.kisaAd, y) }
+            item { Etiket("Serbest çalışma", Modifier.padding(start = 4.dp, top = 12.dp)) }
             item {
                 KartKutu(tikla = if (yanlislar.isNotEmpty()) ({ y.coz("Yanlışlarım", yanlislar.shuffled(), null, "yanlislar") }) else null) {
                     Text("Yanlışlarım", style = MaterialTheme.typography.titleMedium)
@@ -497,6 +506,45 @@ fun DerslerSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic:
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun PaketSatiri(banka: SoruBankasi, depo: KullaniciDeposu, dersKod: String, ad: String, y: Yonlendirici) {
+    val adimlar = com.lisanshazirlik.app.data.Paket.adimlar(banka, dersKod)
+    val bitti = com.lisanshazirlik.app.data.Paket.tamamlananlar(depo, dersKod)
+    val tamam = adimlar.count { it.id in bitti }
+    val sonraki = adimlar.firstOrNull { it.id !in bitti }
+    val bos = adimlar.isEmpty()
+    val bitmis = !bos && sonraki == null
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(if (bos) Kart else if (bitmis) Yesil else YesilKoyu)
+            .clickableIf(!bos) { y.paketAc(dersKod) }
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(if (bitmis) "🏅" else "📦", fontSize = 24.sp)
+        Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+            Text(ad, style = MaterialTheme.typography.titleMedium, color = if (bos) MetinSoluk else Krem)
+            Text(
+                when {
+                    bos -> "Hazırlanıyor · yakında"
+                    bitmis -> "Paket tamamlandı ✓"
+                    tamam == 0 -> "${adimlar.size} adım · Başla"
+                    else -> "Adım ${tamam + 1}/${adimlar.size} · ${sonraki!!.tur.ad}"
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (bos) MetinSoluk else KremSoluk,
+            )
+            if (!bos) {
+                Bosluk(8)
+                Ilerleme(tamam / adimlar.size.toFloat())
+            }
+        }
+        if (!bos) Text("▶", color = Altin, fontSize = 20.sp)
     }
 }
 
