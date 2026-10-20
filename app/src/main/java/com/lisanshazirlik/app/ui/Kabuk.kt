@@ -527,8 +527,7 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
                         Text(d.kisaAd, style = MaterialTheme.typography.titleMedium, maxLines = 2)
                         Bosluk(2)
                         Text(
-                            if (adet < SINAV_SORU) "⏱ $adet soru · ${denemeSuresiDk(adet)} dk  (soru eklendikçe 25'e çıkacak)"
-                            else "⏱ 25 soru · 45 dk",
+                            "📋 $DENEME_ADEDI deneme · her biri 25 soru, 45 dk",
                             style = MaterialTheme.typography.bodyMedium,
                             fontSize = 12.sp,
                             color = MetinSoluk,

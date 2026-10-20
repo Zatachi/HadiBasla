@@ -70,7 +70,8 @@ import com.lisanshazirlik.app.ui.dersDenemesiSorulari
 private sealed interface Ekran {
     data class Ders(val kod: String) : Ekran
     data class Coz(val baslik: String, val sorular: List<Soru>, val mod: String) : Ekran
-    data class Deneme(val sorular: List<Soru>, val kapsam: String) : Ekran
+    data class Deneme(val sorular: List<Soru>, val kapsam: String, val no: Int = 0) : Ekran
+    data class DenemeListesi(val ders: String) : Ekran
     data class Hedef(val ders: String?) : Ekran
     data object Gorus : Ekran
     data object Aydinlatma : Ekran
@@ -194,7 +195,7 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
             git(Ekran.Coz(baslik, sorular, mod))
         },
         genelDeneme = { git(Ekran.Deneme(denemeSorulari(banka, banka.lisansDersleri(depo.kullanici?.lisans)), "genel")) },
-        dersDenemesi = { git(Ekran.Deneme(dersDenemesiSorulari(banka, it), it)) },
+        dersDenemesi = { git(Ekran.DenemeListesi(it)) },
         hedefAc = { git(Ekran.Hedef(it)) },
         gorus = { git(Ekran.Gorus) },
         aydinlatma = { git(Ekran.Aydinlatma) },
@@ -273,7 +274,15 @@ private fun AltEkran(
             is Ekran.Coz -> CozEkrani(ust.baslik, ust.sorular, ust.mod, banka, kayit, cevapla, geri = geri)
             is Ekran.Deneme -> DenemeEkrani(
                 ust.sorular, ust.kapsam, banka, cevapla,
-                sonucKaydet = { kapsam, ort, gecti, puanlar, adet -> depo.denemeKaydet(kapsam, ort, gecti, puanlar, adet) },
+                sonucKaydet = { kapsam, ort, gecti, puanlar, adet -> depo.denemeKaydet(kapsam, ort, gecti, puanlar, adet, ust.no) },
+                geri = geri,
+            )
+            is Ekran.DenemeListesi -> com.lisanshazirlik.app.ui.DenemeListesiEkrani(
+                ust.ders, banka, depo,
+                ac = { no ->
+                    com.lisanshazirlik.app.ui.numaraliDeneme(banka, ust.ders, no)?.let { git(Ekran.Deneme(it, ust.ders, no)) }
+                },
+                premiumAc = { git(Ekran.Premium) },
                 geri = geri,
             )
             is Ekran.Hedef -> HedefEkrani(banka, depo, ust.ders, geri = geri)

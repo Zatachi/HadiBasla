@@ -69,6 +69,7 @@ data class DenemeKaydi(
     val gecti: Boolean,
     val dersPuanlari: Map<String, Int>,
     val soruSayisi: Int,
+    val no: Int = 0, // numaralı deneme (1-10); 0: eski/serbest
 )
 
 /**
@@ -332,7 +333,7 @@ class KullaniciDeposu(val uid: String) {
         if (kullanici?.sonKonu != konuId) kok.set(mapOf("sonKonu" to konuId), SetOptions.merge())
     }
 
-    fun denemeKaydet(kapsam: String, ortalama: Int, gecti: Boolean, dersPuanlari: Map<String, Int>, soruSayisi: Int) {
+    fun denemeKaydet(kapsam: String, ortalama: Int, gecti: Boolean, dersPuanlari: Map<String, Int>, soruSayisi: Int, no: Int = 0) {
         xpEkle(Oyun.XP_DENEME + ortalama)
         kok.collection("denemeler").add(
             mapOf(
@@ -342,6 +343,7 @@ class KullaniciDeposu(val uid: String) {
                 "gecti" to gecti,
                 "dersPuanlari" to dersPuanlari,
                 "soruSayisi" to soruSayisi,
+                "no" to no,
             )
         )
     }
@@ -392,6 +394,7 @@ class KullaniciDeposu(val uid: String) {
             gecti = getBoolean("gecti") ?: false,
             dersPuanlari = puanlar,
             soruSayisi = getLong("soruSayisi")?.toInt() ?: 0,
+            no = getLong("no")?.toInt() ?: 0,
         )
     }.getOrNull()
 
