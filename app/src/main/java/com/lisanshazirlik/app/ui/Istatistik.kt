@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -497,32 +498,93 @@ private fun SonucPenceresi(
     val sayi = puan.toIntOrNull()
     val gecerli = sayi != null && sayi in 0..100
 
-    AlertDialog(
-        onDismissRequest = kapat,
-        title = { Text(dersAdi) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlinedTextField(
-                    value = puan,
-                    onValueChange = { yeni -> puan = yeni.filter { it.isDigit() }.take(3) },
-                    label = { Text("Aldığın Puan (0–100)") },
-                    singleLine = true,
-                    isError = puan.isNotEmpty() && !gecerli,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                if (puan.isNotEmpty() && !gecerli) Text("Puan 0 ile 100 Arasında Olmalı.", color = YanlisKirmizi, fontSize = 13.sp)
-                OutlinedButton(onClick = { takvim = true }, modifier = Modifier.fillMaxWidth()) {
-                    Text(tarih?.let { "Sınav Tarihi: ${uzunTarih(it)}" } ?: "Sınav Tarihini Seç (İsteğe Bağlı)")
+    val odak = remember { androidx.compose.ui.focus.FocusRequester() }
+    androidx.compose.runtime.LaunchedEffect(Unit) { runCatching { odak.requestFocus() } }
+
+    androidx.compose.ui.window.Dialog(onDismissRequest = kapat) {
+        Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(Zemin)) {
+            // Başlık: koyu yeşil şerit, altın etiket, ders adı
+            Column(Modifier.fillMaxWidth().background(YesilKoyu).padding(start = 20.dp, end = 20.dp, top = 18.dp, bottom = 18.dp)) {
+                Text("📜  SINAV SONUCU", color = Altin, style = MaterialTheme.typography.labelMedium)
+                Bosluk(6)
+                Text(dersAdi, color = Krem, fontFamily = Baslik, fontSize = 21.sp, lineHeight = 26.sp)
+            }
+
+            Column(Modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("Aldığın Puanı Yaz", style = MaterialTheme.typography.titleMedium, color = Metin)
+                Bosluk(10)
+                // Büyük puan kutusu: yazılacak yer ilk bakışta belli olsun
+                Row(
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(Kart)
+                        .border(2.dp, if (puan.isNotEmpty() && !gecerli) YanlisKirmizi else Yesil, RoundedCornerShape(18.dp))
+                        .clickable { runCatching { odak.requestFocus() } }
+                        .padding(vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Box(contentAlignment = Alignment.CenterEnd) {
+                        if (puan.isEmpty()) Text("00", fontFamily = Baslik, fontSize = 52.sp, color = Cizgi)
+                        androidx.compose.foundation.text.BasicTextField(
+                            value = puan,
+                            onValueChange = { yeni -> puan = yeni.filter { it.isDigit() }.take(3) },
+                            singleLine = true,
+                            textStyle = androidx.compose.ui.text.TextStyle(fontFamily = Baslik, fontSize = 52.sp, color = Yesil, textAlign = TextAlign.End),
+                            cursorBrush = androidx.compose.ui.graphics.SolidColor(Altin),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            modifier = Modifier.size(width = 110.dp, height = 70.dp).focusRequester(odak),
+                        )
+                    }
+                    Text(" / 100", fontFamily = Baslik, fontSize = 24.sp, color = MetinSoluk, modifier = Modifier.padding(top = 14.dp))
                 }
-                if (sil != null) {
-                    TextButton(onClick = sil) { Text("Sonucu Kaldır", color = YanlisKirmizi) }
+                Bosluk(10)
+                // Canlı durum: geçti / kaldı / geçersiz
+                val (durumYazi, durumRenk, durumZemin) = when {
+                    puan.isEmpty() -> Triple("Geçme Notu 50", MetinSoluk, YesilAcik.copy(alpha = 0.5f))
+                    !gecerli -> Triple("Puan 0 ile 100 Arasında Olmalı", YanlisKirmizi, YanlisZemin)
+                    sayi!! >= 50 -> Triple("🎉 Tebrikler, Bu Dersi Geçtin", DogruYesil, DogruZemin)
+                    else -> Triple("Geçme Notu 50 · Bir Dahakine", YanlisKirmizi, YanlisZemin)
+                }
+                Text(
+                    durumYazi, color = durumRenk, style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.clip(RoundedCornerShape(50)).background(durumZemin).padding(horizontal = 14.dp, vertical = 6.dp),
+                )
+                Bosluk(16)
+
+                // Tarih satırı
+                Row(
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(Kart).border(1.dp, Cizgi, RoundedCornerShape(14.dp))
+                        .clickable { takvim = true }.padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(Modifier.size(38.dp).clip(RoundedCornerShape(10.dp)).background(YesilAcik), contentAlignment = Alignment.Center) {
+                        Text("📅", fontSize = 18.sp)
+                    }
+                    Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+                        Text("Sınav Tarihi", style = MaterialTheme.typography.labelMedium, color = MetinSoluk)
+                        Text(tarih?.let { uzunTarih(it) } ?: "Seç (İsteğe Bağlı)", style = MaterialTheme.typography.titleMedium, color = if (tarih != null) Metin else Yesil)
+                    }
+                    Text("›", fontSize = 22.sp, color = Yesil)
+                }
+                Bosluk(20)
+
+                androidx.compose.material3.Button(
+                    onClick = { sayi?.let { kaydet(it, tarih) } },
+                    enabled = gecerli,
+                    shape = RoundedCornerShape(14.dp),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Yesil, contentColor = Krem,
+                        disabledContainerColor = Cizgi, disabledContentColor = MetinSoluk,
+                    ),
+                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                ) { Text("Kaydet", style = MaterialTheme.typography.titleMedium) }
+                Row(Modifier.fillMaxWidth().padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                    if (sil != null) TextButton(onClick = sil) { Text("Sonucu Kaldır", color = YanlisKirmizi) }
+                    androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
+                    TextButton(onClick = kapat) { Text("Vazgeç", color = MetinSoluk) }
                 }
             }
-        },
-        confirmButton = { TextButton(onClick = { sayi?.let { kaydet(it, tarih) } }, enabled = gecerli) { Text("Kaydet") } },
-        dismissButton = { TextButton(onClick = kapat) { Text("Vazgeç") } },
-    )
+        }
+    }
     if (takvim) {
         TarihPenceresi(tarih, kapat = { takvim = false }, gecmis = true, baslik = "Sınava Girdiğin Tarih") {
             tarih = it; takvim = false
