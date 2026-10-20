@@ -485,25 +485,66 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item {
-                Column(
-                    Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)).background(YesilAcik).padding(16.dp),
-                ) {
-                    Text("Sınav nasıl?", style = MaterialTheme.typography.titleMedium)
-                    Bosluk(4)
+                Column {
+                    Text("Gerçek sınavın ölçüleri", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(start = 4.dp))
+                    Bosluk(8)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OlcuKutusu(Modifier.weight(1f), "25", "soru", Yesil)
+                        OlcuKutusu(Modifier.weight(1f), "45", "dakika", Yesil)
+                        OlcuKutusu(Modifier.weight(1f), "50", "ders barajı", YanlisKirmizi)
+                        OlcuKutusu(Modifier.weight(1f), "60", "ortalama", Altin)
+                    }
+                    Bosluk(8)
                     Text(
-                        "Her ders ayrı bir sınavdır: 25 soru, 45 dakika. Geçmek için her dersten en az 50, ortalama en az 60 alman gerekir. Denemeler de gerçek sınav gibi ders ders yapılır.",
+                        "📌  Her ders ayrı bir sınav. Denemeler de öyle.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Metin,
+                        color = MetinSoluk,
+                        modifier = Modifier.padding(start = 4.dp),
                     )
                 }
             }
             item { Etiket("Ders denemeleri", Modifier.padding(start = 4.dp, top = 8.dp)) }
             items(dersler, key = { "d" + it.kod }) { d ->
                 val adet = minOf(SINAV_SORU, banka.dersSorulari(d.kod).size)
-                KartKutu(tikla = if (adet > 0) ({ y.dersDenemesi(d.kod) }) else null) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(d.kisaAd, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                        Text("$adet soru · ${denemeSuresiDk(adet)} dk", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                val son = denemeler.filter { it.kapsam == d.kod }.maxByOrNull { it.zaman }
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Kart)
+                        .border(1.dp, Cizgi, RoundedCornerShape(16.dp))
+                        .clickableIf(adet > 0) { y.dersDenemesi(d.kod) }
+                        .padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(
+                        Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(YesilAcik),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(d.kod, style = MaterialTheme.typography.labelLarge, color = Yesil)
+                    }
+                    Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+                        Text(d.kisaAd, style = MaterialTheme.typography.titleMedium, maxLines = 2)
+                        Bosluk(2)
+                        Text(
+                            if (adet < SINAV_SORU) "⏱ $adet soru · ${denemeSuresiDk(adet)} dk  (soru eklendikçe 25'e çıkacak)"
+                            else "⏱ 25 soru · 45 dk",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontSize = 12.sp,
+                            color = MetinSoluk,
+                        )
+                        if (son != null) {
+                            Text(
+                                "Son denemen: ${son.ortalama} · ${if (son.gecti) "Geçer ✓" else "Kalır"}",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = if (son.gecti) DogruYesil else YanlisKirmizi,
+                            )
+                        }
+                    }
+                    if (adet > 0) {
+                        Box(Modifier.size(40.dp).clip(CircleShape).background(Yesil), contentAlignment = Alignment.Center) {
+                            Text("▶", color = Krem, fontSize = 16.sp)
+                        }
                     }
                 }
             }
@@ -530,6 +571,17 @@ fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: 
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun OlcuKutusu(modifier: Modifier, sayi: String, etiket: String, renk: androidx.compose.ui.graphics.Color) {
+    Column(
+        modifier.clip(RoundedCornerShape(14.dp)).background(Kart).border(1.dp, Cizgi, RoundedCornerShape(14.dp)).padding(vertical = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(sayi, fontFamily = Baslik, fontSize = 26.sp, color = renk)
+        Text(etiket, style = MaterialTheme.typography.bodyMedium, fontSize = 11.sp, color = MetinSoluk, maxLines = 1)
     }
 }
 
