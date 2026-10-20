@@ -570,10 +570,8 @@ private fun KursKarti(banka: SoruBankasi, depo: KullaniciDeposu, d: com.lisansha
 fun DenemeSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: PaddingValues) {
     val dersler = banka.lisansDersleri(depo.kullanici?.lisans)
     val denemeler = depo.denemeler.filter { !it.kapsam.startsWith("konu:") }
-    var lisansSec by remember { mutableStateOf(false) }
-    if (lisansSec) LisansPenceresi(banka, depo.kullanici?.lisans, kapat = { lisansSec = false }) { depo.lisansSec(it) }
     Column(Modifier.fillMaxSize()) {
-        LisansliBaslik("Deneme", banka.lisans(depo.kullanici?.lisans)?.kisaAd) { lisansSec = true }
+        LisansliBaslik("Deneme", banka.lisans(depo.kullanici?.lisans)?.kisaAd) { y.lisans() }
         if (dersler.none { banka.dersSorulari(it.kod).isNotEmpty() }) {
             Text(
                 "🔜 Bu lisansın denemeleri hazırlanıyor. Dersleri aşağıda görebilirsin.",

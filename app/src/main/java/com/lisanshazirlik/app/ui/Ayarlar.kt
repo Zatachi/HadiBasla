@@ -79,7 +79,7 @@ fun LisansSecici(
                                 Text(seviyeSimgesi(l.kod), fontSize = 20.sp)
                             }
                             Box(Modifier.weight(1f))
-                            Text(l.kisaAd, style = MaterialTheme.typography.titleMedium, color = Krem, maxLines = 2, lineHeight = 20.sp)
+                            Text(l.kisaAd, style = MaterialTheme.typography.titleMedium, color = Krem, maxLines = 2, lineHeight = 20.sp, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                             Bosluk(2)
                             val ilr = ilerleme?.invoke(l)
                             if (ilr != null && ilr.first > 0) {
@@ -89,10 +89,17 @@ fun LisansSecici(
                                     Box(Modifier.fillMaxWidth(ilr.first / ilr.second.toFloat()).height(4.dp).background(Altin))
                                 }
                             } else {
-                                Text(
-                                    if (!l.aktif) "Yakında" else if (hazir) "${l.dersler.size} Ders" else "${l.dersler.size} Ders · İçerik Yakında",
-                                    fontSize = 12.sp, color = KremSoluk,
-                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(if (l.aktif) "${l.dersler.size} Ders" else "", fontSize = 12.sp, color = KremSoluk)
+                                    if (!l.aktif || !hazir) {
+                                        Text(
+                                            "Yakında",
+                                            fontSize = 11.sp, color = YesilKoyu,
+                                            modifier = Modifier.padding(start = if (l.aktif) 6.dp else 0.dp).clip(RoundedCornerShape(50)).background(Altin)
+                                                .padding(horizontal = 7.dp, vertical = 1.dp),
+                                        )
+                                    }
+                                }
                             }
                         }
                         if (s) {
@@ -215,18 +222,3 @@ fun HatirlatmaEkrani(kayit: YerelKayit, geri: () -> Unit) {
 }
 
 private val Sari2 = androidx.compose.ui.graphics.Color(0xFFB07A10)
-
-/** Lisans seçimi için açılır pencere (Deneme sekmesi başlığından). */
-@Composable
-fun LisansPenceresi(banka: com.lisanshazirlik.app.data.SoruBankasi, secili: String?, kapat: () -> Unit, sec: (String) -> Unit) {
-    androidx.compose.material3.AlertDialog(
-        onDismissRequest = kapat,
-        title = { Text("Hangi Lisans?") },
-        text = {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-                LisansSecici(banka.lisanslar, secili, { l -> banka.icerikVar(l) }) { sec(it); kapat() }
-            }
-        },
-        confirmButton = { androidx.compose.material3.TextButton(onClick = kapat) { Text("Kapat") } },
-    )
-}
