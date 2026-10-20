@@ -1,5 +1,5 @@
 {
-  "surum": 7,
+  "surum": 8,
   "guncelleme": "20 Ekim 2026",
   "lisanslar": [
     {
@@ -761,7 +761,19 @@
       "baslik": "Hisse aldın, para ne zaman çıkar? T+2",
       "video": "https://raw.githubusercontent.com/Zatachi/HadiBasla/main/videolar/1012-03-takas-t2.mp4",
       "bas": 0.0,
-      "son": 46.4
+      "son": 46.4,
+      "dizi": "Takas'a Giriş",
+      "bolum": 1,
+      "toplam": 4,
+      "merak": "Hafta sonu araya girerse takas ne olur?",
+      "miniSoru": {
+        "metin": "T+2 ne demek?",
+        "secenekler": [
+          "İşlemden sonraki 2. iş günü",
+          "İşlemden 2 takvim günü sonra"
+        ],
+        "dogru": 0
+      }
     },
     {
       "id": "k-1012-03-2",
@@ -770,7 +782,19 @@
       "baslik": "Takasta sadece iş günleri sayılır",
       "video": "https://raw.githubusercontent.com/Zatachi/HadiBasla/main/videolar/1012-03-takas-t2.mp4",
       "bas": 46.5,
-      "son": 65.1
+      "son": 65.1,
+      "dizi": "Takas'a Giriş",
+      "bolum": 2,
+      "toplam": 4,
+      "merak": "Yarım günde işlem yaparsan takas ne zaman olur?",
+      "miniSoru": {
+        "metin": "Cuma aldığın hissenin takası ne zaman?",
+        "secenekler": [
+          "Pazar",
+          "Salı"
+        ],
+        "dogru": 1
+      }
     },
     {
       "id": "k-1012-03-3",
@@ -779,7 +803,19 @@
       "baslik": "Yarım günde takas olur mu?",
       "video": "https://raw.githubusercontent.com/Zatachi/HadiBasla/main/videolar/1012-03-takas-t2.mp4",
       "bas": 65.2,
-      "son": 76.7
+      "son": 76.7,
+      "dizi": "Takas'a Giriş",
+      "bolum": 3,
+      "toplam": 4,
+      "merak": "Hepsini tek kuralda toplayalım.",
+      "miniSoru": {
+        "metin": "Yarım günde takas yapılır mı?",
+        "secenekler": [
+          "Evet",
+          "Hayır"
+        ],
+        "dogru": 1
+      }
     },
     {
       "id": "k-1012-03-4",
@@ -788,7 +824,19 @@
       "baslik": "Akılda kalsın: T+2",
       "video": "https://raw.githubusercontent.com/Zatachi/HadiBasla/main/videolar/1012-03-takas-t2.mp4",
       "bas": 76.8,
-      "son": 91.2
+      "son": 91.2,
+      "dizi": "Takas'a Giriş",
+      "bolum": 4,
+      "toplam": 4,
+      "merak": "",
+      "miniSoru": {
+        "metin": "Takas süresinde hangi günler sayılır?",
+        "secenekler": [
+          "Tüm takvim günleri",
+          "Sadece iş günleri"
+        ],
+        "dogru": 1
+      }
     }
   ]
 }

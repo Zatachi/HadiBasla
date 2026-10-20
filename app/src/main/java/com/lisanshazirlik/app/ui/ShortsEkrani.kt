@@ -20,10 +20,8 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,237 +40,221 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.lisanshazirlik.app.data.BilgiKarti
 import com.lisanshazirlik.app.data.Kisa
 import com.lisanshazirlik.app.data.KullaniciDeposu
-import com.lisanshazirlik.app.data.Soru
+import com.lisanshazirlik.app.data.Odak
 import com.lisanshazirlik.app.data.SoruBankasi
 import kotlinx.coroutines.delay
 
-sealed interface AkisOgesi {
-    val anahtar: String
-    data class Video(val kisa: Kisa) : AkisOgesi { override val anahtar = "v" + kisa.id }
-    data class SoruKarti(val soru: Soru) : AkisOgesi { override val anahtar = "s" + soru.id }
-    data class Bilgi(val konuAd: String, val kart: BilgiKarti, val no: Int) : AkisOgesi { override val anahtar = "b$konuAd$no" }
-}
+private val KOYU_ZEMIN = Color(0xFF0F1F18)
 
-/**
- * Akış: her kısa videonun ardından aynı konudan bir bilgi kartı ve bir soru; sonra lisansın
- * diğer soruları ve kartları karışık. Video yoksa sadece soru ve kartlarla çalışır.
- */
-fun akisOlustur(banka: SoruBankasi, depo: KullaniciDeposu, dersler: Collection<String>): List<AkisOgesi> {
-    val liste = mutableListOf<AkisOgesi>()
-    // Kaldığın konunun videoları önce gelsin.
-    val siradakiKonu = dersler.firstNotNullOfOrNull { com.lisanshazirlik.app.data.Paket.siradaki(banka, depo, it)?.konu?.id }
-    val kullanilanSoru = mutableSetOf<String>()
-    val kullanilanKart = mutableSetOf<String>()
-    banka.kisalar.filter { it.ders in dersler }.sortedByDescending { it.konu == siradakiKonu }.forEachIndexed { i, k ->
-        liste += AkisOgesi.Video(k)
-        val konu = banka.konu(k.konu)?.second
-        konu?.kartlar?.getOrNull(i % maxOf(1, konu.kartlar.size))?.let { kart ->
-            liste += AkisOgesi.Bilgi(konu.ad, kart, konu.kartlar.indexOf(kart)); kullanilanKart += konu.ad + konu.kartlar.indexOf(kart)
-        }
-        banka.konuSorulari(k.konu).firstOrNull { it.id !in kullanilanSoru }?.let {
-            liste += AkisOgesi.SoruKarti(it); kullanilanSoru += it.id
-        }
-    }
-    val kartlar = banka.dersler.filter { it.kod in dersler }.flatMap { d ->
-        d.konular.flatMap { k -> k.kartlar.mapIndexed { i, kart -> AkisOgesi.Bilgi(k.ad, kart, i) } }
-    }.filter { (it.konuAd + it.no) !in kullanilanKart }.shuffled()
-    val sorular = banka.sorular.filter { it.ders in dersler && it.id !in kullanilanSoru }.shuffled()
-        .map { AkisOgesi.SoruKarti(it) }
-    // İki soruda bir bilgi kartı
-    var ki = 0
-    sorular.forEachIndexed { i, s ->
-        liste += s
-        if (i % 2 == 1 && ki < kartlar.size) liste += kartlar[ki++]
-    }
-    while (ki < kartlar.size) liste += kartlar[ki++]
-    return liste.take(60)
-}
+/** Dizi bölümleri sırayla, sonra diğer kısa videolar. */
+fun shortsSirasi(banka: SoruBankasi, ders: String?): List<Kisa> =
+    banka.kisalar.filter { it.ders == ders }
+        .sortedWith(compareBy<Kisa>({ it.dizi.isEmpty() }, { it.dizi }, { it.bolum }))
 
+/** Shorts: sadece video. Kaydır, izle; isteyen sondaki tek soruyu cevaplar. */
 @Composable
-fun ShortsEkrani(
-    banka: SoruBankasi,
-    depo: KullaniciDeposu,
-    cevapla: (Soru, Boolean) -> Unit,
-    konuAc: (String) -> Unit,
-    geri: () -> Unit,
-) {
-    val odak = com.lisanshazirlik.app.data.Odak.ders(banka, depo)?.kod
-    val akis = remember(odak) { akisOlustur(banka, depo, listOfNotNull(odak)) }
-    val pager = rememberPagerState { akis.size }
+fun ShortsEkrani(banka: SoruBankasi, depo: KullaniciDeposu, konuAc: (String) -> Unit, geri: () -> Unit) {
+    val odak = Odak.ders(banka, depo)?.kod
+    var kayitliMod by remember { mutableStateOf(false) }
+    val k = depo.kullanici
+    val tum = remember(odak, banka) { shortsSirasi(banka, odak) }
+    val liste = if (kayitliMod) tum.filter { it.id in k?.kaydedilenler.orEmpty() } else tum
+    // İzlenmemiş ilk bölümden başla.
+    val baslangic = remember(odak, kayitliMod) { liste.indexOfFirst { it.id !in k?.izlenenShort.orEmpty() }.coerceAtLeast(0) }
+    val pager = rememberPagerState(initialPage = baslangic) { liste.size }
+    val bugun = depo.bugunShort()
 
-    Box(Modifier.fillMaxSize().background(Color(0xFF0F1F18))) {
-        if (akis.isEmpty()) {
+    Box(Modifier.fillMaxSize().background(KOYU_ZEMIN)) {
+        if (liste.isEmpty()) {
             Text(
-                "Bu lisans için kısa içerikler hazırlanıyor.",
+                if (kayitliMod) "Henüz kaydettiğin video yok. Beğendiğin videoda 🔖'ye dokun."
+                else "Bu dersin kısa videoları hazırlanıyor. Üstten başka bir ders seçebilirsin.",
                 color = Krem,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center).padding(32.dp),
             )
         } else {
-            VerticalPager(pager, modifier = Modifier.fillMaxSize(), key = { akis[it].anahtar }) { i ->
-                val aktif = pager.settledPage == i
-                when (val o = akis[i]) {
-                    is AkisOgesi.Video -> KisaVideo(o.kisa, banka.ders(o.kisa.ders)?.kisaAd.orEmpty(), aktif) { konuAc(o.kisa.konu) }
-                    is AkisOgesi.SoruKarti -> AkisSorusu(o.soru, banka.ders(o.soru.ders)?.kisaAd.orEmpty(), cevapla)
-                    is AkisOgesi.Bilgi -> AkisKarti(o)
-                }
+            VerticalPager(pager, modifier = Modifier.fillMaxSize(), key = { liste[it].id }) { i ->
+                val kisa = liste[i]
+                KisaVideo(
+                    kisa = kisa,
+                    dersAd = banka.ders(kisa.ders)?.kisaAd.orEmpty(),
+                    aktif = pager.settledPage == i,
+                    begenildi = kisa.id in k?.begeniler.orEmpty(),
+                    kaydedildi = kisa.id in k?.kaydedilenler.orEmpty(),
+                    begen = { depo.begen(kisa.id, it) },
+                    kaydet = { depo.kaydet(kisa.id, it) },
+                    izlendi = { depo.shortIzlendi(kisa.id) },
+                    konuyaGit = { konuAc(kisa.konu) },
+                    sonMu = i == liste.lastIndex,
+                )
             }
         }
-        // Üst çubuk
+
+        // Üst çubuk: kapat, başlık, günlük halka, kaydedilenler; altında ders çipleri
         Column(Modifier.fillMaxWidth().background(Color(0x66000000)).windowInsetsPadding(WindowInsets.statusBars)) {
-        Row(
-            Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                "✕",
-                color = Krem,
-                fontSize = 22.sp,
-                modifier = Modifier.clip(CircleShape).clickable(onClick = geri).padding(10.dp),
-            )
-            Text("Shorts", color = Krem, fontFamily = Baslik, fontSize = 22.sp, modifier = Modifier.weight(1f).padding(start = 4.dp))
-            if (akis.isNotEmpty()) Text("${pager.currentPage + 1}/${akis.size}", color = KremSoluk, fontSize = 13.sp)
-        }
-        OdakSecici(banka, depo, odak, koyu = true)
-        Bosluk(8)
+            Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text("✕", color = Krem, fontSize = 22.sp, modifier = Modifier.clip(CircleShape).clickable(onClick = geri).padding(10.dp))
+                Text(if (kayitliMod) "Kaydettiklerim" else "Shorts", color = Krem, fontFamily = Baslik, fontSize = 22.sp, modifier = Modifier.weight(1f).padding(start = 4.dp))
+                // Günlük hedef halkası
+                Box(contentAlignment = Alignment.Center, modifier = Modifier.size(40.dp)) {
+                    CircularProgressIndicator(
+                        progress = { (bugun / KullaniciDeposu.GUNLUK_SHORT.toFloat()).coerceAtMost(1f) },
+                        color = Altin,
+                        trackColor = Color(0x33FFFFFF),
+                        strokeWidth = 3.dp,
+                        modifier = Modifier.size(38.dp),
+                    )
+                    Text("$bugun", color = Krem, fontSize = 12.sp)
+                }
+                Text(
+                    "🔖",
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(start = 8.dp).clip(CircleShape)
+                        .background(if (kayitliMod) Altin else Color(0x22FFFFFF))
+                        .clickable { kayitliMod = !kayitliMod }.padding(8.dp),
+                )
+            }
+            if (!kayitliMod) OdakSecici(banka, depo, odak, koyu = true)
+            Bosluk(8)
         }
     }
 }
 
 @Composable
-private fun KisaVideo(k: Kisa, dersAd: String, aktif: Boolean, konuyaGit: () -> Unit) {
+private fun KisaVideo(
+    kisa: Kisa,
+    dersAd: String,
+    aktif: Boolean,
+    begenildi: Boolean,
+    kaydedildi: Boolean,
+    begen: (Boolean) -> Unit,
+    kaydet: (Boolean) -> Unit,
+    izlendi: () -> Unit,
+    konuyaGit: () -> Unit,
+    sonMu: Boolean,
+) {
     var oynatici by remember { mutableStateOf<VideoView?>(null) }
     var hazir by remember { mutableStateOf(false) }
     var durdu by remember { mutableStateOf(false) }
+    var bitti by remember { mutableStateOf(false) }
+    var sayildi by remember { mutableStateOf(false) }
     var ilerleme by remember { mutableStateOf(0f) }
+    var cevap by remember { mutableStateOf<Int?>(null) }
+    var tekrarSayac by remember { mutableStateOf(0) }
     DisposableEffect(Unit) { onDispose { oynatici?.stopPlayback() } }
 
-    LaunchedEffect(aktif, hazir) {
+    LaunchedEffect(aktif, hazir, tekrarSayac) {
         val v = oynatici ?: return@LaunchedEffect
         if (!hazir) return@LaunchedEffect
-        if (aktif) {
-            v.seekTo((k.bas * 1000).toInt()); v.start(); durdu = false
-            while (true) {
-                delay(200)
-                val p = v.currentPosition
-                ilerleme = ((p - k.bas * 1000) / ((k.son - k.bas) * 1000)).toFloat().coerceIn(0f, 1f)
-                if (p >= k.son * 1000) v.seekTo((k.bas * 1000).toInt()) // başa dön (döngü)
-            }
-        } else {
-            v.pause()
+        if (!aktif) { v.pause(); return@LaunchedEffect }
+        v.seekTo((kisa.bas * 1000).toInt()); v.start(); durdu = false; bitti = false
+        while (true) {
+            delay(200)
+            val p = v.currentPosition
+            ilerleme = ((p - kisa.bas * 1000) / ((kisa.son - kisa.bas) * 1000)).toFloat().coerceIn(0f, 1f)
+            if (!sayildi && ilerleme >= 0.7f) { sayildi = true; izlendi() }
+            if (p >= kisa.son * 1000) { v.pause(); bitti = true; ilerleme = 1f; break }
         }
     }
 
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         AndroidView(
             modifier = Modifier.fillMaxSize().clickable {
+                if (bitti) return@clickable
                 oynatici?.let { if (it.isPlaying) { it.pause(); durdu = true } else { it.start(); durdu = false } }
             },
             factory = { c ->
                 VideoView(c).apply {
-                    setOnPreparedListener { it.setVolume(1f, 1f); hazir = true }
-                    setVideoURI(Uri.parse(k.video))
+                    setOnPreparedListener { hazir = true }
+                    setVideoURI(Uri.parse(kisa.video))
                     oynatici = this
                 }
             },
         )
         if (!hazir) CircularProgressIndicator(color = Altin, modifier = Modifier.align(Alignment.Center))
-        if (durdu) Text("▶", color = Krem, fontSize = 64.sp, modifier = Modifier.align(Alignment.Center))
+        if (durdu && !bitti) Text("▶", color = Krem, fontSize = 64.sp, modifier = Modifier.align(Alignment.Center))
+
+        // Sağ taraf: beğen, kaydet, konuya git
         Column(
-            Modifier
-                .align(Alignment.BottomStart)
-                .fillMaxWidth()
-                .background(Color(0x99000000))
-                .windowInsetsPadding(WindowInsets.navigationBars)
-                .padding(16.dp),
+            Modifier.align(Alignment.CenterEnd).padding(end = 10.dp, top = 80.dp),
+            verticalArrangement = Arrangement.spacedBy(18.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text("🎬 $dersAd", color = Altin, fontSize = 13.sp)
-            Text(k.baslik, color = Krem, style = MaterialTheme.typography.titleMedium)
+            YanDugme(if (begenildi) "❤️" else "🤍", "Beğen") { begen(!begenildi) }
+            YanDugme(if (kaydedildi) "🔖" else "📑", if (kaydedildi) "Kayıtlı" else "Kaydet") { kaydet(!kaydedildi) }
+            YanDugme("📖", "Konu", konuyaGit)
+        }
+
+        // Alt bilgi: dizi, başlık, ilerleme
+        Column(
+            Modifier.align(Alignment.BottomStart).fillMaxWidth().background(Color(0x99000000))
+                .windowInsetsPadding(WindowInsets.navigationBars).padding(16.dp),
+        ) {
+            Text(
+                if (kisa.dizi.isNotBlank()) "🎬 ${kisa.dizi} · Bölüm ${kisa.bolum}/${kisa.toplam}" else "🎬 $dersAd",
+                color = Altin, fontSize = 13.sp,
+            )
+            Text(kisa.baslik, color = Krem, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(end = 56.dp))
             Bosluk(8)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.weight(1f).height(3.dp).background(Color(0x55FFFFFF))) {
-                    Box(Modifier.fillMaxWidth(ilerleme).height(3.dp).background(Altin))
-                }
-                Text(
-                    "Konuya git ›",
-                    color = Krem,
-                    fontSize = 13.sp,
-                    modifier = Modifier.padding(start = 12.dp).clip(RoundedCornerShape(50)).background(Color(0x33FFFFFF))
-                        .clickable(onClick = konuyaGit).padding(horizontal = 12.dp, vertical = 6.dp),
-                )
+            Box(Modifier.fillMaxWidth().height(3.dp).background(Color(0x55FFFFFF))) {
+                Box(Modifier.fillMaxWidth(ilerleme).height(3.dp).background(Altin))
             }
-            Bosluk(4)
-            Text("Yukarı kaydır: sıradaki ↑", color = KremSoluk, fontSize = 11.sp)
         }
-    }
-}
 
-@Composable
-private fun AkisSorusu(soru: Soru, dersAd: String, cevapla: (Soru, Boolean) -> Unit) {
-    var secim by remember { mutableStateOf<Int?>(null) }
-    Column(
-        Modifier
-            .fillMaxSize()
-            .background(Zemin)
-            .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(top = 104.dp)
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        Text(
-            if (soru.senaryo) "💼 VAKA · $dersAd" else "✏️ HIZLI SORU · $dersAd",
-            style = MaterialTheme.typography.labelMedium,
-            color = if (soru.senaryo) Color(0xFF7A2E3A) else Yesil,
-        )
-        Text(soru.metin, style = MaterialTheme.typography.titleMedium)
-        soru.secenekler.forEachIndexed { i, m ->
-            val durum = when {
-                secim == null -> SikDurumu.NORMAL
-                i == soru.dogru -> SikDurumu.DOGRU
-                i == secim -> SikDurumu.YANLIS
-                else -> SikDurumu.SOLUK
-            }
-            Sik(HARFLER[i], m, durum, if (secim == null) ({ secim = i; cevapla(soru, i == soru.dogru) }) else null)
-        }
-        if (secim != null) {
-            Aciklama(soru, secim)
-            Text("Devam için yukarı kaydır ↑", color = MetinSoluk, fontSize = 12.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
-        }
-    }
-}
-
-@Composable
-private fun AkisKarti(o: AkisOgesi.Bilgi) {
-    var arka by remember { mutableStateOf(false) }
-    Box(Modifier.fillMaxSize().background(Yesil).padding(24.dp), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("🃏 BİLGİ KARTI · ${o.konuAd}", color = Altin, fontSize = 12.sp, textAlign = TextAlign.Center)
-            Bosluk(16)
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(if (arka) Krem else YesilKoyu)
-                    .border(2.dp, Altin, RoundedCornerShape(24.dp))
-                    .clickable { arka = !arka }
-                    .padding(28.dp),
-                contentAlignment = Alignment.Center,
+        // Bitiş: mini soru (isteğe bağlı) + merak cümlesi
+        if (bitti) {
+            Column(
+                Modifier.align(Alignment.Center).padding(24.dp).fillMaxWidth()
+                    .clip(RoundedCornerShape(22.dp)).background(Color(0xEE10241B)).border(1.dp, Altin, RoundedCornerShape(22.dp)).padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                Text(
-                    if (arka) o.kart.arka else o.kart.on,
-                    color = if (arka) YesilKoyu else Krem,
-                    fontFamily = Baslik,
-                    fontSize = 24.sp,
-                    lineHeight = 32.sp,
-                    textAlign = TextAlign.Center,
-                )
+                val m = kisa.miniSoru
+                if (m != null) {
+                    Text("Hızlı soru", color = Altin, fontSize = 12.sp)
+                    Text(m.metin, color = Krem, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        m.secenekler.forEachIndexed { i, s ->
+                            val renk = when {
+                                cevap == null -> Color(0x33FFFFFF)
+                                i == m.dogru -> DogruYesil
+                                i == cevap -> YanlisKirmizi
+                                else -> Color(0x22FFFFFF)
+                            }
+                            Text(
+                                s, color = Krem, textAlign = TextAlign.Center,
+                                modifier = Modifier.weight(1f).clip(RoundedCornerShape(14.dp)).background(renk)
+                                    .clickable(enabled = cevap == null) { cevap = i }.padding(vertical = 14.dp, horizontal = 6.dp),
+                            )
+                        }
+                    }
+                    cevap?.let { Text(if (it == m.dogru) "✓ Doğru!" else "✗ Doğrusu: ${m.secenekler[m.dogru]}", color = if (it == m.dogru) DogruYesil else YanlisKirmizi) }
+                }
+                if (kisa.merak.isNotBlank()) {
+                    Text("Sıradaki bölümde: ${kisa.merak}", color = KremSoluk, textAlign = TextAlign.Center, fontSize = 14.sp)
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        "⟲ Tekrar izle", color = Krem,
+                        modifier = Modifier.clip(RoundedCornerShape(50)).background(Color(0x33FFFFFF))
+                            .clickable { cevap = null; tekrarSayac++ }.padding(horizontal = 14.dp, vertical = 8.dp),
+                    )
+                }
+                Text(if (sonMu) "Bu dersin son videosu" else "↑ Sıradaki için yukarı kaydır", color = KremSoluk, fontSize = 12.sp)
             }
-            Bosluk(16)
-            Text(if (arka) "Yukarı kaydır: sıradaki ↑" else "Cevabı görmek için karta dokun", color = KremSoluk, fontSize = 13.sp)
         }
+    }
+}
+
+@Composable
+private fun YanDugme(simge: String, yazi: String, tikla: () -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable(onClick = tikla)) {
+        Box(Modifier.size(46.dp).clip(CircleShape).background(Color(0x55000000)), contentAlignment = Alignment.Center) {
+            Text(simge, fontSize = 22.sp)
+        }
+        Text(yazi, color = Krem, fontSize = 11.sp)
     }
 }

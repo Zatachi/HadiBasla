@@ -45,6 +45,11 @@ data class Kullanici(
     /** Eğitim paketlerinde tamamlanan adımlar: ders kodu → adım kimlikleri. */
     val paketler: Map<String, List<String>> = emptyMap(),
     val sonPaket: String? = null,
+    val begeniler: List<String> = emptyList(),
+    val kaydedilenler: List<String> = emptyList(),
+    val izlenenShort: List<String> = emptyList(),
+    val shortGun: String = "",
+    val shortSayi: Int = 0,
 ) {
     /** Bu haftanın XP'si (hafta değiştiyse 0). */
     fun buHaftaXp(): Int = if (hafta == Oyun.hafta()) xpHafta else 0
@@ -285,6 +290,41 @@ class KullaniciDeposu(val uid: String) {
         xpEkle(xp, ek)
     }
 
+    // ---------------------------------------------------------------- Shorts
+
+    fun begen(id: String, ekle: Boolean) =
+        alanYaz(mapOf("begeniler" to if (ekle) FieldValue.arrayUnion(id) else FieldValue.arrayRemove(id)))
+
+    fun kaydet(id: String, ekle: Boolean) =
+        alanYaz(mapOf("kaydedilenler" to if (ekle) FieldValue.arrayUnion(id) else FieldValue.arrayRemove(id)))
+
+    fun bugunShort(): Int = kullanici?.let { if (it.shortGun == bugunKey) it.shortSayi else 0 } ?: 0
+
+    /** Bir kısa video izlendi: günlük sayaç, seri ve 10'a ulaşınca ödül. İzlemek de çalışmak sayılır. */
+    fun shortIzlendi(id: String) {
+        val k = kullanici ?: return
+        val yeniSayi = bugunShort() + 1
+        val ek = mutableMapOf<String, Any?>(
+            "izlenenShort" to FieldValue.arrayUnion(id),
+            "shortGun" to bugunKey,
+            "shortSayi" to yeniSayi,
+        )
+        var xp = 2
+        if (k.sonGun != bugunKey) {
+            val dun = LocalDate.now().minusDays(1).toString()
+            val yeniSeri = if (k.sonGun == dun) k.seri + 1 else 1
+            ek["seri"] = yeniSeri
+            ek["sonGun"] = bugunKey
+            if (yeniSeri > k.enUzunSeri) ek["enUzunSeri"] = yeniSeri
+            xp += Oyun.XP_YENI_GUN
+        }
+        if (yeniSayi == GUNLUK_SHORT) {
+            xp += 30
+            kutlama = "Bugün $GUNLUK_SHORT kısa video izledin! +30 XP"
+        }
+        xpEkle(xp, ek)
+    }
+
     /** Yeni kazanılan rozetleri kaydeder, her biri için XP verir. */
     fun rozetleriGuncelle(hakEdilen: Set<String>) {
         val k = kullanici ?: return
@@ -402,6 +442,11 @@ class KullaniciDeposu(val uid: String) {
             k.toString() to ((v as? List<*>)?.map { it.toString() } ?: emptyList())
         } ?: emptyMap(),
         sonPaket = getString("sonPaket"),
+        begeniler = (get("begeniler") as? List<*>)?.map { it.toString() } ?: emptyList(),
+        kaydedilenler = (get("kaydedilenler") as? List<*>)?.map { it.toString() } ?: emptyList(),
+        izlenenShort = (get("izlenenShort") as? List<*>)?.map { it.toString() } ?: emptyList(),
+        shortGun = getString("shortGun").orEmpty(),
+        shortSayi = getLong("shortSayi")?.toInt() ?: 0,
     )
 
     private fun DocumentSnapshot.deneme(): DenemeKaydi? = runCatching {
@@ -422,6 +467,7 @@ class KullaniciDeposu(val uid: String) {
     }.getOrNull()
 
     companion object {
+        const val GUNLUK_SHORT = 10
         val ALT_KOLEKSIYONLAR = listOf("hedefler", "ilerleme", "gunler", "denemeler", "sonuclar")
     }
 }

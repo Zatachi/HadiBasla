@@ -23,7 +23,17 @@ data class Kisa(
     val video: String,
     val bas: Double,
     val son: Double,
+    /** Dizi adı ve bölüm numarası ("Takas'ın Sırları", 3/12). */
+    val dizi: String = "",
+    val bolum: Int = 0,
+    val toplam: Int = 0,
+    /** Sonraki bölüm için merak cümlesi. */
+    val merak: String = "",
+    /** Video sonunda tek dokunuşla cevaplanan mini soru. */
+    val miniSoru: MiniSoru? = null,
 )
+
+data class MiniSoru(val metin: String, val secenekler: List<String>, val dogru: Int)
 
 data class Konu(
     val id: String,
@@ -152,6 +162,14 @@ data class SoruBankasi(
                         video = k.getString("video"),
                         bas = k.optDouble("bas", 0.0),
                         son = k.optDouble("son", 0.0),
+                        dizi = k.optString("dizi", ""),
+                        bolum = k.optInt("bolum", 0),
+                        toplam = k.optInt("toplam", 0),
+                        merak = k.optString("merak", ""),
+                        miniSoru = k.optJSONObject("miniSoru")?.let { m ->
+                            val a = m.getJSONArray("secenekler")
+                            MiniSoru(m.getString("metin"), (0 until a.length()).map { a.getString(it) }, m.getInt("dogru"))
+                        },
                     )
                 }.getOrNull()
             } ?: emptyList()
