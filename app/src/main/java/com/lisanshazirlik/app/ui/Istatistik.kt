@@ -244,20 +244,135 @@ private fun PuanGrafigi(puanlar: List<Int>) {
 
 // ---------------------------------------------------------------- Sınav sonuçları
 
+/** Geniş kapsamlı mevzuatı (1002) geçen, dar kapsamlıyı (1001) da geçmiş sayılır. */
+fun etkinSonuc(sonuclar: Map<String, com.lisanshazirlik.app.data.SinavSonucu>, kod: String): com.lisanshazirlik.app.data.SinavSonucu? {
+    val kendi = sonuclar[kod]
+    if (kod != "1001") return kendi
+    val genis = sonuclar["1002"]?.takeIf { it.puan >= 50 } ?: return kendi
+    return if (kendi == null || kendi.puan < genis.puan) genis.copy(ders = "1001") else kendi
+}
+
+enum class LisansDurumu { ALINDI, DEVAM, BASLANMADI }
+
+fun lisansDurumu(banka: SoruBankasi, sonuclar: Map<String, com.lisanshazirlik.app.data.SinavSonucu>, lisans: String): Triple<LisansDurumu, Int, Int> {
+    val dersler = banka.lisans(lisans)?.dersler.orEmpty()
+    val puanlar = dersler.mapNotNull { etkinSonuc(sonuclar, it)?.puan }
+    val gecilen = puanlar.count { it >= 50 }
+    val tamam = dersler.isNotEmpty() && puanlar.size == dersler.size && gecilen == dersler.size && puanlar.average() >= 60
+    val durum = when {
+        tamam -> LisansDurumu.ALINDI
+        puanlar.isNotEmpty() -> LisansDurumu.DEVAM
+        else -> LisansDurumu.BASLANMADI
+    }
+    return Triple(durum, gecilen, dersler.size)
+}
+
+/** Sertifika cüzdanı: bütün lisanslar ve durumları; dokununca o lisansın puanları. */
 @Composable
 fun SonuclarEkrani(banka: SoruBankasi, depo: KullaniciDeposu, lisans: String?, geri: () -> Unit) {
+    var acik by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf<String?>(null) }
+    acik?.let { kod ->
+        androidx.activity.compose.BackHandler { acik = null }
+        LisansSonucDetay(banka, depo, kod) { acik = null }
+        return
+    }
+    val sonuclar = depo.sonuclar
+    val sirali = banka.lisanslar.sortedByDescending { it.kod == lisans }
+    val alinan = banka.lisanslar.count { lisansDurumu(banka, sonuclar, it.kod).first == LisansDurumu.ALINDI }
+    Scaffold(topBar = { UstCubuk("Sertifikalarım", geri) }, containerColor = Zemin) { ic ->
+        Column(
+            Modifier.fillMaxSize().padding(ic).verticalScroll(rememberScrollState()).padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Row(
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(Yesil).padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                androidx.compose.foundation.Image(
+                    androidx.compose.ui.res.painterResource(com.lisanshazirlik.app.R.drawable.ic_sertifika),
+                    contentDescription = null,
+                    modifier = Modifier.size(52.dp),
+                )
+                Column(Modifier.weight(1f).padding(start = 14.dp)) {
+                    Text("Sertifika cüzdanın", fontFamily = Baslik, fontSize = 20.sp, color = Krem)
+                    Text("${banka.lisanslar.size} lisanstan $alinan tanesi alındı", style = MaterialTheme.typography.bodyMedium, color = KremSoluk)
+                }
+                Text("$alinan", fontFamily = Baslik, fontSize = 34.sp, color = Altin)
+            }
+            Text(
+                "Lisansına dokun, sınav puanlarını gir. Ortak dersler bütün lisanslarda otomatik sayılır.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MetinSoluk,
+                modifier = Modifier.padding(horizontal = 4.dp),
+            )
+            sirali.forEach { l ->
+                val (durum, gecilen, toplam) = lisansDurumu(banka, sonuclar, l.kod)
+                val i = banka.lisanslar.indexOf(l)
+                val renk = SEVIYE_RENKLERI[i % SEVIYE_RENKLERI.size]
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Kart)
+                        .border(if (durum == LisansDurumu.ALINDI) 2.dp else 1.dp, if (durum == LisansDurumu.ALINDI) Altin else Cizgi, RoundedCornerShape(16.dp))
+                        .clickable { acik = l.kod }
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(Modifier.size(46.dp).clip(RoundedCornerShape(12.dp)).background(renk), contentAlignment = Alignment.Center) {
+                        Text(if (durum == LisansDurumu.ALINDI) "🏅" else "📜", fontSize = 22.sp)
+                    }
+                    Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+                        Text(l.kisaAd, style = MaterialTheme.typography.titleMedium)
+                        Bosluk(4)
+                        Ilerleme(if (toplam == 0) 0f else gecilen / toplam.toFloat())
+                        Bosluk(2)
+                        Text("$gecilen/$toplam ders geçildi", fontSize = 12.sp, color = MetinSoluk)
+                    }
+                    Text(
+                        when (durum) {
+                            LisansDurumu.ALINDI -> "Alındı"
+                            LisansDurumu.DEVAM -> "Devam"
+                            LisansDurumu.BASLANMADI -> "+ Puan gir"
+                        },
+                        style = MaterialTheme.typography.labelMedium,
+                        color = when (durum) {
+                            LisansDurumu.ALINDI -> YesilKoyu
+                            LisansDurumu.DEVAM -> Krem
+                            LisansDurumu.BASLANMADI -> Yesil
+                        },
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(50))
+                            .background(
+                                when (durum) {
+                                    LisansDurumu.ALINDI -> Altin
+                                    LisansDurumu.DEVAM -> Sari
+                                    LisansDurumu.BASLANMADI -> YesilAcik
+                                }
+                            )
+                            .padding(horizontal = 10.dp, vertical = 6.dp),
+                    )
+                }
+            }
+            Text("🔒 Puanların sadece senin hesabında durur.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk, modifier = Modifier.padding(start = 4.dp))
+        }
+    }
+}
+
+@Composable
+private fun LisansSonucDetay(banka: SoruBankasi, depo: KullaniciDeposu, lisans: String?, geri: () -> Unit) {
     val dersler = banka.lisansDersleri(lisans)
     val l = banka.lisans(lisans)
     var duzenlenen by remember { mutableStateOf<String?>(null) }
     val sonuclar = depo.sonuclar
-    val girilen = dersler.mapNotNull { sonuclar[it.kod] }
+    val girilen = dersler.mapNotNull { etkinSonuc(sonuclar, it.kod) }
     val hepsiGirildi = girilen.size == dersler.size && dersler.isNotEmpty()
     val ortalama = if (girilen.isEmpty()) 0 else Math.round(girilen.map { it.puan }.average()).toInt()
     val hepsiGecti = hepsiGirildi && girilen.all { it.puan >= 50 }
     val lisansTamam = hepsiGecti && ortalama >= 60
 
     val gecilen = girilen.count { it.puan >= 50 }
-    Scaffold(topBar = { UstCubuk("Sertifikalarım", geri) }, containerColor = Zemin) { ic ->
+    Scaffold(topBar = { UstCubuk(banka.lisans(lisans)?.kisaAd ?: "Sertifikalarım", geri) }, containerColor = Zemin) { ic ->
         Column(
             Modifier.fillMaxSize().padding(ic).verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -301,7 +416,7 @@ fun SonuclarEkrani(banka: SoruBankasi, depo: KullaniciDeposu, lisans: String?, g
 
             Text("Sınav puanların", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(start = 4.dp, top = 4.dp))
             dersler.forEachIndexed { i, d ->
-                val s2 = sonuclar[d.kod]
+                val s2 = etkinSonuc(sonuclar, d.kod)
                 val renk = SEVIYE_RENKLERI[i % SEVIYE_RENKLERI.size]
                 Row(
                     Modifier

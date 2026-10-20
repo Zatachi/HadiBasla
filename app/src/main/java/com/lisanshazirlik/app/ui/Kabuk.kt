@@ -411,6 +411,7 @@ val SEVIYE_RENKLERI = listOf(
     androidx.compose.ui.graphics.Color(0xFF3E6B5C),
     androidx.compose.ui.graphics.Color(0xFF6B4A2E),
     androidx.compose.ui.graphics.Color(0xFF2E5B6B),
+    androidx.compose.ui.graphics.Color(0xFF5B3E6B),
 )
 
 private fun seviyeSimgesi(kod: String): String = when (kod) {
@@ -422,6 +423,7 @@ private fun seviyeSimgesi(kod: String): String = when (kod) {
     "kurumsal" -> "🤝"
     "gayrimenkul" -> "🏢"
     "konut" -> "🏠"
+    "bilgi" -> "💻"
     else -> "📘"
 }
 
@@ -472,7 +474,11 @@ private fun SeviyeSecimi(banka: SoruBankasi, depo: KullaniciDeposu, ic: PaddingV
                     Box(Modifier.weight(1f))
                     Text(l.kisaAd, style = MaterialTheme.typography.titleMedium, color = Krem, maxLines = 2)
                     Text(
-                        if (l.aktif) "${l.dersler.size} ders" else "Yakında",
+                        when {
+                            !l.aktif -> "Yakında"
+                            l.dersler.any { banka.dersSorulari(it).isNotEmpty() } -> "${l.dersler.size} ders"
+                            else -> "${l.dersler.size} ders · içerik yakında"
+                        },
                         style = MaterialTheme.typography.bodyMedium,
                         fontSize = 12.sp,
                         color = KremSoluk,

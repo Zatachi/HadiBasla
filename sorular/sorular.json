@@ -1,5 +1,5 @@
 {
-  "surum": 5,
+  "surum": 6,
   "guncelleme": "20 Ekim 2026",
   "lisanslar": [
     {
@@ -18,50 +18,115 @@
       "kod": "duzey2",
       "ad": "Sermaye Piyasası Faaliyetleri Düzey 2",
       "kisaAd": "Düzey 2",
-      "dersler": [],
-      "aktif": false
+      "dersler": [
+        "1002",
+        "1003",
+        "1004",
+        "1005",
+        "1006",
+        "1012",
+        "1007",
+        "1010",
+        "1016"
+      ],
+      "aktif": true
     },
     {
       "kod": "duzey3",
       "ad": "Sermaye Piyasası Faaliyetleri Düzey 3",
       "kisaAd": "Düzey 3",
-      "dersler": [],
-      "aktif": false
+      "dersler": [
+        "1002",
+        "1003",
+        "1004",
+        "1005",
+        "1006",
+        "1012",
+        "1007",
+        "1010",
+        "1016",
+        "1008",
+        "1009",
+        "1013"
+      ],
+      "aktif": true
     },
     {
       "kod": "turev",
-      "ad": "Türev Araçlar",
+      "ad": "Türev Araçlar Lisansı",
       "kisaAd": "Türev Araçlar",
-      "dersler": [],
-      "aktif": false
+      "dersler": [
+        "1002",
+        "1003",
+        "1004",
+        "1005",
+        "1006",
+        "1009",
+        "1011",
+        "1013"
+      ],
+      "aktif": true
     },
     {
       "kod": "kredi",
-      "ad": "Kredi Derecelendirme",
+      "ad": "Kredi Derecelendirme Lisansı",
       "kisaAd": "Kredi Derecelendirme",
-      "dersler": [],
-      "aktif": false
+      "dersler": [
+        "1002",
+        "1009",
+        "1010",
+        "1016",
+        "1017"
+      ],
+      "aktif": true
     },
     {
       "kod": "kurumsal",
-      "ad": "Kurumsal Yönetim Derecelendirme",
+      "ad": "Kurumsal Yönetim Derecelendirme Lisansı",
       "kisaAd": "Kurumsal Yönetim Der.",
-      "dersler": [],
-      "aktif": false
+      "dersler": [
+        "1002",
+        "1009",
+        "1010",
+        "1016",
+        "1018"
+      ],
+      "aktif": true
     },
     {
       "kod": "gayrimenkul",
-      "ad": "Gayrimenkul Değerleme",
+      "ad": "Gayrimenkul Değerleme Lisansı",
       "kisaAd": "Gayrimenkul Değerleme",
-      "dersler": [],
-      "aktif": false
+      "dersler": [
+        "1001",
+        "1014",
+        "1015",
+        "1019"
+      ],
+      "aktif": true
     },
     {
       "kod": "konut",
-      "ad": "Konut Değerleme",
+      "ad": "Konut Değerleme Lisansı",
       "kisaAd": "Konut Değerleme",
-      "dersler": [],
-      "aktif": false
+      "dersler": [
+        "1001",
+        "1014"
+      ],
+      "aktif": true
+    },
+    {
+      "kod": "bilgi",
+      "ad": "Bilgi Sistemleri Bağımsız Denetim Lisansı",
+      "kisaAd": "Bilgi Sistemleri Denetimi",
+      "dersler": [
+        "1001",
+        "1020",
+        "1021",
+        "1022",
+        "1023"
+      ],
+      "aktif": true
     }
   ],
   "dersler": [
@@ -113,9 +178,16 @@
       "aciklama": "SPK Kanunu, özel durumlar, kurumsal yönetim, yatırım fonları ve meslek kuralları"
     },
     {
+      "kod": "1002",
+      "ad": "Geniş Kapsamlı Sermaye Piyasası Mevzuatı ve Meslek Kuralları",
+      "kisaAd": "Geniş Kapsamlı Mevzuat ve Meslek Kuralları",
+      "aciklama": "Dar kapsamlı konuların tamamı ve daha geniş mevzuat; bu dersi geçmek dar kapsamlıyı da geçmiş sayılır",
+      "konular": []
+    },
+    {
       "kod": "1003",
       "ad": "Sermaye Piyasası Araçları 1",
-      "kisaAd": "Sermaye Piyasası Araçları",
+      "kisaAd": "Sermaye Piyasası Araçları 1",
       "konular": [
         {
           "id": "1003-01",
@@ -139,6 +211,13 @@
         }
       ],
       "aciklama": "Paylar, tahviller ve bonolar, yatırım fonları, türev araçlar ve vergilendirme"
+    },
+    {
+      "kod": "1004",
+      "ad": "Sermaye Piyasası Araçları 2",
+      "kisaAd": "Sermaye Piyasası Araçları 2",
+      "aciklama": "İleri düzey sermaye piyasası araçları",
+      "konular": []
     },
     {
       "kod": "1005",
@@ -171,6 +250,48 @@
         }
       ],
       "aciklama": "Aracı kurumlar, yatırım hizmetleri, kredili işlemler, kitle fonlaması ve uzaktan kimlik tespiti"
+    },
+    {
+      "kod": "1006",
+      "ad": "Finansal Piyasalar",
+      "kisaAd": "Finansal Piyasalar",
+      "aciklama": "Para, sermaye ve döviz piyasalarının işleyişi",
+      "konular": []
+    },
+    {
+      "kod": "1007",
+      "ad": "Finansal Yönetim ve Mali Analiz",
+      "kisaAd": "Finansal Yönetim ve Mali Analiz",
+      "aciklama": "Finansal tablolar, oran analizi ve finansal yönetim",
+      "konular": []
+    },
+    {
+      "kod": "1008",
+      "ad": "Genel Ekonomi",
+      "kisaAd": "Genel Ekonomi",
+      "aciklama": "Mikro ve makro ekonominin temel kavramları",
+      "konular": []
+    },
+    {
+      "kod": "1009",
+      "ad": "Temel Finans Matematiği ve Değerleme Yöntemleri",
+      "kisaAd": "Finans Matematiği ve Değerleme",
+      "aciklama": "Paranın zaman değeri, getiri ve değerleme yöntemleri",
+      "konular": []
+    },
+    {
+      "kod": "1010",
+      "ad": "Ticaret Hukuku",
+      "kisaAd": "Ticaret Hukuku",
+      "aciklama": "Ticari işletme, şirketler ve kıymetli evrak",
+      "konular": []
+    },
+    {
+      "kod": "1011",
+      "ad": "Türev Araçlar, Piyasalar ve Risk Yönetimi",
+      "kisaAd": "Türev Araçlar ve Risk Yönetimi",
+      "aciklama": "Vadeli işlemler, opsiyonlar ve risk yönetimi",
+      "konular": []
     },
     {
       "kod": "1012",
@@ -219,6 +340,83 @@
         }
       ],
       "aciklama": "Takas ve saklama, MKK, pay ve borçlanma araçları takası, VİOP ve teminat yönetimi"
+    },
+    {
+      "kod": "1013",
+      "ad": "Kurumlarda ve Sermaye Piyasasında Vergilendirme",
+      "kisaAd": "Kurumlarda ve SP'de Vergilendirme",
+      "aciklama": "Kurumlar vergisi ve sermaye piyasası gelirlerinin vergilendirilmesi",
+      "konular": []
+    },
+    {
+      "kod": "1014",
+      "ad": "Gayrimenkul Değerleme Esasları",
+      "kisaAd": "Gayrimenkul Değerleme Esasları",
+      "aciklama": "Değerleme yaklaşımları ve değerleme raporları",
+      "konular": []
+    },
+    {
+      "kod": "1015",
+      "ad": "İnşaat ve Gayrimenkul Muhasebesi",
+      "kisaAd": "İnşaat ve Gayrimenkul Muhasebesi",
+      "aciklama": "İnşaat maliyetleri ve gayrimenkul muhasebesi",
+      "konular": []
+    },
+    {
+      "kod": "1016",
+      "ad": "Muhasebe ve Finansal Raporlama",
+      "kisaAd": "Muhasebe ve Finansal Raporlama",
+      "aciklama": "Muhasebe ilkeleri ve finansal raporlama standartları",
+      "konular": []
+    },
+    {
+      "kod": "1017",
+      "ad": "Kredi Derecelendirmesi",
+      "kisaAd": "Kredi Derecelendirmesi",
+      "aciklama": "Kredi derecelendirme süreci ve yöntemleri",
+      "konular": []
+    },
+    {
+      "kod": "1018",
+      "ad": "Kurumsal Yönetim",
+      "kisaAd": "Kurumsal Yönetim",
+      "aciklama": "Kurumsal yönetim ilkeleri ve derecelendirme",
+      "konular": []
+    },
+    {
+      "kod": "1019",
+      "ad": "Gayrimenkul Mevzuatı",
+      "kisaAd": "Gayrimenkul Mevzuatı",
+      "aciklama": "İmar, tapu ve gayrimenkul ile ilgili mevzuat",
+      "konular": []
+    },
+    {
+      "kod": "1020",
+      "ad": "Bilgi Sistemleri Yönetimi ve Denetimi",
+      "kisaAd": "Bilgi Sistemleri Yönetimi ve Denetimi",
+      "aciklama": "BT yönetişimi ve bilgi sistemleri denetimi",
+      "konular": []
+    },
+    {
+      "kod": "1021",
+      "ad": "Bilgi Sistemleri Geliştirilmesi ve Uygulanması",
+      "kisaAd": "BS Geliştirilmesi ve Uygulanması",
+      "aciklama": "Yazılım geliştirme ve sistem edinimi",
+      "konular": []
+    },
+    {
+      "kod": "1022",
+      "ad": "Bilgi Sistemleri İşletimi",
+      "kisaAd": "Bilgi Sistemleri İşletimi",
+      "aciklama": "BT operasyonları ve süreklilik",
+      "konular": []
+    },
+    {
+      "kod": "1023",
+      "ad": "Bilgi Sistemleri Güvenliği",
+      "kisaAd": "Bilgi Sistemleri Güvenliği",
+      "aciklama": "Bilgi güvenliği ve erişim kontrolleri",
+      "konular": []
     }
   ],
   "sorular": [
