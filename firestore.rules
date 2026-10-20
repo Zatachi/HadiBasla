@@ -70,6 +70,41 @@ service cloud.firestore {
     }
 
     // ---- Davet ----
+    // ---- Kısa videolar: beğeni ve yorumlar ----
+    // Beğeni sayısı belge sayımıyla bulunur; herkes yalnızca kendi beğenisini yazar ya da siler.
+    match /kisaBegeni/{id} {
+      allow read: if girisli();
+      allow create: if girisli() && kendisi() && veri().keys().hasOnly(['kisa', 'uid'])
+        && veri().kisa is string && veri().kisa.size() <= 60
+        && id == veri().kisa + '_' + request.auth.uid;
+      allow delete: if sahibi();
+    }
+
+    // Bir listede yalnızca kendi kimliğini ekleyip çıkarabilirsin (yorum beğenisi, bildirim).
+    function sadeceKendisi(alan) {
+      let once = resource.data.get(alan, []).toSet();
+      let sonra = veri().get(alan, []).toSet();
+      let ben = [request.auth.uid].toSet();
+      return sonra == once
+        || (sonra.difference(once) == ben && once.difference(sonra).size() == 0)
+        || (once.difference(sonra) == ben && sonra.difference(once).size() == 0);
+    }
+
+    match /kisaYorum/{id} {
+      allow read: if girisli();
+      allow delete: if sahibi();
+      allow create: if girisli() && kendisi() && simdi()
+        && veri().keys().hasOnly(['uid', 'takmaAd', 'kisa', 'metin', 'zaman', 'begenenler', 'sikayetEdenler'])
+        && veri().kisa is string && veri().kisa.size() <= 60
+        && veri().metin is string && veri().metin.size() >= 1 && veri().metin.size() <= 300
+        && veri().begenenler.size() == 0 && veri().sikayetEdenler.size() == 0
+        && veri().takmaAd is string && veri().takmaAd.size() >= 2 && veri().takmaAd.size() <= 20
+        && get(/databases/$(database)/documents/takmaAdlar/$(veri().takmaAd.lower())).data.uid == request.auth.uid;
+      allow update: if girisli()
+        && veri().diff(resource.data).affectedKeys().hasOnly(['begenenler', 'sikayetEdenler'])
+        && sadeceKendisi('begenenler') && sadeceKendisi('sikayetEdenler');
+    }
+
     // ---- Ana sayfa: topluluk akışı ve şu an çevrimiçi olanlar ----
     // Akışa sadece takma adının sahibi yazar; metin cihazda üretilir, kayıtta serbest yazı yok.
     match /akis/{id} {
