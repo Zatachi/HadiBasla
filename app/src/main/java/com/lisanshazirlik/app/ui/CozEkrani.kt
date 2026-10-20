@@ -75,7 +75,7 @@ fun CozEkrani(
             }
         },
         bottomBar = {
-            if (!bitti) {
+            if (!bitti && secim != null) {
                 Column(Modifier.background(Kart).navigationBarsPadding()) {
                     HorizontalDivider(color = Cizgi)
                     Button(
@@ -89,7 +89,7 @@ fun CozEkrani(
                             disabledContainerColor = Cizgi,
                             disabledContentColor = MetinSoluk,
                         ),
-                        modifier = Modifier.fillMaxWidth().padding(16.dp).height(56.dp),
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp).height(52.dp),
                     ) {
                         Text(
                             when {
@@ -125,12 +125,12 @@ fun CozEkrani(
                     .padding(ic)
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 val dersAdi = banka.ders(soru.ders)?.kisaAd ?: soru.ders
                 val konuAdi = banka.ders(soru.ders)?.konular?.firstOrNull { it.id == soru.konu }?.ad
-                SoruMetni(soru, listOfNotNull(dersAdi, konuAdi).joinToString(" · "), dersRengi(soru.ders))
-                Bosluk(8)
+                SoruMetni(soru, listOfNotNull(dersAdi, konuAdi).joinToString(" · "))
+                Bosluk(4)
                 soru.secenekler.forEachIndexed { i, metin ->
                     val durum = when {
                         secim == null -> SikDurumu.NORMAL
@@ -162,22 +162,23 @@ fun CozEkrani(
 }
 
 /** Üst şerit: her soru bir parça (doğru yeşil, yanlış kırmızı, sıradaki altın), sağda doğru/yanlış sayısı ve seri. */
+/** Üst şerit: ince parçalar (doğru yeşil, yanlış kırmızı, sıradaki altın), altında sade sayaç. */
 @Composable
 private fun IlerlemeSeridi(sonuclar: List<Boolean?>, sira: Int) {
     val dogru = sonuclar.count { it == true }
     val yanlis = sonuclar.count { it == false }
     val seri = sonuclar.take(sira + 1).reversed().dropWhile { it == null }.takeWhile { it == true }.size
-    Column(Modifier.fillMaxWidth().background(Yesil).padding(start = 16.dp, end = 16.dp, bottom = 12.dp)) {
+    Column(Modifier.fillMaxWidth().background(Yesil).padding(start = 16.dp, end = 16.dp, bottom = 10.dp)) {
         if (sonuclar.size <= 30) {
             androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
                 sonuclar.forEachIndexed { i, r ->
                     androidx.compose.foundation.layout.Box(
-                        Modifier.weight(1f).height(6.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(3.dp)).background(
+                        Modifier.weight(1f).height(4.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(2.dp)).background(
                             when {
-                                r == true -> androidx.compose.ui.graphics.Color(0xFF5BD68A)
+                                r == true -> androidx.compose.ui.graphics.Color(0xFF6FCF97)
                                 r == false -> androidx.compose.ui.graphics.Color(0xFFE57F6E)
                                 i == sira -> Altin
-                                else -> androidx.compose.ui.graphics.Color(0x33FFFFFF)
+                                else -> androidx.compose.ui.graphics.Color(0x2EFFFFFF)
                             }
                         )
                     )
@@ -186,17 +187,17 @@ private fun IlerlemeSeridi(sonuclar: List<Boolean?>, sira: Int) {
         } else {
             androidx.compose.material3.LinearProgressIndicator(
                 progress = { (sira + 1f) / sonuclar.size },
-                color = Altin, trackColor = androidx.compose.ui.graphics.Color(0x33FFFFFF),
-                modifier = Modifier.fillMaxWidth().height(6.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(3.dp)),
+                color = Altin, trackColor = androidx.compose.ui.graphics.Color(0x2EFFFFFF),
+                modifier = Modifier.fillMaxWidth().height(4.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(2.dp)),
             )
         }
-        Bosluk(8)
-        androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.CenterVertically) {
-            SayiCipi("✓ $dogru", androidx.compose.ui.graphics.Color(0xFF5BD68A))
-            androidx.compose.foundation.layout.Box(Modifier.padding(start = 6.dp))
-            SayiCipi("✕ $yanlis", androidx.compose.ui.graphics.Color(0xFFE57F6E))
-            androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
-            if (seri >= 3) Text("🔥 $seri Doğru Üst Üste", color = Altin, style = MaterialTheme.typography.labelLarge)
+        if (dogru + yanlis > 0) {
+            Bosluk(6)
+            androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("$dogru Doğru · $yanlis Yanlış", color = KremSoluk, style = MaterialTheme.typography.labelMedium)
+                androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
+                if (seri >= 3) Text("🔥 $seri Üst Üste", color = Altin, style = MaterialTheme.typography.labelMedium)
+            }
         }
     }
 }

@@ -43,88 +43,85 @@ import com.lisanshazirlik.app.data.Soru
 
 enum class SikDurumu { NORMAL, SECILI, DOGRU, YANLIS, SOLUK }
 
-/** Soru kartı: üstte ders/konu etiketi, ortada büyük ve okunaklı soru metni. */
+/** Soru kartı: koyu yeşil zemin, altın etiket, krem metin (Profil kimlik kartıyla aynı dil). */
 @Composable
-fun SoruMetni(soru: Soru, ust: String, renk: Color = Yesil) {
-    val sekil = RoundedCornerShape(20.dp)
+fun SoruMetni(soru: Soru, ust: String, @Suppress("UNUSED_PARAMETER") renk: Color = Yesil) {
+    val sekil = RoundedCornerShape(18.dp)
     Column(
         Modifier
             .fillMaxWidth()
-            .shadow(3.dp, sekil, ambientColor = renk.copy(alpha = 0.2f), spotColor = renk.copy(alpha = 0.25f))
             .clip(sekil)
-            .background(Kart),
+            .background(YesilKoyu)
+            .padding(start = 18.dp, end = 18.dp, top = 14.dp, bottom = 18.dp),
     ) {
-        Box(Modifier.fillMaxWidth().height(5.dp).background(renk))
-        Column(Modifier.padding(start = 18.dp, end = 18.dp, top = 14.dp, bottom = 18.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                ust.uppercase(java.util.Locale.forLanguageTag("tr")),
+                style = MaterialTheme.typography.labelMedium,
+                color = Altin,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false),
+            )
+            if (soru.senaryo) {
                 Text(
-                    ust.uppercase(java.util.Locale.forLanguageTag("tr")),
+                    "  ·  VAKA",
                     style = MaterialTheme.typography.labelMedium,
-                    color = renk,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.clip(RoundedCornerShape(50)).background(renk.copy(alpha = 0.1f)).padding(horizontal = 10.dp, vertical = 4.dp),
+                    color = KremSoluk,
                 )
-                if (soru.senaryo) {
-                    Box(Modifier.width(6.dp))
-                    Text(
-                        "📋 VAKA",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = Color(0xFF7A5A12),
-                        modifier = Modifier.clip(RoundedCornerShape(50)).background(Color(0xFFFBEFD7)).padding(horizontal = 10.dp, vertical = 4.dp),
-                    )
-                }
             }
-            Bosluk(12)
-            Text(soru.metin, style = MaterialTheme.typography.bodyLarge, fontSize = 17.sp, lineHeight = 26.sp, color = Metin)
         }
+        Bosluk(8)
+        Box(Modifier.width(28.dp).height(2.dp).background(Altin))
+        Bosluk(12)
+        Text(soru.metin, style = MaterialTheme.typography.bodyLarge, fontSize = 17.sp, lineHeight = 25.sp, color = Krem)
     }
 }
 
-/** Şık: harf rozeti, metin ve cevaptan sonra sağda ✓ / ✕ işareti. Renk değişimleri yumuşak geçişli. */
+/** Şık: ince çerçeveli sade satır, harf yuvarlağı başlık yazı tipinde. Cevaptan sonra sağda ✓ / ✕. */
 @Composable
 fun Sik(harf: String, metin: String, durum: SikDurumu, tikla: (() -> Unit)?) {
     val (zemin, kenar, rozet, rozetYazi) = when (durum) {
-        SikDurumu.NORMAL -> Dortlu(Kart, Cizgi, YesilAcik, Yesil)
+        SikDurumu.NORMAL -> Dortlu(Kart, Cizgi, Zemin, Yesil)
         SikDurumu.SECILI -> Dortlu(YesilAcik, Yesil, Yesil, Krem)
         SikDurumu.DOGRU -> Dortlu(DogruZemin, DogruYesil, DogruYesil, Color.White)
         SikDurumu.YANLIS -> Dortlu(YanlisZemin, YanlisKirmizi, YanlisKirmizi, Color.White)
-        SikDurumu.SOLUK -> Dortlu(Kart.copy(alpha = 0.6f), Cizgi, Zemin, MetinSoluk)
+        SikDurumu.SOLUK -> Dortlu(Kart, Cizgi, Zemin, MetinSoluk)
     }
-    val zeminA by animateColorAsState(zemin, tween(250), label = "zemin")
-    val kenarA by animateColorAsState(kenar, tween(250), label = "kenar")
-    val rozetA by animateColorAsState(rozet, tween(250), label = "rozet")
-    val olcek by animateFloatAsState(if (durum == SikDurumu.DOGRU || durum == SikDurumu.SECILI) 1.02f else 1f, tween(200), label = "olcek")
-    val sekil = RoundedCornerShape(16.dp)
+    val zeminA by animateColorAsState(zemin, tween(220), label = "zemin")
+    val kenarA by animateColorAsState(kenar, tween(220), label = "kenar")
+    val rozetA by animateColorAsState(rozet, tween(220), label = "rozet")
+    val sekil = RoundedCornerShape(14.dp)
     Row(
         Modifier
             .fillMaxWidth()
-            .graphicsLayer { scaleX = olcek; scaleY = olcek }
-            .then(if (durum == SikDurumu.NORMAL) Modifier.shadow(1.5.dp, sekil) else Modifier)
             .clip(sekil)
             .background(zeminA)
-            .border(if (durum == SikDurumu.NORMAL || durum == SikDurumu.SOLUK) 1.dp else 2.dp, kenarA, sekil)
+            .border(if (durum == SikDurumu.NORMAL || durum == SikDurumu.SOLUK) 1.dp else 1.5.dp, kenarA, sekil)
             .then(if (tikla != null) Modifier.clickable(onClick = tikla) else Modifier)
-            .heightIn(min = 60.dp)
-            .padding(horizontal = 12.dp, vertical = 12.dp),
+            .heightIn(min = 52.dp)
+            .padding(horizontal = 12.dp, vertical = 9.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(38.dp).clip(RoundedCornerShape(11.dp)).background(rozetA), contentAlignment = Alignment.Center) {
-            Text(harf, fontFamily = Baslik, fontSize = 17.sp, color = rozetYazi)
+        Box(
+            Modifier.size(30.dp).clip(CircleShape).background(rozetA)
+                .then(if (durum == SikDurumu.NORMAL || durum == SikDurumu.SOLUK) Modifier.border(1.dp, Cizgi, CircleShape) else Modifier),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(harf, fontFamily = Baslik, fontSize = 15.sp, color = rozetYazi)
         }
         Text(
             metin,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyMedium,
             fontSize = 15.sp,
-            lineHeight = 21.sp,
-            fontWeight = if (durum == SikDurumu.DOGRU || durum == SikDurumu.SECILI) FontWeight.SemiBold else FontWeight.Normal,
+            lineHeight = 20.sp,
+            fontWeight = if (durum == SikDurumu.DOGRU) FontWeight.SemiBold else FontWeight.Normal,
             color = if (durum == SikDurumu.SOLUK) MetinSoluk else Metin,
             modifier = Modifier.weight(1f).padding(horizontal = 12.dp),
         )
         when (durum) {
             SikDurumu.DOGRU -> IsaretRozeti("✓", DogruYesil)
             SikDurumu.YANLIS -> IsaretRozeti("✕", YanlisKirmizi)
-            SikDurumu.SECILI -> IsaretRozeti("●", Yesil)
             else -> {}
         }
     }
@@ -132,8 +129,8 @@ fun Sik(harf: String, metin: String, durum: SikDurumu, tikla: (() -> Unit)?) {
 
 @Composable
 private fun IsaretRozeti(simge: String, renk: Color) {
-    Box(Modifier.size(26.dp).clip(CircleShape).background(renk), contentAlignment = Alignment.Center) {
-        Text(simge, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+    Box(Modifier.size(22.dp).clip(CircleShape).background(renk), contentAlignment = Alignment.Center) {
+        Text(simge, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -148,7 +145,7 @@ fun Aciklama(soru: Soru, verilen: Int?) {
         dogruMu -> DogruYesil
         else -> YanlisKirmizi
     }
-    val sekil = RoundedCornerShape(18.dp)
+    val sekil = RoundedCornerShape(16.dp)
     Column(Modifier.fillMaxWidth().clip(sekil).background(Kart).border(1.dp, renk.copy(alpha = 0.35f), sekil)) {
         Row(
             Modifier.fillMaxWidth().background(renk).padding(horizontal = 16.dp, vertical = 12.dp),
