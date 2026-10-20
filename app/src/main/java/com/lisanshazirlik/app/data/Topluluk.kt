@@ -116,11 +116,11 @@ object Topluluk {
     }
 
     /** Adı ayırır ve sıralamaya katılır. Ad alınmışsa [AdAlinmis] fırlatır. */
-    suspend fun katil(uid: String, depo: KullaniciDeposu, banka: SoruBankasi, takmaAd: String, duvar: Boolean) {
+    suspend fun katil(uid: String, depo: KullaniciDeposu, banka: SoruBankasi, takmaAd: String, duvar: Boolean, akis: Boolean = false) {
         val temiz = takmaAd.trim().replace(Regex("\\s+"), " ").take(20)
         if (!adAyir(uid, temiz)) throw AdAlinmis()
         eskiAdlariBirak(uid, adAnahtari(temiz))
-        depo.alanYaz(mapOf("siralamaKatil" to true, "takmaAd" to temiz, "duvar" to duvar, "adCakisma" to false))
+        depo.alanYaz(mapOf("siralamaKatil" to true, "takmaAd" to temiz, "duvar" to duvar, "akis" to akis, "adCakisma" to false))
         // Kullanıcı kaydı güncellenince profilYaz ana ekrandan tekrar çağrılır; ilk kaydı hemen yazalım.
         val k = depo.kullanici ?: return
         db.collection("siralama").document(uid).set(
@@ -130,8 +130,9 @@ object Topluluk {
     }
 
     fun ayril(uid: String, depo: KullaniciDeposu) {
-        depo.alanYaz(mapOf("siralamaKatil" to false))
+        depo.alanYaz(mapOf("siralamaKatil" to false, "akis" to false))
         db.collection("siralama").document(uid).delete()
+        Akis.benimkileriSil(uid)
         ayrilmis = null
         eskiAdlariBirak(uid, null)
     }

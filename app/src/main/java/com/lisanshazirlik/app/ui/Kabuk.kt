@@ -382,6 +382,7 @@ fun DerslerSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic:
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
+            item { BugunkuPlanKarti(banka, depo, y, Modifier.padding(bottom = 6.dp)) }
             item {
                 Text("Hangi Derse Çalışacaksın?", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(start = 4.dp, bottom = 2.dp))
             }

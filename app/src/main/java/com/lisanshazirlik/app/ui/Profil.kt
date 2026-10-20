@@ -163,6 +163,20 @@ fun ProfilSekme(
 
             Etiket("Gizlilik ve Destek", Modifier.padding(start = 4.dp, top = 4.dp))
             Grup {
+                MenuSatiri(
+                    "📣", "Topluluk Akışında Görün",
+                    when {
+                        k?.siralamaKatil != true -> "Önce Sıralamaya Katıl"
+                        k.akis -> "Açık"
+                        else -> "Kapalı"
+                    },
+                ) {
+                    when {
+                        k?.siralamaKatil != true -> y.basariAc(BasariBolumu.SIRALAMA)
+                        k.akis -> { depo.alanYaz(mapOf("akis" to false)); com.lisanshazirlik.app.data.Akis.benimkileriSil(depo.uid) }
+                        else -> depo.alanYaz(mapOf("akis" to true))
+                    }
+                }
                 MenuSatiri("🗂", "Verilerim", null) { y.verilerim() }
                 MenuSatiri("🔒", "Aydınlatma Metni", null) { y.aydinlatma() }
                 MenuSatiri("💬", "Görüşünü Yaz", null, son = true) { y.gorus() }

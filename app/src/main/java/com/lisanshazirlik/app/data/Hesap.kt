@@ -131,6 +131,8 @@ class Hesap {
         silinecekler += db.collection("takmaAdlar").whereEqualTo("uid", u).get().await().documents.map { it.reference }
         silinecekler += db.collection("duellolar").whereEqualTo("kurucu", u).get().await().documents.map { it.reference }
         silinecekler += db.collection("bekleyenler").document(u)
+        silinecekler += db.collection("cevrimici").document(u)
+        silinecekler += db.collection("akis").whereEqualTo("uid", u).get().await().documents.map { it.reference }
         silinecekler += db.collection("kodlar").whereEqualTo("uid", u).get().await().documents.map { it.reference }
         silinecekler += db.collection("davetler").whereEqualTo("davetEden", u).get().await().documents.map { it.reference }
         silinecekler += db.collection("davetler").document(u)

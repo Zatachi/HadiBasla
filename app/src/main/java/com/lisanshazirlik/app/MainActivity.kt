@@ -1,5 +1,6 @@
 package com.lisanshazirlik.app
 
+import androidx.lifecycle.repeatOnLifecycle
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -187,6 +188,16 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
     LaunchedEffect(k?.xp, k?.siralamaKatil, k?.takmaAd, k?.duvar, depo.sonuclar.size) {
         kotlinx.coroutines.delay(3000)
         Topluluk.profilYaz(depo.uid, depo, banka)
+    }
+    // "Şu an çalışanlar" sayacı için: uygulama ön plandayken dakikada bir nabız.
+    val yasamDongusu = androidx.compose.ui.platform.LocalLifecycleOwner.current.lifecycle
+    LaunchedEffect(depo.uid, k?.lisans) {
+        yasamDongusu.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+            while (true) {
+                com.lisanshazirlik.app.data.Akis.nabiz(depo.uid, k?.lisans)
+                kotlinx.coroutines.delay(60_000)
+            }
+        }
     }
     depo.kutlama?.let { mesaj ->
         androidx.compose.material3.AlertDialog(

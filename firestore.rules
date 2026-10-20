@@ -70,6 +70,29 @@ service cloud.firestore {
     }
 
     // ---- Davet ----
+    // ---- Ana sayfa: topluluk akışı ve şu an çevrimiçi olanlar ----
+    // Akışa sadece takma adının sahibi yazar; metin cihazda üretilir, kayıtta serbest yazı yok.
+    match /akis/{id} {
+      allow read: if girisli();
+      allow delete: if sahibi();
+      allow create: if girisli() && kendisi() && simdi()
+        && veri().keys().hasOnly(['uid', 'takmaAd', 'tur', 'ders', 'deger', 'zaman'])
+        && veri().tur in ['gecti', 'deneme', 'duello', 'rozet']
+        && (veri().ders == null || (veri().ders is string && veri().ders.size() <= 30))
+        && veri().deger is int && veri().deger >= 0 && veri().deger <= 100
+        && veri().takmaAd is string && veri().takmaAd.size() >= 2 && veri().takmaAd.size() <= 20
+        && get(/databases/$(database)/documents/takmaAdlar/$(veri().takmaAd.lower())).data.uid == request.auth.uid;
+    }
+
+    // Kimlik yazılmaz: sadece zaman ve seçili lisans. Sayaç için okunur.
+    match /cevrimici/{uid} {
+      allow read: if girisli();
+      allow delete: if girisli() && request.auth.uid == uid;
+      allow create, update: if girisli() && request.auth.uid == uid && simdi()
+        && veri().keys().hasOnly(['zaman', 'lisans'])
+        && (veri().lisans == null || (veri().lisans is string && veri().lisans.size() <= 30));
+    }
+
     // ---- Canlı düello: rakip arayanlar ve maçlar ----
     match /bekleyenler/{uid} {
       allow read: if girisli();

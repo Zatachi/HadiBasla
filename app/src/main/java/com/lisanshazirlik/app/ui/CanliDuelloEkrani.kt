@@ -171,6 +171,7 @@ fun CanliDuelloEkrani(banka: SoruBankasi, depo: KullaniciDeposu, cevapla: (Soru,
                 com.lisanshazirlik.app.data.Olcum.olay("duello_bitti", "bot" to a.bot, "sonuc" to s, "terk" to a.benim.terk)
                 val xp = if (a.benim.terk) 0 else when (s) { 1 -> if (a.bot) 15 else 40; 0 -> if (a.bot) 8 else 20; else -> 5 }
                 depo.xpEkle(xp)
+                if (s == 1 && !a.bot && !a.benim.terk) com.lisanshazirlik.app.data.Akis.paylas(depo, "duello")
             }
             CanliSonuc(a, tekrar = { gecen = 0; asama = Asama.Araniyor }, geri = geri)
         }

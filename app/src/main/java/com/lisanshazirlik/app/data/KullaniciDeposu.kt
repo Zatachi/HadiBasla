@@ -53,6 +53,8 @@ data class Kullanici(
     val planGun: String = "",
     val planAdim: String? = null,
     val planTekrar: Int = 0,
+    /** Başarıları topluluk akışında görünsün mü (açık rıza). */
+    val akis: Boolean = false,
 ) {
     /** Bu haftanın XP'si (hafta değiştiyse 0). */
     fun buHaftaXp(): Int = if (hafta == Oyun.hafta()) xpHafta else 0
@@ -337,7 +339,10 @@ class KullaniciDeposu(val uid: String) {
         val bugun = bugunKey
         xpEkle(Oyun.XP_ROZET * yeni.size, mapOf("rozetler" to yeni.associateWith { bugun }))
         val r = Oyun.ROZETLER.firstOrNull { it.id in yeni }
-        if (r != null) kutlama = "${r.simge} Yeni Rozet: ${r.ad}"
+        if (r != null) {
+            kutlama = "${r.simge} Yeni Rozet: ${r.ad}"
+            if (r.id != "ilk_soru") Akis.paylas(this, "rozet", r.id)
+        }
     }
 
     fun paylasildi() {
@@ -392,6 +397,7 @@ class KullaniciDeposu(val uid: String) {
             mapOf("puan" to puan.coerceIn(0, 100), "tarih" to tarih?.toString(), "zaman" to FieldValue.serverTimestamp())
         )
         val h = hedef(ders)
+        if (puan >= 50 && h?.gecti != true) Akis.paylas(this, "gecti", ders)
         if (puan >= 50) hedefKaydet(ders, h?.sinavTarihi ?: tarih, gecti = true)
         else if (h?.gecti == true) hedefKaydet(ders, h.sinavTarihi, gecti = false)
         // Geniş kapsamlı mevzuatı geçen, dar kapsamlıyı da geçmiş sayılır.
@@ -409,6 +415,7 @@ class KullaniciDeposu(val uid: String) {
     fun denemeKaydet(kapsam: String, ortalama: Int, gecti: Boolean, dersPuanlari: Map<String, Int>, soruSayisi: Int, no: Int = 0) {
         Olcum.olay("deneme_bitti", "kapsam" to kapsam, "ortalama" to ortalama, "no" to no)
         xpEkle(Oyun.XP_DENEME + ortalama)
+        if (!kapsam.startsWith("konu:") && soruSayisi >= 20 && ortalama >= 70) Akis.paylas(this, "deneme", kapsam, ortalama)
         kok.collection("denemeler").add(
             mapOf(
                 "zaman" to FieldValue.serverTimestamp(),
@@ -462,6 +469,7 @@ class KullaniciDeposu(val uid: String) {
         planGun = (get("plan") as? Map<*, *>)?.get("gun")?.toString().orEmpty(),
         planAdim = (get("plan") as? Map<*, *>)?.get("adim")?.toString(),
         planTekrar = ((get("plan") as? Map<*, *>)?.get("tekrar") as? Number)?.toInt() ?: 0,
+        akis = getBoolean("akis") ?: false,
     )
 
     private fun DocumentSnapshot.deneme(): DenemeKaydi? = runCatching {

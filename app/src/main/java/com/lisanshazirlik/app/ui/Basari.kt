@@ -303,6 +303,7 @@ private fun KatilEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String, 
     var ad by remember { mutableStateOf("") }
     var onay by remember { mutableStateOf(false) }
     var duvar by remember { mutableStateOf(false) }
+    var akis by remember { mutableStateOf(false) }
     var hata by remember { mutableStateOf<String?>(null) }
     var bekle by remember { mutableStateOf(false) }
     val kapsam = rememberCoroutineScope()
@@ -347,12 +348,16 @@ private fun KatilEkrani(banka: SoruBankasi, depo: KullaniciDeposu, uid: String, 
             Checkbox(checked = duvar, onCheckedChange = { duvar = it })
             Text("Sınavı Geçtiğimde \"Geçenler Duvarı\"nda da Görüneyim (İsteğe Bağlı).", style = MaterialTheme.typography.bodyMedium)
         }
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickableIf(true) { akis = !akis }) {
+            Checkbox(checked = akis, onCheckedChange = { akis = it })
+            Text("Başarılarım (Sınavı Geçmek, Yüksek Deneme Puanı, Düello Galibiyeti, Yeni Rozet) Ana Sayfadaki Topluluk Akışında Takma Adımla Görünsün (İsteğe Bağlı).", style = MaterialTheme.typography.bodyMedium)
+        }
         Button(
             onClick = {
                 bekle = true
                 kapsam.launch {
                     try {
-                        Topluluk.katil(uid, depo, banka, ad, duvar)
+                        Topluluk.katil(uid, depo, banka, ad, duvar, akis)
                     } catch (e: Topluluk.AdAlinmis) {
                         hata = e.message
                     } catch (e: Exception) {
