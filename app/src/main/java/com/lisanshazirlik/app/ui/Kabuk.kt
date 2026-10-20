@@ -4,6 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.runtime.remember
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.getValue
@@ -356,7 +360,16 @@ private fun HedefKarti(h: Hedef, banka: SoruBankasi, cozulen: Set<String>, y: Yo
 fun DerslerSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: PaddingValues) {
     val lisans = banka.lisans(depo.kullanici?.lisans)
     val dersler = banka.lisansDersleri(depo.kullanici?.lisans)
-    val renkler = listOf(Yesil, androidx.compose.ui.graphics.Color(0xFF24476B), androidx.compose.ui.graphics.Color(0xFF7A2E3A), androidx.compose.ui.graphics.Color(0xFF7A5A12))
+    val renkler = SEVIYE_RENKLERI
+    var seviyeler by rememberSaveable { mutableStateOf(false) }
+    if (seviyeler || depo.kullanici?.seviyeSecildi != true) {
+        SeviyeSecimi(banka, depo, ic) { kod ->
+            depo.lisansSec(kod)
+            depo.alanYaz(mapOf("seviyeSecildi" to true))
+            seviyeler = false
+        }
+        return
+    }
     Column(Modifier.fillMaxSize()) {
         SekmeBasligi("Eğitim")
         LazyColumn(
@@ -365,15 +378,111 @@ fun DerslerSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic:
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
             item {
-                Row(Modifier.padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text("Hangi derse çalışacaksın?", style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
-                    Text(lisans?.kisaAd ?: "", style = MaterialTheme.typography.labelLarge, color = Yesil, modifier = Modifier.clickableIf(true, y.lisans))
+                Column(Modifier.padding(horizontal = 4.dp)) {
+                    Text(
+                        "‹ Seviyeler",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Yesil,
+                        modifier = Modifier.clip(RoundedCornerShape(50)).background(YesilAcik).clickable { seviyeler = true }.padding(horizontal = 12.dp, vertical = 6.dp),
+                    )
+                    Bosluk(10)
+                    Text(lisans?.kisaAd ?: "", style = MaterialTheme.typography.labelLarge, color = MetinSoluk)
+                    Text("Hangi derse çalışacaksın?", style = MaterialTheme.typography.titleLarge)
                 }
             }
             items(dersler.withIndex().toList(), key = { "k" + it.value.kod }) { (i, d) ->
                 KursKarti(banka, depo, d, renkler[i % renkler.size]) { y.paketAc(d.kod) }
             }
         }
+    }
+}
+
+val SEVIYE_RENKLERI = listOf(
+    androidx.compose.ui.graphics.Color(0xFF2C4F3E),
+    androidx.compose.ui.graphics.Color(0xFF24476B),
+    androidx.compose.ui.graphics.Color(0xFF7A2E3A),
+    androidx.compose.ui.graphics.Color(0xFF7A5A12),
+    androidx.compose.ui.graphics.Color(0xFF4A4A6A),
+    androidx.compose.ui.graphics.Color(0xFF3E6B5C),
+    androidx.compose.ui.graphics.Color(0xFF6B4A2E),
+    androidx.compose.ui.graphics.Color(0xFF2E5B6B),
+)
+
+private fun seviyeSimgesi(kod: String): String = when (kod) {
+    "duzey1" -> "🎓"
+    "duzey2" -> "📈"
+    "duzey3" -> "🏛"
+    "turev" -> "⚖️"
+    "kredi" -> "⭐"
+    "kurumsal" -> "🤝"
+    "gayrimenkul" -> "🏢"
+    "konut" -> "🏠"
+    else -> "📘"
+}
+
+@Composable
+private fun SeviyeSecimi(banka: SoruBankasi, depo: KullaniciDeposu, ic: PaddingValues, sec: (String) -> Unit) {
+    val secili = depo.kullanici?.lisans
+    var yakinda by remember { mutableStateOf<String?>(null) }
+    Column(Modifier.fillMaxSize()) {
+        SekmeBasligi("Eğitim")
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier.fillMaxSize().padding(bottom = ic.calculateBottomPadding()),
+            contentPadding = PaddingValues(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            item(span = { GridItemSpan(2) }) {
+                Column(Modifier.padding(horizontal = 4.dp, vertical = 4.dp)) {
+                    Text("Hangi lisansa hazırlanıyorsun?", style = MaterialTheme.typography.titleLarge)
+                    Text("Seçtiğin lisans hatırlanır; istediğin zaman değiştirebilirsin.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                }
+            }
+            items(banka.lisanslar.size) { i ->
+                val l = banka.lisanslar[i]
+                val renk = SEVIYE_RENKLERI[i % SEVIYE_RENKLERI.size]
+                val buMu = l.kod == secili && l.aktif
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(128.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(renk.copy(alpha = if (l.aktif) 1f else 0.55f))
+                        .clickable { if (l.aktif) sec(l.kod) else yakinda = l.ad }
+                        .padding(14.dp),
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(seviyeSimgesi(l.kod), fontSize = 28.sp, modifier = Modifier.weight(1f))
+                        if (buMu) {
+                            Text(
+                                "Devam ediyorsun",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontSize = 10.sp,
+                                color = renk,
+                                modifier = Modifier.clip(RoundedCornerShape(50)).background(Altin).padding(horizontal = 7.dp, vertical = 3.dp),
+                            )
+                        }
+                    }
+                    Box(Modifier.weight(1f))
+                    Text(l.kisaAd, style = MaterialTheme.typography.titleMedium, color = Krem, maxLines = 2)
+                    Text(
+                        if (l.aktif) "${l.dersler.size} ders" else "Yakında",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = 12.sp,
+                        color = KremSoluk,
+                    )
+                }
+            }
+        }
+    }
+    yakinda?.let { ad ->
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { yakinda = null },
+            title = { Text(ad) },
+            text = { Text("Bu lisansın içerikleri hazırlanıyor. Hazır olunca burada açılacak.") },
+            confirmButton = { androidx.compose.material3.TextButton(onClick = { yakinda = null }) { Text("Tamam") } },
+        )
     }
 }
 

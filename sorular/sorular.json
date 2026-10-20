@@ -1,5 +1,5 @@
 {
-  "surum": 4,
+  "surum": 5,
   "guncelleme": "20 Ekim 2026",
   "lisanslar": [
     {
@@ -32,6 +32,34 @@
       "kod": "turev",
       "ad": "Türev Araçlar",
       "kisaAd": "Türev Araçlar",
+      "dersler": [],
+      "aktif": false
+    },
+    {
+      "kod": "kredi",
+      "ad": "Kredi Derecelendirme",
+      "kisaAd": "Kredi Derecelendirme",
+      "dersler": [],
+      "aktif": false
+    },
+    {
+      "kod": "kurumsal",
+      "ad": "Kurumsal Yönetim Derecelendirme",
+      "kisaAd": "Kurumsal Yönetim Der.",
+      "dersler": [],
+      "aktif": false
+    },
+    {
+      "kod": "gayrimenkul",
+      "ad": "Gayrimenkul Değerleme",
+      "kisaAd": "Gayrimenkul Değerleme",
+      "dersler": [],
+      "aktif": false
+    },
+    {
+      "kod": "konut",
+      "ad": "Konut Değerleme",
+      "kisaAd": "Konut Değerleme",
       "dersler": [],
       "aktif": false
     }
