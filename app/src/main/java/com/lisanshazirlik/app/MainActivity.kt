@@ -204,6 +204,7 @@ private fun AnaUygulama(banka: SoruBankasi, depo: KullaniciDeposu, hesap: Hesap,
         lisans = { git(Ekran.Lisans) },
         hatirlatma = { git(Ekran.Hatirlatma) },
         paketAc = { git(Ekran.Paket(it)) },
+        paketAdimAc = { d, a -> git(Ekran.PaketAdim(d, a)) },
     )
 
     BackHandler(enabled = yigin.isNotEmpty() || sekme != Sekme.ANA) {

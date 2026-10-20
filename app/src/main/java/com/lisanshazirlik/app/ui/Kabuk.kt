@@ -2,6 +2,15 @@ package com.lisanshazirlik.app.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import com.lisanshazirlik.app.data.Paket
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -69,6 +78,7 @@ class Yonlendirici(
     val lisans: () -> Unit,
     val hatirlatma: () -> Unit,
     val paketAc: (String) -> Unit,
+    val paketAdimAc: (ders: String, adimId: String) -> Unit,
 )
 
 @Composable
@@ -151,14 +161,19 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: Pad
     val hedefSayi = gunlukHedef(banka, depo)
     val bugun = depo.bugunCozulen
     val zayif = zayifKonu(banka, depo)
-    val lisansAd = banka.lisans(k?.lisans)?.kisaAd ?: "Düzey 1"
-    val lisansSorulari = banka.lisansDersleri(k?.lisans).flatMap { banka.dersSorulari(it.kod) }
+    val dersler = banka.lisansDersleri(k?.lisans)
+    val lisansSorulari = dersler.flatMap { banka.dersSorulari(it.kod) }
     val gununSorusu = lisansSorulari.takeIf { it.isNotEmpty() }?.let {
         it[(java.time.LocalDate.now().toEpochDay() % it.size).toInt()]
     }
-    val sonKonu = k?.sonKonu?.let { id ->
-        banka.dersler.firstNotNullOfOrNull { d -> d.konular.firstOrNull { it.id == id }?.let { d to it } }
-    }
+    // Yolun dersi: son çalışılan paket → içeriği olan ilk hedef dersi → içeriği olan ilk ders.
+    val icerikli = dersler.filter { Paket.adimlar(banka, it.kod).isNotEmpty() }
+    val varsayilan = k?.sonPaket?.takeIf { s -> dersler.any { it.kod == s } }
+        ?: aktif.firstOrNull { h -> icerikli.any { it.kod == h.ders } }?.ders
+        ?: icerikli.firstOrNull()?.kod
+        ?: dersler.firstOrNull()?.kod
+    var secili by rememberSaveable { mutableStateOf<String?>(null) }
+    val dersKod = secili ?: varsayilan
 
     LazyColumn(
         Modifier.fillMaxSize().padding(bottom = ic.calculateBottomPadding()),
@@ -171,91 +186,86 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: Pad
                     .fillMaxWidth()
                     .background(Yesil)
                     .windowInsetsPadding(WindowInsets.statusBars)
-                    .padding(horizontal = 20.dp, vertical = 18.dp),
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(Modifier.size(44.dp).clip(CircleShape).background(Krem), contentAlignment = Alignment.Center) {
+                    Box(Modifier.size(40.dp).clip(CircleShape).background(Krem), contentAlignment = Alignment.Center) {
                         Text(basHarf(k?.ad.orEmpty()), color = Yesil, style = MaterialTheme.typography.titleMedium)
                     }
-                    Column(Modifier.padding(start = 12.dp)) {
-                        Text("Merhaba ${k?.ad.orEmpty()}", fontFamily = Baslik, fontSize = 24.sp, color = Krem)
-                        Text(
-                            when {
-                                aktif.isEmpty() -> "$lisansAd · ${com.lisanshazirlik.app.data.Oyun.seviye(k?.xp ?: 0).ad} · ${k?.xp ?: 0} XP"
-                                else -> "$lisansAd · ${com.lisanshazirlik.app.data.Oyun.seviye(k?.xp ?: 0).ad} · ${k?.xp ?: 0} XP"
-                            },
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = KremSoluk,
-                        )
-                    }
-                }
-                Bosluk(16)
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    UstKutu(
-                        Modifier.weight(1f),
-                        "En yakın sınav",
-                        when {
-                            enYakin == null -> "–"
-                            enYakin.kalanGun() == 0L -> "Bugün"
-                            else -> "${enYakin.kalanGun()} gün"
-                        },
-                        Altin,
+                    Text(
+                        "Merhaba ${k?.ad.orEmpty()}",
+                        fontFamily = Baslik,
+                        fontSize = 22.sp,
+                        color = Krem,
+                        modifier = Modifier.padding(start = 12.dp),
                     )
-                    UstKutu(Modifier.weight(1f), "Çalışma serisi", "${depo.seri()} gün", Krem)
-                }
-            }
-        }
-
-        item {
-            KartKutu(Modifier.padding(horizontal = 16.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("Bugünkü hedef", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                    Text("$bugun / $hedefSayi", style = MaterialTheme.typography.titleMedium, color = if (bugun >= hedefSayi) DogruYesil else Yesil)
                 }
                 Bosluk(10)
-                Ilerleme(bugun / hedefSayi.toFloat())
-                Bosluk(8)
                 Text(
-                    when {
-                        bugun >= hedefSayi -> "Bugünkü hedefini tamamladın. Harika!"
-                        aktif.isEmpty() -> "Hedef eklersen günlük soru sayın sınav tarihine göre hesaplanır."
-                        else -> "Sınav tarihine göre hesaplandı. ${hedefSayi - bugun} soru kaldı."
-                    },
+                    listOfNotNull(
+                        "🔥 ${depo.seri()} gün seri",
+                        "⭐ ${k?.xp ?: 0} XP",
+                        enYakin?.let { if (it.kalanGun() == 0L) "📅 Sınav bugün" else "📅 Sınava ${it.kalanGun()} gün" },
+                    ).joinToString("   "),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MetinSoluk,
+                    color = KremSoluk,
                 )
             }
         }
 
+        // ------------------------------------------------ Öğrenme yolu
         item {
-            val paketDers = k?.sonPaket ?: aktif.firstOrNull()?.ders ?: banka.lisansDersleri(k?.lisans).firstOrNull()?.kod
-            val pd = paketDers?.let { banka.ders(it) }
-            if (pd != null) {
-                val adimlar = com.lisanshazirlik.app.data.Paket.adimlar(banka, pd.kod)
-                val bitti = com.lisanshazirlik.app.data.Paket.tamamlananlar(depo, pd.kod)
-                val tamam = adimlar.count { it.id in bitti }
-                val sonraki = adimlar.firstOrNull { it.id !in bitti }
-                Row(
-                    Modifier
-                        .padding(horizontal = 16.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(YesilKoyu)
-                        .clickableIf(true) { y.paketAc(pd.kod) }
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text("📦", fontSize = 26.sp)
-                    Column(Modifier.weight(1f).padding(start = 12.dp)) {
-                        Text(if (tamam == 0) "Eğitim paketiyle başla" else "Paketine devam et", style = MaterialTheme.typography.bodyMedium, color = KremSoluk)
-                        Text(pd.kisaAd, style = MaterialTheme.typography.titleMedium, color = Krem)
-                        Text(
-                            if (sonraki == null) "Paket tamamlandı ✓" else "Adım ${tamam + 1}/${adimlar.size} · ${sonraki.tur.ad}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = KremSoluk,
-                        )
-                    }
-                    Text("▶", color = Altin, fontSize = 22.sp)
+            Column(Modifier.padding(horizontal = 20.dp)) {
+                Text("Ne öğreneceksin?", style = MaterialTheme.typography.titleLarge)
+                Text("Dersini seç, adımları sırayla izle ve çöz.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+            }
+        }
+        item {
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(dersler, key = { "c" + it.kod }) { d ->
+                    val sec = d.kod == dersKod
+                    val bos = Paket.adimlar(banka, d.kod).isEmpty()
+                    Text(
+                        d.kisaAd,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = if (sec) Krem else if (bos) MetinSoluk else Yesil,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(50))
+                            .background(if (sec) Yesil else Kart)
+                            .border(1.dp, if (sec) Yesil else Cizgi, RoundedCornerShape(50))
+                            .clickable {
+                                secili = d.kod
+                                depo.alanYaz(mapOf("sonPaket" to d.kod))
+                            }
+                            .padding(horizontal = 14.dp, vertical = 8.dp),
+                    )
+                }
+            }
+        }
+        dersKod?.let { banka.ders(it) }?.let { ders ->
+            item(key = "yol" + ders.kod) {
+                OgrenmeYolu(banka, depo, ders.kod, y, icerikliBaska = icerikli.firstOrNull { it.kod != ders.kod }?.let { d ->
+                    d.kisaAd to { secili = d.kod; depo.alanYaz(mapOf("sonPaket" to d.kod)) }
+                })
+            }
+        }
+
+        // ------------------------------------------------ Diğer
+        item { Etiket("Bugün", Modifier.padding(start = 20.dp, top = 10.dp)) }
+        item {
+            KartKutu(Modifier.padding(horizontal = 16.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Bugünkü hedef", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                    Text("$bugun / $hedefSayi soru", style = MaterialTheme.typography.titleMedium, color = if (bugun >= hedefSayi) DogruYesil else Yesil)
+                }
+                Bosluk(10)
+                Ilerleme(bugun / hedefSayi.toFloat())
+                if (bugun >= hedefSayi) {
+                    Bosluk(6)
+                    Text("Bugünkü hedefini tamamladın. Harika!", style = MaterialTheme.typography.bodyMedium, color = DogruYesil)
                 }
             }
         }
@@ -278,56 +288,6 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: Pad
             }
         }
 
-        if (sonKonu != null) {
-            item {
-                val (d, kn) = sonKonu
-                val sorular = banka.konuSorulari(kn.id)
-                val c = sorular.count { it.id in cozulen }
-                Row(
-                    Modifier
-                        .padding(horizontal = 16.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(Yesil)
-                        .clickableIf(true) { y.konuAc(kn.id) }
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column(Modifier.weight(1f)) {
-                        Text("Kaldığın yerden devam", style = MaterialTheme.typography.bodyMedium, color = KremSoluk)
-                        Text(kn.ad, style = MaterialTheme.typography.titleMedium, color = Krem)
-                        Text("${d.kisaAd} · ${sorular.size} sorudan $c çözüldü", style = MaterialTheme.typography.bodyMedium, color = KremSoluk)
-                    }
-                    Text("▶", color = Altin, fontSize = 22.sp)
-                }
-            }
-        }
-
-        item { Etiket("Hedeflerin", Modifier.padding(start = 20.dp, top = 6.dp)) }
-
-        if (aktif.isEmpty()) {
-            item {
-                KartKutu(Modifier.padding(horizontal = 16.dp), tikla = { y.hedefAc(null) }) {
-                    Text("Hangi derse çalışıyorsun?", style = MaterialTheme.typography.titleMedium)
-                    Bosluk(4)
-                    Text("Ders ve sınav tarihi seç; kalan günleri ve günlük hedefini takip et.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
-                    Bosluk(8)
-                    Text("Hedef ekle", style = MaterialTheme.typography.labelLarge, color = Yesil)
-                }
-            }
-        }
-        items(aktif, key = { "h" + it.ders }) { h -> HedefKarti(h, banka, cozulen, y) }
-        if (aktif.isNotEmpty() && depo.hedefler.size < banka.lisansDersleri(k?.lisans).size) {
-            item {
-                Text(
-                    "+ Başka bir ders ekle",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = Yesil,
-                    modifier = Modifier.padding(horizontal = 20.dp).clickableIf(true) { y.hedefAc(null) }.padding(vertical = 6.dp),
-                )
-            }
-        }
-
         if (zayif != null) {
             item {
                 Column(
@@ -346,6 +306,30 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: Pad
             }
         }
 
+        item { Etiket("Sınav hedeflerin", Modifier.padding(start = 20.dp, top = 10.dp)) }
+        if (aktif.isEmpty()) {
+            item {
+                KartKutu(Modifier.padding(horizontal = 16.dp), tikla = { y.hedefAc(null) }) {
+                    Text("Sınav tarihin belli mi?", style = MaterialTheme.typography.titleMedium)
+                    Bosluk(4)
+                    Text("Tarih eklersen kalan günleri ve günlük soru hedefini hesaplarız.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                    Bosluk(8)
+                    Text("Hedef ekle", style = MaterialTheme.typography.labelLarge, color = Yesil)
+                }
+            }
+        }
+        items(aktif, key = { "h" + it.ders }) { h -> HedefKarti(h, banka, cozulen, y) }
+        if (aktif.isNotEmpty() && depo.hedefler.size < dersler.size) {
+            item {
+                Text(
+                    "+ Başka bir ders ekle",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Yesil,
+                    modifier = Modifier.padding(horizontal = 20.dp).clickableIf(true) { y.hedefAc(null) }.padding(vertical = 6.dp),
+                )
+            }
+        }
+
         if (gecilen.isNotEmpty()) {
             item {
                 KartKutu(Modifier.padding(horizontal = 16.dp)) {
@@ -355,10 +339,136 @@ fun AnaSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic: Pad
                         Text("✓  ${banka.ders(h.ders)?.kisaAd ?: h.ders}", style = MaterialTheme.typography.bodyMedium, color = DogruYesil)
                     }
                     Bosluk(4)
-                    Text("${gecilen.size} / ${banka.lisansDersleri(k?.lisans).size} ders tamamlandı", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+                    Text("${gecilen.size} / ${dersler.size} ders tamamlandı", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
                 }
             }
         }
+    }
+}
+
+/** Ana sayfanın kalbi: seçili dersin adımları yukarıdan aşağıya bir yol gibi. */
+@Composable
+private fun OgrenmeYolu(
+    banka: SoruBankasi,
+    depo: KullaniciDeposu,
+    dersKod: String,
+    y: Yonlendirici,
+    icerikliBaska: Pair<String, () -> Unit>?,
+) {
+    val ders = banka.ders(dersKod) ?: return
+    val adimlar = Paket.adimlar(banka, dersKod)
+    val bitti = Paket.tamamlananlar(depo, dersKod)
+    val siradaki = adimlar.firstOrNull { it.id !in bitti }
+    val tamam = adimlar.count { it.id in bitti }
+
+    KartKutu(Modifier.padding(horizontal = 16.dp)) {
+        Text(ders.ad, style = MaterialTheme.typography.titleMedium)
+        if (ders.aciklama.isNotBlank()) Text(ders.aciklama, style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+
+        if (adimlar.isEmpty()) {
+            Bosluk(10)
+            Text("Bu dersin anlatımları hazırlanıyor.", style = MaterialTheme.typography.bodyMedium, color = MetinSoluk)
+            if (icerikliBaska != null) {
+                Bosluk(10)
+                Button(onClick = icerikliBaska.second, modifier = Modifier.fillMaxWidth().height(48.dp)) {
+                    Text("${icerikliBaska.first} dersiyle başla")
+                }
+            }
+            return@KartKutu
+        }
+
+        Bosluk(10)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Ilerleme(tamam / adimlar.size.toFloat(), Modifier.weight(1f))
+            Text("  $tamam/${adimlar.size} adım", style = MaterialTheme.typography.labelLarge, color = Yesil)
+        }
+        Bosluk(8)
+
+        var sonKonu: String? = "-"
+        var konuNo = 0
+        adimlar.forEach { a ->
+            val konuId = a.konu?.id
+            if (konuId != sonKonu) {
+                sonKonu = konuId
+                Bosluk(10)
+                Text(
+                    if (a.konu != null) "${++konuNo}. ${a.konu.ad}" else "Son adım",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MetinSoluk,
+                )
+                Bosluk(4)
+            }
+            YolAdimi(a, durum = when {
+                a.id in bitti -> 2
+                a == siradaki -> 1
+                else -> 0
+            }) { y.paketAdimAc(dersKod, a.id) }
+        }
+
+        val hazirlaniyor = ders.konular.filter { kn -> adimlar.none { it.konu?.id == kn.id } }
+        if (hazirlaniyor.isNotEmpty()) {
+            Bosluk(12)
+            Text(
+                "Hazırlanıyor: " + hazirlaniyor.joinToString(", ") { it.ad },
+                style = MaterialTheme.typography.bodyMedium,
+                fontSize = 12.sp,
+                color = MetinSoluk,
+            )
+        }
+
+        Bosluk(14)
+        if (siradaki != null) {
+            Button(onClick = { y.paketAdimAc(dersKod, siradaki.id) }, modifier = Modifier.fillMaxWidth().height(52.dp)) {
+                Text(if (tamam == 0) "▶  Başla: ${siradaki.tur.ad}" else "▶  Devam et: ${siradaki.tur.ad}")
+            }
+        } else {
+            Text("🏅 Bu paketi tamamladın!", style = MaterialTheme.typography.titleMedium, color = DogruYesil)
+            if (icerikliBaska != null) {
+                Bosluk(8)
+                OutlinedButton(onClick = icerikliBaska.second, modifier = Modifier.fillMaxWidth().height(48.dp)) {
+                    Text("Sıradaki ders: ${icerikliBaska.first}")
+                }
+            }
+        }
+    }
+}
+
+/** durum: 0 sırada bekliyor, 1 şimdi, 2 bitti. */
+@Composable
+private fun YolAdimi(a: Paket.Adim, durum: Int, tikla: () -> Unit) {
+    val simdi = durum == 1
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(if (simdi) YesilAcik else Kart)
+            .clickable(onClick = tikla)
+            .padding(horizontal = 10.dp, vertical = 9.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier
+                .size(26.dp)
+                .clip(CircleShape)
+                .background(
+                    when (durum) {
+                        2 -> DogruYesil
+                        1 -> Yesil
+                        else -> Zemin
+                    }
+                )
+                .border(1.dp, if (durum == 0) Cizgi else androidx.compose.ui.graphics.Color.Transparent, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                when (durum) { 2 -> "✓"; 1 -> "▶"; else -> "" },
+                color = Krem,
+                fontSize = 12.sp,
+            )
+        }
+        Text("${a.tur.simge}  ${a.tur.ad}", style = MaterialTheme.typography.bodyMedium, color = if (durum == 0) MetinSoluk else Metin,
+            modifier = Modifier.weight(1f).padding(start = 10.dp))
+        if (simdi) Text("şimdi", style = MaterialTheme.typography.labelMedium, color = Yesil)
     }
 }
 
@@ -511,8 +621,8 @@ fun DerslerSekme(banka: SoruBankasi, depo: KullaniciDeposu, y: Yonlendirici, ic:
 
 @Composable
 private fun PaketSatiri(banka: SoruBankasi, depo: KullaniciDeposu, dersKod: String, ad: String, y: Yonlendirici) {
-    val adimlar = com.lisanshazirlik.app.data.Paket.adimlar(banka, dersKod)
-    val bitti = com.lisanshazirlik.app.data.Paket.tamamlananlar(depo, dersKod)
+    val adimlar = Paket.adimlar(banka, dersKod)
+    val bitti = Paket.tamamlananlar(depo, dersKod)
     val tamam = adimlar.count { it.id in bitti }
     val sonraki = adimlar.firstOrNull { it.id !in bitti }
     val bos = adimlar.isEmpty()
